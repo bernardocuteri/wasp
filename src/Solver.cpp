@@ -413,7 +413,7 @@ Solver::solvePropagators(
             }
         }
         
-        #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL)
+        #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL) || defined(ENABLE_CPP)
         for( unsigned int i = 0; i < propagatorsAfterUnit.size(); i++ )
         {
             propagatorsAfterUnit[ i ]->endUnitPropagation( *this );
@@ -493,7 +493,7 @@ Solver::solvePropagators(
             }
         }                
         
-        #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL)
+        #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL) || defined(ENABLE_CPP)
         for( unsigned int i = 0; i < propagatorsAttachedToEndPropagation.size(); i++ )
         {
             propagatorsAttachedToEndPropagation[ i ]->endPropagation( *this );
@@ -506,7 +506,7 @@ Solver::solvePropagators(
         
         restartIfNecessary();
 
-        #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL)
+        #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL) || defined(ENABLE_CPP)
         for( unsigned int i = 0; i < propagatorsAttachedToPartialChecks.size(); i++ )
             if( !propagatorsAttachedToPartialChecks[ i ]->checkPartialInterpretation( *this ) )
             {
@@ -520,7 +520,7 @@ Solver::solvePropagators(
         #endif
     }
     
-    #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL)
+    #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL) || defined(ENABLE_CPP)
     for( unsigned int i = 0; i < propagatorsAttachedToCheckAnswerSet.size(); i++ )
         if( !propagatorsAttachedToCheckAnswerSet[ i ]->checkAnswerSet( *this ) )
         {

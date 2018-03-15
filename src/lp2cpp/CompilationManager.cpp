@@ -1,0 +1,483 @@
+/*
+ *
+ *  Copyright 2016 Bernardo Cuteri, Alessandro De Rosis, Francesco Ricca.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+#include "CompilationManager.h"
+#include "utils/Indentation.h"
+#include "utils/SharedFunctions.h"
+#include <ostream>
+#include <fstream>
+#include <cassert>
+#include <map>
+#include <set>
+#include <list>
+#include <bits/unordered_map.h>
+#include "DLV2libs/input/InputDirector.h"
+#include "parsing/AspCore2ProgramBuilder.h"
+#include "datastructures/PredicateWSet.h"
+using namespace std;
+
+
+const string tab = "    ";
+
+CompilationManager::CompilationManager() : out(&std::cout), ind(0) {
+}
+
+void CompilationManager::setOutStream(std::ostream* outputTarget) {
+    this->out = outputTarget;
+}
+
+void CompilationManager::lp2cpp(const string &filename) {
+    DLV2::InputDirector director;
+    AspCore2ProgramBuilder* builder = new AspCore2ProgramBuilder();
+    director.configureBuilder(builder);
+    vector<const char*> fileNames;
+    fileNames.push_back(filename.c_str());
+    director.parse(fileNames);
+    //    generateCompilableProgram(builder->getProgram(), builder);
+    generateStratifiedCompilableProgram(builder->getProgram(), builder);
+    delete builder;
+
+}
+
+bool hasConstraint(const aspc::Program & program) {
+    for (const aspc::Rule & r : program.getRules()) {
+        if (r.isConstraint()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void CompilationManager::generateStratifiedCompilableProgram(const aspc::Program & program, AspCore2ProgramBuilder* builder) {
+
+    *out << ind << "#include \"Executor.h\"\n\n";
+    *out << ind << "#include \"utils/ConstantsManager.h\"\n\n";
+    *out << ind << "#include \"DLV2libs/input/InputDirector.h\"\n\n";
+    *out << ind << "#include \"parsing/AspCore2InstanceBuilder.h\"\n\n";
+    *out << ind++ << "extern \"C\" Executor* create_object() {\n";
+
+    *out << ind << "return new Executor;\n";
+    *out << --ind << "}\n";
+
+    *out << ind++ << "extern \"C\" void destroy_object( Executor* object ) {\n";
+    *out << ind << "delete object;\n";
+    *out << --ind << "}\n";
+
+    *out << ind << "Executor::~Executor() {}\n\n";
+
+    *out << ind << "Executor::Executor() {}\n\n";
+    //perform join functions    
+
+
+    //typedefs
+
+    *out << ind << "typedef vector<const vector<unsigned>* > Tuples;\n";
+
+    //print tuples 
+    *out << ind++ << "void printTuples(const string & predicateName, const Tuples & tuples) {\n";
+    *out << ind++ << "for (const vector<unsigned> * tuple : tuples) {\n";
+    *out << ind << "cout <<predicateName<< \"(\";\n";
+    *out << ind++ << "for (unsigned i = 0; i < tuple->size(); i++) {\n";
+    *out << ind++ << "if (i > 0) {\n";
+    *out << ind << "cout << \",\";\n";
+    *out << --ind << "}\n";
+    *out << ind << "cout << ConstantsManager::getInstance().unmapConstant((*tuple)[i]);\n";
+    *out << --ind << "}\n";
+    *out << ind << "cout << \").\\n\";\n";
+    *out << --ind << "}\n";
+    *out << --ind << "}\n";
+    //handle arieties
+    *out << ind++ << "void Executor::executeFromFile(const char* filename) {\n";
+    *out << ind << "DLV2::InputDirector director;\n";
+    *out << ind << "AspCore2InstanceBuilder* builder = new AspCore2InstanceBuilder();\n";
+    *out << ind << "director.configureBuilder(builder);\n";
+    *out << ind << "vector<const char*> fileNames;\n";
+    *out << ind << "fileNames.push_back(filename);\n";
+    *out << ind << "director.parse(fileNames);\n";
+    *out << ind << "executeProgramOnFacts(builder->getProblemInstance());\n";
+    *out << ind << "delete builder;\n";
+    *out << --ind << "}\n\n";
+    *out << ind << "using PredicateWSet = std::unordered_set<std::vector<unsigned>, VectorHash>;\n";
+
+    *out << ind++ << "void Executor::executeProgramOnFacts(const vector<aspc::Atom> & program) {\n";
+    const set< pair<string, unsigned> >& predicates = program.getPredicates();
+    //data structure init
+
+
+    *out << ind << "failedConstraints.clear();\n";
+
+    *out << ind << "map<string, PredicateWSet*> predicateWSetMap;\n";
+    *out << ind << "map<string, Tuples* > predicateTuplesMap;\n";
+
+    for (const pair<string, unsigned>& predicate : predicates) {
+        *out << ind << "Tuples tuples_" << predicate.first << ";\n";
+        *out << ind << "PredicateWSet w" << predicate.first << ";\n";
+        *out << ind << "predicateWSetMap[\"" << predicate.first << "\"]=&w" << predicate.first << ";\n";
+        *out << ind << "predicateTuplesMap[\"" << predicate.first << "\"]=&tuples_" << predicate.first << ";\n";
+    }
+
+
+    bodyPredicates = program.getBodyPredicates();
+
+    GraphWithTarjanAlgorithm& graphWithTarjanAlgorithm = builder->getGraphWithTarjanAlgorithm();
+    vector< vector <int> > sccs = graphWithTarjanAlgorithm.SCC();
+
+    //print working set
+    //     for (const pair<string, unsigned>& predicate : predicates) {
+    //        *out << ind << "w" << predicate.first <<".printTuples(\""<<predicate.first<<"\");\n";
+    //    }
+    joinKeys.resize(program.getRulesSize());
+    auxiliaryMapsNameByRuleAndStartIndex.resize(program.getRulesSize());
+    for (unsigned i = 0; i < program.getRulesSize(); i++) {
+        auxiliaryMapsNameByRuleAndStartIndex[i].resize(program.getRule(i).getBodySize());
+    }
+
+    const unordered_map<int, Vertex>& vertexByID = builder->getVertexByIDMap();
+
+    //compute levels of each predicate
+    vector< unsigned > predicateLevels(vertexByID.size());
+    for (int i = sccs.size() - 1; i >= 0; i--) {
+        const vector<int>& scc = sccs[i];
+        for (int c : scc) {
+            predicateLevels[c] = sccs.size() - i - 1;
+        }
+    }
+
+    *out << ind << "unordered_map <string, vector <AuxiliaryMap*> > predicateToAuxiliaryMaps;\n";
+    unsigned sccsSize = sccs.size();
+    if (hasConstraint(program)) {
+        sccsSize++;
+    }
+    vector< unordered_map<string, vector<unsigned>>> starterToExitRulesByComponent(sccsSize);
+    vector < unordered_map<string, vector<pair<unsigned, unsigned> > >> starterToRecursiveRulesByComponent(sccsSize);
+    vector<bool> exitRules(program.getRulesSize(), false);
+    const unordered_map<string, int>& predicateIDs = builder->getPredicateIDsMap();
+    for (const aspc::Rule& r : program.getRules()) {
+        //r is a constraint
+        bool exitRule = true;
+        unsigned lIndex = 0;
+        if (!r.isConstraint()) {
+            unsigned headLevel = predicateLevels[predicateIDs.at(r.getHead().at(0).getPredicateName())];
+            for (const aspc::Literal& l : r.getBody()) {
+                unsigned predicateID = predicateIDs.at(l.getPredicateName());
+                if (predicateLevels.at(predicateID) == headLevel) {
+                    exitRule = false;
+                    joinKeys[r.getRuleId()][lIndex].resize(r.getBodySize() - 1);
+                    handleDataStructuresDeclaration(r, lIndex);
+                    starterToRecursiveRulesByComponent[headLevel][l.getPredicateName()].push_back(pair<unsigned, unsigned>(r.getRuleId(), lIndex));
+                }
+                lIndex++;
+            }
+            if (exitRule) {
+                starterToExitRulesByComponent[headLevel][r.getBody().front().getPredicateName()].push_back(r.getRuleId());
+                joinKeys[r.getRuleId()][0].resize(r.getBodySize() - 1);
+                exitRules[r.getRuleId()] = true;
+                handleDataStructuresDeclaration(r, 0);
+            }
+        } else {
+            starterToExitRulesByComponent[sccs.size()][r.getBody().front().getPredicateName()].push_back(r.getRuleId());
+            joinKeys[r.getRuleId()][0].resize(r.getBodySize() - 1);
+            exitRules[r.getRuleId()] = true;
+            handleDataStructuresDeclaration(r, 0);
+        }
+    }
+
+
+    //feed facts
+    //*out << ind << "cout<<\"facts\\n\";\n";
+    *out << ind++ << "for(unsigned i=0;i<program.size();i++) {\n";
+    //*out << ind << "cout<<i<<\"\\n\";\n";
+    *out << ind << "map<string,PredicateWSet*>::iterator it = predicateWSetMap.find(program[i].getPredicateName());\n";
+    *out << ind++ << "if(it==predicateWSetMap.end()) {\n";
+    *out << ind << "program[i].print();\n";
+    *out << ind << "cout<<\".\\n\";\n";
+    *out << --ind << "}\n";
+    *out << ind++ << "else {\n";
+    *out << ind << "vector<unsigned> tuple = program[i].getIntTuple();\n";
+    *out << ind << "const auto& insertResult=it->second->insert(tuple);\n";
+
+    *out << ind++ << "if(insertResult.second){\n";
+    //    *out << ind << "it->second->insert(tuple);\n";
+    *out << ind << "Tuples & tuples = *predicateTuplesMap[program[i].getPredicateName()];\n";
+    *out << ind << "tuples.push_back(&(*(insertResult.first)));\n";
+    *out << ind++ << "for(AuxiliaryMap* auxMap:predicateToAuxiliaryMaps[it->first]){\n";
+    *out << ind << "auxMap -> insert2(*tuples.back());\n";
+    //    *out << ind << "cout<<it->first<<endl;\n";
+    *out << --ind << "}\n";
+    *out << --ind << "}\n";
+    *out << --ind << "}\n";
+    *out << --ind << "}\n";
+
+    //declare iterators
+    for (const pair<string, unsigned>& predicate : predicates) {
+        *out << ind << "unsigned index_" << predicate.first << "=0;\n";
+    }
+
+    for (unsigned i = 0; i < sccsSize; i++) {
+        const unordered_map<string, vector<unsigned>>&startersExitRules = starterToExitRulesByComponent[i];
+        for (const auto& rulesByPredicate : startersExitRules) {
+            *out << ind << "index_" << rulesByPredicate.first << "=0;\n";
+            *out << ind++ << "while(index_" << rulesByPredicate.first << "!=tuples_" << rulesByPredicate.first << ".size()){\n";
+            *out << ind << "const vector<unsigned>& tuple0 = *tuples_" << rulesByPredicate.first << "[index_" << rulesByPredicate.first << "];\n";
+            for (unsigned ruleId : rulesByPredicate.second) {
+                const aspc::Rule& r = program.getRule(ruleId);
+                *out << ind++ << "{\n";
+                handleRuleLoops(r, 0);
+                *out << --ind << "}\n";
+
+            }
+            *out << ind << "index_" << rulesByPredicate.first << "++;\n";
+            *out << --ind << "}\n";
+        }
+
+        const unordered_map<string, vector <pair<unsigned, unsigned>>>& recursiveRulesByStarter = starterToRecursiveRulesByComponent[i];
+        if (recursiveRulesByStarter.size()) {
+            *out << ind++ << "while(";
+            unsigned index = 0;
+            for (unsigned vertexId : sccs[sccs.size() - i - 1]) {
+                const Vertex& v = vertexByID.at(vertexId);
+                if (index > 0)
+                    *out << " || ";
+                *out << "index_" << v.name << "!=tuples_" << v.name << ".size()";
+                index++;
+            }
+            *out << "){\n";
+        }
+        for (const auto& rulesByStarter : recursiveRulesByStarter) {
+            *out << ind++ << "while(index_" << rulesByStarter.first << "!=tuples_" << rulesByStarter.first << ".size()){\n";
+            *out << ind << "const vector<unsigned>& tuple0 = *tuples_" << rulesByStarter.first << "[index_" << rulesByStarter.first << "];\n";
+            for (const auto& ruleAndStarterIndex : rulesByStarter.second) {
+                const aspc::Rule& r = program.getRule(ruleAndStarterIndex.first);
+                *out << ind++ << "{\n";
+                handleRuleLoops(r, ruleAndStarterIndex.second);
+                *out << --ind << "}\n";
+
+            }
+            *out << ind << "index_" << rulesByStarter.first << "++;\n";
+            *out << --ind << "}\n";
+        }
+        if (recursiveRulesByStarter.size())
+            *out << --ind << "}\n";
+
+    }
+    if (!program.hasConstraint()) {
+        for (const pair<string, unsigned>& predicate : predicates) {
+            *out << ind << "printTuples(\"" << predicate.first << "\",tuples_" << predicate.first << ");\n";
+
+        }
+    }
+    *out << --ind << "}\n";
+
+
+    //*out << ind << "w" << predicateIdPair.first << ".printTuples(\"" << predicateIdPair.first << "\");\n";
+}
+
+void CompilationManager::handleDataStructuresDeclaration(const aspc::Rule& r, unsigned start) {
+    //TODO handle aux map for predicate with equal cards
+    vector<unsigned> joinOrder;
+    joinOrder.push_back(start);
+    for (unsigned i = 0; i < r.getBodySize(); i++)
+        if (start != i)
+            joinOrder.push_back(i);
+
+
+    for (unsigned i = 1; i < r.getBodySize(); i++) {
+        const aspc::Literal& li = r.getBody().at(joinOrder[i]);
+
+        string mapVariableName = "";
+        vector< unsigned > keyIndexes;
+        mapVariableName += li.getPredicateName() + "_";
+        for (unsigned tiIndex = 0; tiIndex < li.getTerms().size(); tiIndex++) {
+            bool found = false;
+            const string& ti = li.getTermAt(tiIndex);
+            for (unsigned j = 0; j < i && !found; j++) {
+                const aspc::Literal& lj = r.getBody().at(joinOrder[j]);
+                unsigned termIndex = 0;
+                for (string tj : lj.getTerms()) {
+                    if (ti == tj) {
+                        joinKeys[r.getRuleId()][start][i - 1].push_back(pair<unsigned, unsigned>(j, termIndex));
+                        mapVariableName += to_string(tiIndex) + "_";
+                        keyIndexes.push_back(tiIndex);
+                        found = true;
+                        break;
+                    }
+                    termIndex++;
+                }
+            }
+        }
+        auxiliaryMapsNameByRuleAndStartIndex[r.getRuleId()][start].push_back(mapVariableName);
+        if (!declaredMaps.count(mapVariableName)) {
+            *out << ind << "vector<unsigned> keyIndexes" << mapVariableName << ";\n";
+            for (unsigned keyIndex : keyIndexes) {
+                *out << ind << "keyIndexes" << mapVariableName << ".push_back(" << keyIndex << ");\n";
+            }
+
+            *out << ind << "AuxiliaryMap p" << mapVariableName << "(&keyIndexes" << mapVariableName << ");\n";
+            predicateToAuxiliaryMaps[li.getPredicateName()].insert(mapVariableName);
+            *out << ind << "predicateToAuxiliaryMaps[\"" << li.getPredicateName() << "\"].push_back(&p" << mapVariableName << ");\n";
+            declaredMaps.insert(mapVariableName);
+        }
+
+    }
+}
+
+void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
+    //Iterate over starting workingset
+    vector<unsigned> joinOrder;
+    joinOrder.push_back(start);
+    for (unsigned i = 0; i < r.getBodySize(); i++)
+        if (start != i)
+            joinOrder.push_back(i);
+    const vector<aspc::Literal>& body = r.getBody();
+
+    unsigned nEqualCardsOrConstants = 0;
+    for (unsigned i = 0; i < body.size(); i++) {
+
+        if (i != 0) {
+
+            if (body[joinOrder[i]].isNegated()) {
+                *out << ind << "vector<unsigned> key" << i - 1 << "(" << body[joinOrder[i]].getAriety() << ");\n";
+                auto it = joinKeys[r.getRuleId()][start][i - 1].begin();
+                for (unsigned j = 0; j < body[joinOrder[i]].getAriety(); j++) {
+                    if (!body[joinOrder[i]].isVariableTermAt(j)) {
+                        *out << ind << "key" << i - 1 << "[" << j << "]=" + body[joinOrder[i]].getTermAt(j) + ";\n";
+                    } else {
+                        *out << ind << "key" << i - 1 << "[" << j << "]=tuple" << it->first << "[" << it->second << "];\n";
+                        it++;
+                    }
+                }
+                *out << ind++ << "if(w" << body[joinOrder[i]].getPredicateName() << ".find(key" << i - 1 << ")==w" << body[joinOrder[i]].getPredicateName() << ".end()){\n";
+
+            } else {
+                *out << ind << "vector<unsigned> key" << i - 1 << "(" << joinKeys[r.getRuleId()][start][i - 1].size() << ");\n";
+                unsigned counter = 0;
+                for (const auto& keyPair : joinKeys[r.getRuleId()][start][i - 1]) {
+                    *out << ind << "key" << i - 1 << "[" << counter << "]=tuple" << keyPair.first << "[" << keyPair.second << "];\n";
+                    counter++;
+                }
+                *out << ind << "const vector<const vector <unsigned>* >& tuples = p" << auxiliaryMapsNameByRuleAndStartIndex[r.getRuleId()][start][i - 1] << ".getValues(key" << i - 1 << ");\n";
+                *out << ind++ << "for( unsigned i=0; i< tuples.size();i++){\n";
+                *out << ind << "const vector<unsigned>& tuple" << i << " = *tuples[i];\n";
+                //                *out << ind++ << "for( const vector<unsigned>& tuple" << i << ": tuples){\n";
+            }
+
+        }
+        if (handleEqualCardsAndConstants(r, i, joinOrder))
+            nEqualCardsOrConstants++;
+        if (i == body.size() - 1) {
+
+            if (!r.isConstraint()) {
+
+                *out << ind << "vector <unsigned> head(" << r.getHead().front().getTermsSize() << ");\n";
+                for (const auto& headLiteralToBodyLiteral : r.getBodyToHeadVariablesMap()) {
+                    unsigned k;
+                    for (k = 0; k < joinOrder.size(); k++) {
+                        if (joinOrder[k] == headLiteralToBodyLiteral.second.first)
+                            break;
+                    }
+
+                    *out << ind << "head[" << headLiteralToBodyLiteral.first << "]=tuple" << k << "[" << headLiteralToBodyLiteral.second.second << "];\n";
+                }
+                for (unsigned th = 0; th < r.getHead().front().getTermsSize(); th++) {
+                    if (!r.getHead().front().isVariableTermAt(th)) {
+                        if (isUnsignedInteger(r.getHead().front().getTermAt(th))) {
+                            *out << ind << "head[" << th << "]=" << r.getHead().front().getTermAt(th) << ";\n";
+                        } else {
+                            *out << ind << "head[" << th << "]=ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(r.getHead().front().getTermAt(th)) << "\");\n";
+                        }
+                    }
+                }
+                *out << ind << "const auto & insertResult = w" << r.getHead().front().getPredicateName() << ".insert(head);\n";
+                *out << ind++ << "if(insertResult.second){\n";
+                *out << ind << "tuples_" << r.getHead().front().getPredicateName() << ".push_back(&(*insertResult.first));\n";
+                //            *out << ind++ << "if(!w" << r.getHead().front().getPredicateName() << ".contains(head)){\n";
+                //            *out << ind << "w" << r.getHead().front().getPredicateName() << ".insert(head);\n";
+                for (const string& auxMapName : predicateToAuxiliaryMaps[r.getHead().front().getPredicateName()]) {
+                    *out << ind << "p" << auxMapName << ".insert2(*tuples_" << r.getHead().front().getPredicateName() << ".back());\n";
+                    //                *out << ind << "cout<<\"" << auxMapName << "\"<<endl;\n";
+                }
+                //            *out << ind << "cout<<\"join succeded\"<<endl;\n";
+                *out << --ind << "}\n";
+            } else {
+
+                *out << ind << "vector<aspc::Literal>failedConstraint;\n";
+
+                for (unsigned i = 0; i < body.size(); i++) {
+                    *out << ind << "vector<string> terms" << i << ";\n";
+
+                    if (body[i].isNegated()) {
+                        *out << ind++ << "for(unsigned v:key" << i - 1 << ") {\n";
+                    } else {
+                        *out << ind++ << "for(unsigned v:tuple" << i << ") {\n";
+                    }
+                    *out << ind << "terms" << i << ".push_back(ConstantsManager::getInstance().unmapConstant(v));\n";
+                    *out << --ind << "}\n";
+                    string p = body[i].isNegated() ? "true" : "false";
+                    *out << ind << "failedConstraint.push_back(aspc::Literal(" + p + ", aspc::Atom(\"" + body[i].getPredicateName() + "\", terms" << i << ")));\n";
+
+                }
+
+                *out << ind << "failedConstraints.push_back(failedConstraint);\n";
+            }
+
+        }
+
+
+    }
+    for (unsigned i = 0; i < nEqualCardsOrConstants; i++) {
+        *out << --ind << "}\n";
+    }
+    for (unsigned i = 1; i < body.size(); i++) {
+        *out << --ind << "}\n";
+    }
+}
+
+bool CompilationManager::handleEqualCardsAndConstants(const aspc::Rule& r, unsigned i, const vector<unsigned>& joinOrder) {
+    bool hasCondition = false;
+    const aspc::Literal l = r.getBody()[joinOrder[i]];
+    if (l.isNegated()) {
+        return false;
+    }
+    for (unsigned t1 = 0; t1 < l.getAriety(); t1++) {
+        if (!l.isVariableTermAt(t1)) {
+            if (!hasCondition) {
+                *out << ind++ << "if( ";
+                hasCondition = true;
+            } else
+                *out << " && ";
+            *out << "tuple" << i << "[" << t1 << "] == " << l.getTermAt(t1);
+
+        }
+        for (unsigned t2 = t1 + 1; t2 < l.getAriety(); t2++)
+            if (l.isVariableTermAt(t1) && l.getTermAt(t1) == l.getTermAt(t2)) {
+                if (!hasCondition) {
+                    *out << ind++ << "if( ";
+                    hasCondition = true;
+                } else
+                    *out << " && ";
+                *out << "tuple" << i << "[" << t1 << "] == tuple" << i << "[" << t2 << "]";
+            }
+    }
+    if (hasCondition)
+        *out << "){\n";
+    return hasCondition;
+}
+
+const std::set<std::string>& CompilationManager::getBodyPredicates() {
+    return bodyPredicates;
+}

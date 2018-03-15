@@ -23,43 +23,81 @@
 #include "util/WaspOptions.h"
 #include "PredicateMinimization.h"
 #include "CautiousReasoning.h"
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <cstring>
+#include "lp2cpp/CompilationManager.h"
+#include "lp2cpp/ExecutionManager.h"
+#include "lp2cpp/LazyConstraint.h"
+#include "lp2cpp/LazyConstraintImpl.h"
+#include "lp2cpp/utils/GraphWithTarjanAlgorithm.h"
 using namespace std;
+extern string executablePath;
 
 int EXIT_CODE = 0;
 
 WaspFacade* waspFacadePointer = NULL;
 
-void my_handler( int )
-{
+void my_handler(int) {
     cerr << "Killed: Bye!" << endl;
-    if( EXIT_CODE == 0 )
+    if (EXIT_CODE == 0)
         EXIT_CODE = 1;
     waspFacadePointer->onKill();
     delete waspFacadePointer;
     Statistics::clean();
-    exit( EXIT_CODE );
+    exit(EXIT_CODE);
 }
 
-int main( int argc, char** argv )
-{
-    wasp::Options::parse( argc, argv );
+int main(int argc, char** argv) {
+
+    if(false) {
+        string executablePathAndName = argv[0];
+        executablePath = executablePathAndName;
+        for (int i = executablePath.size() - 1; i >= 0; i--) {
+            if (executablePath[i] == '/') {
+                executablePath = executablePath.substr(0, i);
+                break;
+            }
+        }
+
+        std::ofstream outfile(executablePath + "/src/lp2cpp/Executor.cpp");
+        CompilationManager manager;
+        manager.setOutStream(&outfile);
+        manager.lp2cpp(executablePath+"/encodings/reachability");
+        outfile.close();
+        ExecutionManager execManager;
+        execManager.compileDynamicLibrary(executablePath);
+        if (true) {
+            execManager.launchExecutorOnFile((executablePath+"/instances/reachability").c_str());
+        }
+        return 0;
+    }
+    
+
+
+    wasp::Options::parse(argc, argv);
     waspFacadePointer = new WaspFacade();
     WaspFacade& waspFacade = *waspFacadePointer;
-    wasp::Options::setOptions( waspFacade );        
-    
-    signal( SIGINT, my_handler );
-    signal( SIGTERM, my_handler );
-    signal( SIGXCPU, my_handler );
-    
-    waspFacade.readInput( cin );
-    if( wasp::Options::predMinimizationAlgorithm != NO_PREDMINIMIZATION ) { PredicateMinimization p( waspFacade ); p.solve(); }
-    else if( wasp::Options::queryAlgorithm == ONE_QUERIES 
-            || wasp::Options::queryAlgorithm == KDYN_QUERIES 
+    wasp::Options::setOptions(waspFacade);
+
+    signal(SIGINT, my_handler);
+    signal(SIGTERM, my_handler);
+    signal(SIGXCPU, my_handler);
+
+    waspFacade.readInput(cin);
+    if (wasp::Options::predMinimizationAlgorithm != NO_PREDMINIMIZATION) {
+        PredicateMinimization p(waspFacade);
+        p.solve();
+    } else if (wasp::Options::queryAlgorithm == ONE_QUERIES
+            || wasp::Options::queryAlgorithm == KDYN_QUERIES
             || wasp::Options::queryAlgorithm == PREFERENCE_QUERIES
             || wasp::Options::queryAlgorithm == PMRES_QUERIES
             || wasp::Options::queryAlgorithm == ITERATIVE_COHERENCE_TESTING_PREFERENCES
-            || wasp::Options::queryAlgorithm == PRIME_IMPLICATE ) { CautiousReasoning c( waspFacade ); c.solve(); }
-    else waspFacade.solve();
+            || wasp::Options::queryAlgorithm == PRIME_IMPLICATE) {
+        CautiousReasoning c(waspFacade);
+        c.solve();
+    } else waspFacade.solve();
     waspFacade.onFinish();
     delete waspFacadePointer;
     Statistics::clean();

@@ -323,7 +323,7 @@ Options::parse(
                 { "minimization-algorithm", required_argument, NULL, OPTIONID_predminimizationalgorithm },
                 { "min-chunk-percentage", required_argument, NULL, OPTIONID_predminimizationchunkpercentage },
                 
-                #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL)
+                #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL) || defined(ENABLE_CPP)
                 /* HEURISTIC */
                 { "interpreter", required_argument, NULL, OPTIONID_heuristic_interpreter },
                 { "heuristic-scriptname", required_argument, NULL, OPTIONID_heuristic_scriptname },
@@ -520,7 +520,12 @@ Options::parse(
                     if( !strcmp( optarg, "python" ) )
                         interpreter = PYTHON_INTERPRETER;
                     else
-                    #endif                    
+                    #endif     
+                    #ifdef ENABLE_CPP
+                    if( !strcmp( optarg, "cpp" ) )
+                        interpreter = CPP_INTERPRETER;
+                    else
+                    #endif  
                         WaspErrorMessage::errorGeneric( "Unkwown interpreter." );
                 }
                 break;

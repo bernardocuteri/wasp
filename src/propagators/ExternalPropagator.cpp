@@ -24,6 +24,7 @@
 #include "../Clause.h"
 #include "../interpreters/MyPerlInterpreter.h"
 #include "../interpreters/MyPythonInterpreter.h"
+#include "../interpreters/MyCppLazyInterpreter.h"
 #include "../util/WaspOptions.h"
 
 ExternalPropagator::~ExternalPropagator()
@@ -68,6 +69,8 @@ ExternalPropagator::ExternalPropagator(
         interpreter = new MyPythonInterpreter( fn, scriptDirectory, wasp::Options::callPyFinalize );
     else if( interpr == PERL_INTERPRETER )
         interpreter = new MyPerlInterpreter( fn, scriptDirectory );
+    else if(interpr == CPP_INTERPRETER) 
+        interpreter = new MyCppLazyInterpreter( fn, scriptDirectory );
     else
         WaspErrorMessage::errorGeneric( "Unsupported interpreter" );
     check_addedVarName = interpreter->checkMethod( method_plugins_addedVarName );

@@ -184,6 +184,7 @@
 #define NO_INTERPRETER 0
 #define PYTHON_INTERPRETER 1
 #define PERL_INTERPRETER 2
+#define CPP_INTERPRETER 3
 
 /*
  * Init minisat heuristic
