@@ -49,6 +49,7 @@ void CompilationManager::lp2cpp(const string &filename) {
     fileNames.push_back(filename.c_str());
     director.parse(fileNames);
     //    generateCompilableProgram(builder->getProgram(), builder);
+    builder->getProgram().print();
     generateStratifiedCompilableProgram(builder->getProgram(), builder);
     delete builder;
 
@@ -63,7 +64,7 @@ bool hasConstraint(const aspc::Program & program) {
     return false;
 }
 
-void CompilationManager::generateStratifiedCompilableProgram(const aspc::Program & program, AspCore2ProgramBuilder* builder) {
+void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & program, AspCore2ProgramBuilder* builder) {
 
     *out << ind << "#include \"Executor.h\"\n\n";
     *out << ind << "#include \"utils/ConstantsManager.h\"\n\n";
@@ -171,6 +172,7 @@ void CompilationManager::generateStratifiedCompilableProgram(const aspc::Program
         //r is a constraint
         bool exitRule = true;
         unsigned lIndex = 0;
+        unsigned headLevel = sccs.size();
         if (!r.isConstraint()) {
             unsigned headLevel = predicateLevels[predicateIDs.at(r.getHead().at(0).getPredicateName())];
             for (const aspc::Literal& l : r.getBody()) {
@@ -183,19 +185,37 @@ void CompilationManager::generateStratifiedCompilableProgram(const aspc::Program
                 }
                 lIndex++;
             }
-            if (exitRule) {
-                starterToExitRulesByComponent[headLevel][r.getBody().front().getPredicateName()].push_back(r.getRuleId());
-                joinKeys[r.getRuleId()][0].resize(r.getBodySize() - 1);
-                exitRules[r.getRuleId()] = true;
-                handleDataStructuresDeclaration(r, 0);
-            }
-        } else {
-            starterToExitRulesByComponent[sccs.size()][r.getBody().front().getPredicateName()].push_back(r.getRuleId());
+        } 
+        if(exitRule || r.isConstraint()) {
+            starterToExitRulesByComponent[headLevel][r.getBody().front().getPredicateName()].push_back(r.getRuleId());
             joinKeys[r.getRuleId()][0].resize(r.getBodySize() - 1);
             exitRules[r.getRuleId()] = true;
             handleDataStructuresDeclaration(r, 0);
         }
     }
+    
+    
+    // =============== START TEST JOIN ORDERS ================
+    
+    for (aspc::Rule& r : program.getRules()) {
+        //r is a constraint
+        vector<unsigned> starters;
+        if (!r.isConstraint()) {
+            unsigned headLevel = predicateLevels[predicateIDs.at(r.getHead().at(0).getPredicateName())];
+            int lIndex = 0;
+            for (const aspc::Literal& l : r.getBody()) {
+                unsigned predicateID = predicateIDs.at(l.getPredicateName());
+                if (predicateLevels.at(predicateID) == headLevel) {
+                    starters.push_back(lIndex);
+                }
+                lIndex++;
+            }
+        } 
+        r.bodyReordering(starters);
+        r.printOrderedBodies();
+    }
+    
+    // =============== END TEST JOIN ORDERS =================
 
 
     //feed facts
@@ -380,6 +400,8 @@ void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
         if (handleEqualCardsAndConstants(r, i, joinOrder))
             nEqualCardsOrConstants++;
         if (i == body.size() - 1) {
+            
+            handleExpressions(r,i,joinOrder);
 
             if (!r.isConstraint()) {
 
@@ -447,9 +469,13 @@ void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
     }
 }
 
+void CompilationManager::handleExpressions(const aspc::Rule& r, unsigned i, const vector<unsigned>& joinOrder) {
+    
+}
+
 bool CompilationManager::handleEqualCardsAndConstants(const aspc::Rule& r, unsigned i, const vector<unsigned>& joinOrder) {
     bool hasCondition = false;
-    const aspc::Literal l = r.getBody()[joinOrder[i]];
+    const aspc::Literal & l = r.getBody()[joinOrder[i]];
     if (l.isNegated()) {
         return false;
     }

@@ -36,7 +36,7 @@
 #include "../propagators/ExternalPropagator.h"
 
 
-set<string> supportedMethos = {method_plugins_checkAnswerSet, method_plugins_getReasonsForCheckFailure,
+const set<string> supportedMethos = {method_plugins_checkAnswerSet, method_plugins_getReasonsForCheckFailure,
     method_plugins_addedVarName, method_plugins_getVariablesToFreeze, method_plugins_onStartingSolver};
 
 MyCppLazyInterpreter::MyCppLazyInterpreter(char* filenameToCompile, const string & executablePath) : filenameToCompile(filenameToCompile) {

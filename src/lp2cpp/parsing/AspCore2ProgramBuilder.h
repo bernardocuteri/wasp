@@ -30,6 +30,7 @@
 #include "../language/Program.h"
 #include "../language/ArithmeticExpression.h"
 #include "../utils/GraphWithTarjanAlgorithm.h"
+#include "../language/ArithmeticRelation.h"
 #include <vector>
 #include <unordered_map>
 using namespace std;
@@ -42,10 +43,10 @@ private:
     vector<aspc::Atom> buildingHead;
     map<string, unsigned> arietyMap;
     bool naf;
-    ComparisonOperator inequalitySign;
+    aspc::ComparisonType inequalitySign;
     char arithOp;
-    ArithmeticExpression expression;
-    vector<tuple<ArithmeticExpression, ComparisonOperator, ArithmeticExpression> > inequalities;
+    aspc::ArithmeticExpression expression;
+    vector<aspc::ArithmeticRelation> inequalities;
     string predicateName;
     GraphWithTarjanAlgorithm graphWithTarjanAlgorithm;
     unordered_map<string, int> predicateIDs;
@@ -144,7 +145,7 @@ public:
 
     virtual void onWeightAtLevels(int nWeight, int nLevel, int nTerm);
     
-    const aspc::Program & getProgram();
+    aspc::Program & getProgram();
     
     const map<string, unsigned> & getArietyMap();
     

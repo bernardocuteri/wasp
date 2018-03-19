@@ -30,8 +30,7 @@ class CompilationManager {
 public:
     CompilationManager();
     void lp2cpp(const std::string & filename);
-    void generateCompilableProgram(const aspc::Program & program, AspCore2ProgramBuilder* builder);
-    void generateStratifiedCompilableProgram(const aspc::Program & program, AspCore2ProgramBuilder* builder);
+    void generateStratifiedCompilableProgram(aspc::Program & program, AspCore2ProgramBuilder* builder);
     void setOutStream(std::ostream* outputTarget);
     const std::set<std::string> & getBodyPredicates();
     
@@ -45,6 +44,7 @@ private:
     bool checkInequalities(const aspc::Rule & rule, Indentation & ind);
     void declareArithmeticVariables(const aspc::Rule & rule, Indentation & ind);
     bool handleEqualCardsAndConstants(const aspc::Rule & r,unsigned i,const vector<unsigned>& joinOrder);
+    void handleExpressions(const aspc::Rule& r, unsigned i, const vector<unsigned>& joinOrder);
     
     std::ostream* out;
     std::set<std::string> bodyPredicates;

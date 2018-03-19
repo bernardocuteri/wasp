@@ -27,15 +27,16 @@
 #include <iostream>
 #include <cstring>
 #include <bits/unordered_map.h>
+#include "../language/ArithmeticRelation.h"
 
-AspCore2ProgramBuilder::AspCore2ProgramBuilder() : naf(false), inequalitySign(UNASSIGNED) {
+AspCore2ProgramBuilder::AspCore2ProgramBuilder() : naf(false), inequalitySign(aspc::UNASSIGNED) {
 }
 
 void AspCore2ProgramBuilder::buildExpression() {
     if (buildingTerms.size() == 1) {
-        expression = ArithmeticExpression(buildingTerms[0]);
+        expression = aspc::ArithmeticExpression(buildingTerms[0]);
     } else {
-        expression = ArithmeticExpression(buildingTerms[0], buildingTerms[1], arithOp);
+        expression = aspc::ArithmeticExpression(buildingTerms[0], buildingTerms[1], arithOp);
     }
     buildingTerms.clear();
 }
@@ -88,11 +89,11 @@ void AspCore2ProgramBuilder::onBody() {
 }
 
 void AspCore2ProgramBuilder::onBodyLiteral() {
-    if (inequalitySign != UNASSIGNED) {
+    if (inequalitySign != aspc::UNASSIGNED) {
         if (buildingTerms.size() == 1) {
-            inequalities.push_back(tuple<ArithmeticExpression, ComparisonOperator, ArithmeticExpression>(expression, inequalitySign, ArithmeticExpression(buildingTerms[0])));
+            inequalities.push_back(aspc::ArithmeticRelation(expression, aspc::ArithmeticExpression(buildingTerms[0]), inequalitySign));
         } else {
-            inequalities.push_back(tuple<ArithmeticExpression, ComparisonOperator, ArithmeticExpression>(expression, inequalitySign, ArithmeticExpression(buildingTerms[0], buildingTerms[1], arithOp)));
+            inequalities.push_back(aspc::ArithmeticRelation(expression, aspc::ArithmeticExpression(buildingTerms[0], buildingTerms[1], arithOp), inequalitySign));
         }
     } else {
         buildingBody.push_back(aspc::Literal(naf, aspc::Atom(predicateName, buildingTerms)));
@@ -102,7 +103,7 @@ void AspCore2ProgramBuilder::onBodyLiteral() {
             arietyMap[predicateName] = buildingTerms.size();
         }
     }
-    inequalitySign = UNASSIGNED;
+    inequalitySign = aspc::UNASSIGNED;
     buildingTerms.clear();
     naf = false;
 }
@@ -162,7 +163,7 @@ void AspCore2ProgramBuilder::onDirective(char*, char*) {
 }
 
 void AspCore2ProgramBuilder::onEqualOperator() {
-    inequalitySign = EQ;
+    inequalitySign = aspc::EQ;
     buildExpression();
 }
 
@@ -179,12 +180,12 @@ void AspCore2ProgramBuilder::onFunction(char*, int) {
 }
 
 void AspCore2ProgramBuilder::onGreaterOperator() {
-    inequalitySign = GT;
+    inequalitySign = aspc::GT;
     buildExpression();
 }
 
 void AspCore2ProgramBuilder::onGreaterOrEqualOperator() {
-    inequalitySign = GTE;
+    inequalitySign = aspc::GTE;
     buildExpression();
 }
 
@@ -202,12 +203,12 @@ void AspCore2ProgramBuilder::onHeadAtom() {
 }
 
 void AspCore2ProgramBuilder::onLessOperator() {
-    inequalitySign = LT;
+    inequalitySign = aspc::LT;
     buildExpression();
 }
 
 void AspCore2ProgramBuilder::onLessOrEqualOperator() {
-    inequalitySign = LTE;
+    inequalitySign = aspc::LTE;
     buildExpression();
 }
 
@@ -301,7 +302,7 @@ void AspCore2ProgramBuilder::onTermRange(char*, char*) {
 }
 
 void AspCore2ProgramBuilder::onUnequalOperator() {
-    inequalitySign = NE;
+    inequalitySign = aspc::NE;
     buildExpression();
 
 }
@@ -318,7 +319,7 @@ void AspCore2ProgramBuilder::onWeightAtLevels(int, int, int) {
 
 }
 
-const aspc::Program & AspCore2ProgramBuilder::getProgram() {
+aspc::Program & AspCore2ProgramBuilder::getProgram() {
     return program;
 }
 

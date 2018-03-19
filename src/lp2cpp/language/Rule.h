@@ -20,20 +20,20 @@
 #define RULE_H_ASPC
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <list>
 #include <tuple>
 #include "Atom.h"
 #include "Literal.h"
 #include "ArithmeticExpression.h"
+#include "ArithmeticRelation.h"
 
 enum RuleType {
     GENERATIVE_RULE, CONSTRAINT
 };
 
 
-enum ComparisonOperator {
-    GTE = 0, LTE, GT, LT, NE, EQ, UNASSIGNED
-};
+
 
 namespace aspc {
 
@@ -41,12 +41,12 @@ namespace aspc {
     public:
         static unsigned rulesCounter;
         static string inequalityStrings[];
-        Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & body, const vector<tuple<ArithmeticExpression, ComparisonOperator, ArithmeticExpression> > & inequalities);
-        Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & body, const vector<tuple<ArithmeticExpression, ComparisonOperator, ArithmeticExpression> > & inequalities, bool reorderBody);
+        Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & body, const vector<ArithmeticRelation> & arithmeticRelation);
+        Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & body, const vector<ArithmeticRelation> & inequalities, bool reorderBody);
         virtual ~Rule();
         const vector<aspc::Atom> & getHead() const;
         const vector<aspc::Literal> & getBody() const;
-        const vector<tuple<ArithmeticExpression, ComparisonOperator, ArithmeticExpression> > & getInequalities() const;
+        const vector<ArithmeticRelation> & getArithmeticRelations() const;
         vector<unsigned> getHeadToBodyVariableMap() const;
         RuleType getType() const;
         unsigned getRuleId() const;
@@ -56,12 +56,17 @@ namespace aspc {
         void print() const;
         bool containsNegation() const;
         bool isConstraint() const;
+        
+        void bodyReordering();
+        void bodyReordering(const vector<unsigned> & starters);
+        void printOrderedBodies() const;
     private:
         vector<aspc::Atom> head;
         vector<aspc::Literal> body;
         int ruleId;
-        vector<tuple<ArithmeticExpression, ComparisonOperator, ArithmeticExpression> > inequalities;
-        //vector<tuple<string, AspProgramBuilder::InequalitySign, string> > inequalities;
+        vector<ArithmeticRelation> arithmeticRelations;
+        
+        unordered_map<unsigned, vector<aspc::Formula*> > orderedBodyByStarter;
 
     };
 }

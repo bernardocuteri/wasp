@@ -20,13 +20,17 @@
 #define LITERAL_H_ASPC
 
 #include "Atom.h"
+#include "Formula.h"
 
 namespace aspc {
 
-    class Literal {
+    class Literal : public aspc::Formula {
     public:
         Literal();
         Literal(bool negated, const aspc::Atom & atom);
+        Literal(const Literal &);
+        virtual ~Literal();
+
         void negate();
         bool isNegated() const;
         const string & getTermAt(unsigned i) const;
@@ -34,8 +38,14 @@ namespace aspc {
         const string & getPredicateName() const;
         unsigned getAriety() const;
         const aspc::Atom & getAtom() const;
-        void print() const;
         const vector<string>& getTerms() const;
+        virtual bool isBoundedExpression(const set<string> &) const override;
+        virtual bool isBoundedLiteral(const set<string> &) const override;
+        virtual bool isBoundedValueAssignment(const set<string> &) const override;
+        virtual void addVariablesToSet(set<string> &) override;
+        virtual bool isPositiveLiteral() const override;
+        virtual void print() const override;
+
     private:
         aspc::Atom atom;
         bool negated;

@@ -18,19 +18,27 @@
 
 #include "Literal.h"
 #include <iostream>
+#include <set>
 
 aspc::Literal::Literal() {
 }
 
-aspc::Literal::Literal(bool negated, const aspc::Atom & atom): atom(atom), negated(negated) {
+aspc::Literal::Literal(bool negated, const aspc::Atom & atom) : atom(atom), negated(negated) {
 }
 
+aspc::Literal::Literal(const Literal& b): atom(b.atom), negated(b.negated) {
+
+}
+
+aspc::Literal::~Literal() {
+
+}
 
 void aspc::Literal::negate() {
     negated = true;
 }
 
-bool aspc::Literal::isNegated() const{
+bool aspc::Literal::isNegated() const {
     return negated;
 }
 
@@ -46,17 +54,17 @@ bool aspc::Literal::isVariableTermAt(unsigned i) const {
     return atom.isVariableTermAt(i);
 }
 
-const string & aspc::Literal::getPredicateName() const{
+const string & aspc::Literal::getPredicateName() const {
     return atom.getPredicateName();
 }
 
-const aspc::Atom & aspc::Literal::getAtom() const{
+const aspc::Atom & aspc::Literal::getAtom() const {
     return atom;
 }
 
 void aspc::Literal::print() const {
-    if(negated) {
-        std::cout<<"not ";
+    if (negated) {
+        std::cout << "not ";
     }
     atom.print();
 }
@@ -64,3 +72,40 @@ void aspc::Literal::print() const {
 const vector<string>& aspc::Literal::getTerms() const {
     return atom.getTerms();
 }
+
+void aspc::Literal::addVariablesToSet(set<string>& set) {
+    for (unsigned i = 0; i < getAriety(); i++) {
+        if (isVariableTermAt(i)) {
+            set.insert(getTermAt(i));
+        }
+    }
+
+}
+
+bool aspc::Literal::isBoundedExpression(const set<string>&) const {
+    return false;
+}
+
+bool aspc::Literal::isBoundedLiteral(const set<string>& set) const {
+    for (unsigned i = 0; i < getAriety(); i++) {
+        if (isVariableTermAt(i) && !set.count(getTermAt(i))) {
+            return false;
+        }
+    }
+    return true;
+
+}
+
+bool aspc::Literal::isBoundedValueAssignment(const set<string>&) const {
+    return false;
+}
+
+bool aspc::Literal::isPositiveLiteral() const {
+    return !negated;
+}
+
+
+
+
+
+

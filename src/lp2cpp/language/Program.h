@@ -37,6 +37,7 @@ namespace aspc {
         const set< pair<string, unsigned> >& getPredicates() const;
         unsigned getRulesSize() const;
         const vector<aspc::Rule>& getRules() const;
+        vector<aspc::Rule>& getRules();
         unsigned getFactsSize() const;
         const aspc::Rule & getRule(unsigned i) const;
         const aspc::Atom & getFact(unsigned i) const;

@@ -54,6 +54,10 @@ const vector<aspc::Rule>& aspc::Program::getRules() const{
     return rules;
 }
 
+vector<aspc::Rule>& aspc::Program::getRules() {
+    return rules;
+}
+
 const aspc::Atom & aspc::Program::getFact(unsigned i) const {
     return facts[i];
 }

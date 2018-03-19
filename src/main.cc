@@ -33,7 +33,6 @@
 #include "lp2cpp/LazyConstraintImpl.h"
 #include "lp2cpp/utils/GraphWithTarjanAlgorithm.h"
 using namespace std;
-extern string executablePath;
 
 int EXIT_CODE = 0;
 
@@ -53,7 +52,7 @@ int main(int argc, char** argv) {
 
     if(false) {
         string executablePathAndName = argv[0];
-        executablePath = executablePathAndName;
+        string executablePath = executablePathAndName;
         for (int i = executablePath.size() - 1; i >= 0; i--) {
             if (executablePath[i] == '/') {
                 executablePath = executablePath.substr(0, i);
@@ -64,12 +63,12 @@ int main(int argc, char** argv) {
         std::ofstream outfile(executablePath + "/src/lp2cpp/Executor.cpp");
         CompilationManager manager;
         manager.setOutStream(&outfile);
-        manager.lp2cpp(executablePath+"/encodings/reachability");
+        manager.lp2cpp(executablePath+"/encodings/constants");
         outfile.close();
         ExecutionManager execManager;
         execManager.compileDynamicLibrary(executablePath);
         if (true) {
-            execManager.launchExecutorOnFile((executablePath+"/instances/reachability").c_str());
+            execManager.launchExecutorOnFile((executablePath+"/instances/constants").c_str());
         }
         return 0;
     }

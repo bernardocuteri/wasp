@@ -19,20 +19,17 @@
 #include "Rule.h"
 #include "ArithmeticExpression.h"
 #include <iostream>
+#include <cassert>
 
 
 unsigned aspc::Rule::rulesCounter = 0;
 string aspc::Rule::inequalityStrings[] = {">=", "<=", ">", "<", "!=", "=="};
 
-
-
-aspc::Rule::Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & body, const vector<tuple<ArithmeticExpression, ComparisonOperator, ArithmeticExpression> > & inequalities) : head(head), body(body), ruleId(rulesCounter), inequalities(inequalities) {
+aspc::Rule::Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & body, const vector<aspc::ArithmeticRelation> & arithmeticRelations) : head(head), body(body), ruleId(rulesCounter), arithmeticRelations(arithmeticRelations) {
     rulesCounter++;
-    
-
 }
 
-aspc::Rule::Rule(const vector<Atom>& head, const vector<Literal> & body, const vector<tuple<ArithmeticExpression, ComparisonOperator, ArithmeticExpression> >& inequalities, bool) : Rule(head, body, inequalities){
+aspc::Rule::Rule(const vector<Atom>& head, const vector<Literal> & body, const vector<aspc::ArithmeticRelation>& arithmeticRelations, bool) : Rule(head, body, arithmeticRelations) {
     vector<Literal> orderedBody(body.size());
     int start = 0;
     int end = body.size() - 1;
@@ -132,8 +129,8 @@ map<unsigned, pair<unsigned, unsigned> > aspc::Rule::getBodyToHeadVariablesMap()
     return resultMap;
 }
 
-const vector<tuple<ArithmeticExpression, ComparisonOperator, ArithmeticExpression> >& aspc::Rule::getInequalities() const {
-    return inequalities;
+const vector<aspc::ArithmeticRelation> & aspc::Rule::getArithmeticRelations() const {
+    return arithmeticRelations;
 }
 
 void aspc::Rule::print() const {
@@ -146,8 +143,9 @@ void aspc::Rule::print() const {
         literal.print();
         cout << " ";
     }
-    for (const tuple<ArithmeticExpression, ComparisonOperator, ArithmeticExpression> & inequality : inequalities) {
-        cout << get<0>(inequality) << inequalityStrings[get<1>(inequality)] << get<2>(inequality) << " ";
+    for (const ArithmeticRelation & arithmeticRelation : arithmeticRelations) {
+        arithmeticRelation.print();
+        cout << " ";
     }
     cout << "\n";
 }
@@ -162,6 +160,96 @@ bool aspc::Rule::containsNegation() const {
 }
 
 bool aspc::Rule::isConstraint() const {
-    return getType()==CONSTRAINT;
+    return getType() == CONSTRAINT;
 }
 
+void aspc::Rule::bodyReordering() {
+    vector<unsigned> starters;
+    for(unsigned i = 0;i<body.size();i++) {
+        if(body[i].isPositiveLiteral()) {
+            starters.push_back(i);
+            break;
+        }
+    }
+    bodyReordering(starters);
+    
+}
+
+void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
+
+    if(starters.empty()) {
+        bodyReordering();
+    }
+
+    for (unsigned starter : starters) {
+
+        set<string> boundVariables;
+        body[starter].addVariablesToSet(boundVariables);
+
+        orderedBodyByStarter[starter].push_back(&body[starter]);
+
+        list<Formula*> allFormulas;
+        for (unsigned i = 0; i < body.size(); i++) {
+            if (i != starter) {
+                allFormulas.push_back(& body[i]);
+            }
+
+        }
+        for (unsigned i = 0; i < arithmeticRelations.size(); i++) {
+            allFormulas.push_back(& arithmeticRelations[i]);
+        }
+        while (!allFormulas.empty()) {
+            Formula* boundExpression = NULL;
+            Formula* boundLiteral = NULL;
+            Formula* boundValueAssignment = NULL;
+            Formula* positiveLiteral = NULL;
+            Formula* selectedFormula = NULL;
+
+            for (list<Formula*>::reverse_iterator formula = allFormulas.rbegin(); formula != allFormulas.rend(); formula++) {
+                if ((*formula)->isBoundedExpression(boundVariables)) {
+                    boundExpression = *formula;
+                } else if ((*formula)->isBoundedLiteral(boundVariables)) {
+                    boundLiteral = *formula;
+                } else if ((*formula)->isBoundedValueAssignment(boundVariables)) {
+                    boundValueAssignment = *formula;
+                } else if ((*formula)->isPositiveLiteral()) {
+                    positiveLiteral = *formula;
+                }
+            }
+
+            if (boundExpression) {
+                selectedFormula = boundExpression;
+            } else if (boundLiteral) {
+                selectedFormula = boundLiteral;
+            } else if (boundValueAssignment) {
+                selectedFormula = boundValueAssignment;
+            } else {
+                selectedFormula = positiveLiteral;
+            }
+            assert(selectedFormula);
+            if(selectedFormula!=boundExpression && selectedFormula!=boundLiteral) {
+                selectedFormula->addVariablesToSet(boundVariables);
+            }
+            orderedBodyByStarter[starter].push_back(selectedFormula);
+            allFormulas.remove(selectedFormula);
+
+        }
+
+    }
+
+
+
+}
+
+void aspc::Rule::printOrderedBodies() const {
+    
+    for(const auto& entry:orderedBodyByStarter) {
+        for(Formula* f:entry.second) {
+            f->print();
+            cout<<" ";
+        }
+        cout<<endl;
+    }
+    cout<<endl;
+
+}

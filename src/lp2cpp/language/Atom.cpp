@@ -28,6 +28,15 @@ aspc::Atom::Atom(const std::string & predicateName, const std::vector<std::strin
     
 }
 
+aspc::Atom::Atom(const aspc::Atom& b):predicateName(b.predicateName), terms(b.terms) {
+
+}
+
+aspc::Atom::~Atom() {
+
+}
+
+
 const std::string & aspc::Atom::getTermAt(unsigned i) const {
     return terms[i];
 }

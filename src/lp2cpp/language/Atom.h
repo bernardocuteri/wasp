@@ -28,6 +28,8 @@ namespace aspc {
     public:
         Atom();
         Atom(const string & predicateName, const vector<string> & terms);
+        Atom(const Atom &);
+        virtual ~Atom();
         const string & getPredicateName() const;
         const string & getTermAt(unsigned) const;
         unsigned getTermsSize() const;
