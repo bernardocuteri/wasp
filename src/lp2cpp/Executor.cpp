@@ -41,41 +41,51 @@ void Executor::executeFromFile(const char* filename) {
 }
 
 using PredicateWSet = std::unordered_set<std::vector<unsigned>, VectorHash>;
-void Executor::executeProgramOnFacts(const vector<aspc::Atom> & program) {
+void Executor::executeProgramOnFacts(const vector<aspc::Atom*> & program) {
     failedConstraints.clear();
     map<string, PredicateWSet*> predicateWSetMap;
     map<string, Tuples* > predicateTuplesMap;
-    Tuples tuples_b;
-    PredicateWSet wb;
-    predicateWSetMap["b"]=&wb;
-    predicateTuplesMap["b"]=&tuples_b;
-    Tuples tuples_c;
-    PredicateWSet wc;
-    predicateWSetMap["c"]=&wc;
-    predicateTuplesMap["c"]=&tuples_c;
-    Tuples tuples_f;
-    PredicateWSet wf;
-    predicateWSetMap["f"]=&wf;
-    predicateTuplesMap["f"]=&tuples_f;
+    Tuples tuples_p_0;
+    PredicateWSet wp_0;
+    predicateWSetMap["p_0"]=&wp_0;
+    predicateTuplesMap["p_0"]=&tuples_p_0;
+    Tuples tuples_p_2;
+    PredicateWSet wp_2;
+    predicateWSetMap["p_2"]=&wp_2;
+    predicateTuplesMap["p_2"]=&tuples_p_2;
+    Tuples tuples_p_4;
+    PredicateWSet wp_4;
+    predicateWSetMap["p_4"]=&wp_4;
+    predicateTuplesMap["p_4"]=&tuples_p_4;
+    Tuples tuples_p_5;
+    PredicateWSet wp_5;
+    predicateWSetMap["p_5"]=&wp_5;
+    predicateTuplesMap["p_5"]=&tuples_p_5;
     unordered_map <string, vector <AuxiliaryMap*> > predicateToAuxiliaryMaps;
-    vector<unsigned> keyIndexesb_;
-    AuxiliaryMap pb_(&keyIndexesb_);
-    predicateToAuxiliaryMaps["b"].push_back(&pb_);
-    vector<unsigned> keyIndexesf_0_;
-    keyIndexesf_0_.push_back(0);
-    AuxiliaryMap pf_0_(&keyIndexesf_0_);
-    predicateToAuxiliaryMaps["f"].push_back(&pf_0_);
+    vector<unsigned> keyIndexesp_0_0_1_2_3_;
+    keyIndexesp_0_0_1_2_3_.push_back(0);
+    keyIndexesp_0_0_1_2_3_.push_back(1);
+    keyIndexesp_0_0_1_2_3_.push_back(2);
+    keyIndexesp_0_0_1_2_3_.push_back(3);
+    AuxiliaryMap pp_0_0_1_2_3_(&keyIndexesp_0_0_1_2_3_);
+    predicateToAuxiliaryMaps["p_0"].push_back(&pp_0_0_1_2_3_);
+    vector<unsigned> keyIndexesp_0_0_1_2_;
+    keyIndexesp_0_0_1_2_.push_back(0);
+    keyIndexesp_0_0_1_2_.push_back(1);
+    keyIndexesp_0_0_1_2_.push_back(2);
+    AuxiliaryMap pp_0_0_1_2_(&keyIndexesp_0_0_1_2_);
+    predicateToAuxiliaryMaps["p_0"].push_back(&pp_0_0_1_2_);
     for(unsigned i=0;i<program.size();i++) {
-        map<string,PredicateWSet*>::iterator it = predicateWSetMap.find(program[i].getPredicateName());
+        map<string,PredicateWSet*>::iterator it = predicateWSetMap.find(program[i]->getPredicateName());
         if(it==predicateWSetMap.end()) {
-            program[i].print();
+            program[i]->print();
             cout<<".\n";
         }
         else {
-            vector<unsigned> tuple = program[i].getIntTuple();
+            vector<unsigned> tuple = program[i]->getIntTuple();
             const auto& insertResult=it->second->insert(tuple);
             if(insertResult.second){
-                Tuples & tuples = *predicateTuplesMap[program[i].getPredicateName()];
+                Tuples & tuples = *predicateTuplesMap[program[i]->getPredicateName()];
                 tuples.push_back(&(*(insertResult.first)));
                 for(AuxiliaryMap* auxMap:predicateToAuxiliaryMaps[it->first]){
                     auxMap -> insert2(*tuples.back());
@@ -83,40 +93,89 @@ void Executor::executeProgramOnFacts(const vector<aspc::Atom> & program) {
             }
         }
     }
-    unsigned index_b=0;
-    unsigned index_c=0;
-    unsigned index_f=0;
-    index_c=0;
-    while(index_c!=tuples_c.size()){
-        const vector<unsigned>& tuple0 = *tuples_c[index_c];
-        {
-            vector<unsigned> key0(0);
-            const vector<const vector <unsigned>* >& tuples = pb_.getValues(key0);
-            for( unsigned i=0; i< tuples.size();i++){
-                const vector<unsigned>& tuple1 = *tuples[i];
-                vector<unsigned> key1(1);
-                key1[0]=tuple0[0];
-                if(wf.find(key1)==wf.end()){
-                    vector<aspc::Literal>failedConstraint;
-                    vector<string> terms0;
-                    for(unsigned v:tuple0) {
-                        terms0.push_back(ConstantsManager::getInstance().unmapConstant(v));
+    unsigned index_p_0=0;
+    unsigned index_p_2=0;
+    unsigned index_p_4=0;
+    unsigned index_p_5=0;
+    while(index_p_5!=tuples_p_5.size() || index_p_4!=tuples_p_4.size() || index_p_2!=tuples_p_2.size()){
+        while(index_p_4!=tuples_p_4.size()){
+            const vector<unsigned>& tuple0 = *tuples_p_4[index_p_4];
+            {
+                if( tuple0[0] == tuple0[1]){
+                    vector<unsigned> key0(3);
+                    key0[0]=tuple0[0];
+                    key0[1]=tuple0[0];
+                    key0[2]=tuple0[0];
+                    const vector<const vector <unsigned>* >& tuples = pp_0_0_1_2_.getValues(key0);
+                    for( unsigned i=0; i< tuples.size();i++){
+                        const vector<unsigned>& tuple1 = *tuples[i];
+                        if( tuple1[0] == tuple1[1] && tuple1[0] == tuple1[2] && tuple1[1] == tuple1[2]){
+                            vector <unsigned> head(4);
+                            head[0]=tuple0[1];
+                            head[1]=tuple0[1];
+                            head[2]=tuple0[1];
+                            head[3]=tuple0[1];
+                            const auto & insertResult = wp_5.insert(head);
+                            if(insertResult.second){
+                                tuples_p_5.push_back(&(*insertResult.first));
+                            }
+                        }
                     }
-                    failedConstraint.push_back(aspc::Literal(false, aspc::Atom("c", terms0)));
-                    vector<string> terms1;
-                    for(unsigned v:tuple1) {
-                        terms1.push_back(ConstantsManager::getInstance().unmapConstant(v));
-                    }
-                    failedConstraint.push_back(aspc::Literal(false, aspc::Atom("b", terms1)));
-                    vector<string> terms2;
-                    for(unsigned v:key1) {
-                        terms2.push_back(ConstantsManager::getInstance().unmapConstant(v));
-                    }
-                    failedConstraint.push_back(aspc::Literal(true, aspc::Atom("f", terms2)));
-                    failedConstraints.push_back(failedConstraint);
                 }
             }
+            index_p_4++;
         }
-        index_c++;
+        while(index_p_2!=tuples_p_2.size()){
+            const vector<unsigned>& tuple0 = *tuples_p_2[index_p_2];
+            {
+                vector<unsigned> key0(4);
+                key0[0]=tuple0[0];
+                key0[1]=tuple0[0];
+                key0[2]=tuple0[1];
+                key0[3]=tuple0[1];
+                const vector<const vector <unsigned>* >& tuples = pp_0_0_1_2_3_.getValues(key0);
+                for( unsigned i=0; i< tuples.size();i++){
+                    const vector<unsigned>& tuple1 = *tuples[i];
+                    if( tuple1[0] == tuple1[1] && tuple1[2] == tuple1[3]){
+                        vector <unsigned> head(2);
+                        head[0]=tuple0[0];
+                        head[1]=tuple0[1];
+                        const auto & insertResult = wp_4.insert(head);
+                        if(insertResult.second){
+                            tuples_p_4.push_back(&(*insertResult.first));
+                        }
+                    }
+                }
+            }
+            {
+                vector <unsigned> head(2);
+                head[0]=tuple0[0];
+                head[1]=tuple0[1];
+                const auto & insertResult = wp_4.insert(head);
+                if(insertResult.second){
+                    tuples_p_4.push_back(&(*insertResult.first));
+                }
+            }
+            index_p_2++;
+        }
+        while(index_p_5!=tuples_p_5.size()){
+            const vector<unsigned>& tuple0 = *tuples_p_5[index_p_5];
+            {
+                if( tuple0[0] == tuple0[2] && tuple0[0] == tuple0[3] && tuple0[2] == tuple0[3]){
+                    vector <unsigned> head(2);
+                    head[0]=tuple0[1];
+                    head[1]=tuple0[3];
+                    const auto & insertResult = wp_2.insert(head);
+                    if(insertResult.second){
+                        tuples_p_2.push_back(&(*insertResult.first));
+                    }
+                }
+            }
+            index_p_5++;
+        }
     }
+    printTuples("p_0",tuples_p_0);
+    printTuples("p_2",tuples_p_2);
+    printTuples("p_4",tuples_p_4);
+    printTuples("p_5",tuples_p_5);
 }

@@ -33,7 +33,7 @@
 class AspCore2InstanceBuilder : public DLV2::InputBuilder{
     
 private:
-    std::vector<aspc::Atom> problemInstance;
+    std::vector<aspc::Atom*> problemInstance;
     std::vector<std::string> buildingTerms;
     std::string predicateName;
 public:
@@ -129,8 +129,10 @@ public:
 
     virtual void onWeightAtLevels(int nWeight, int nLevel, int nTerm);
     
-    const std::vector<aspc::Atom> & getProblemInstance();
+    const std::vector<aspc::Atom*> & getProblemInstance();
     
+    virtual ~AspCore2InstanceBuilder();
+
 
 };
 

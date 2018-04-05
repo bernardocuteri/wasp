@@ -262,11 +262,14 @@ unsigned int Options::initMinisatHeuristic = INIT_MINISAT_ALL_EQUALS;
 unsigned int Options::initValue = 0;
 unsigned int Options::initSign = INIT_SIGN_MINISAT_ALLFALSE;
 
+string Options::arg0 = "";
+
 void
 Options::parse(
     int argc,
     char* const* argv )
 {
+    arg0 = argv[0];
     // It will store the option code.
     int code;
     initMap();

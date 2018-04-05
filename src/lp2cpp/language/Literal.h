@@ -39,13 +39,17 @@ namespace aspc {
         unsigned getAriety() const;
         const aspc::Atom & getAtom() const;
         const vector<string>& getTerms() const;
-        virtual bool isBoundedExpression(const set<string> &) const override;
+        
+        virtual bool isBoundedRelation(const set<string> &) const override;
         virtual bool isBoundedLiteral(const set<string> &) const override;
         virtual bool isBoundedValueAssignment(const set<string> &) const override;
-        virtual void addVariablesToSet(set<string> &) override;
+        virtual void addVariablesToSet(set<string> &) const override;
         virtual bool isPositiveLiteral() const override;
         virtual void print() const override;
+        virtual bool isLiteral() const override;
+        virtual unsigned firstOccurrenceOfVariableInLiteral(const string & v) const override;
 
+        
     private:
         aspc::Atom atom;
         bool negated;

@@ -28,22 +28,30 @@
 #include "CompilationManager.h"
 #include "ExecutionManager.h"
 #include "language/Literal.h"
+#include "../util/WaspOptions.h"
 
-void LazyConstraintImpl::setFilename(const std::string & executablePath, const std::string & filename) {
+void LazyConstraintImpl::setFilename(const std::string & fileDirectory, const std::string & filename) {
 
+    string executablePathAndName = wasp::Options::arg0;
+    string executablePath = executablePathAndName;
+    for (int i = executablePath.size() - 1; i >= 0; i--) {
+        if (executablePath[i] == '/') {
+            executablePath = executablePath.substr(0, i);
+            break;
+        }
+    }
 
     std::ofstream outfile(executablePath + "/src/lp2cpp/Executor.cpp");
     compilationManager.setOutStream(&outfile);
-    filepath = executablePath +"/"+ filename;
+    filepath = fileDirectory + "/" + filename;
     compilationManager.lp2cpp(filepath);
-    //manager.lp2cpp(executablePath+"/encodings/reachability");
     outfile.close();
     executionManager.compileDynamicLibrary(executablePath);
 
 
 }
 
-aspc::Atom parseAtom(const std::string & atomString) {
+aspc::Atom* parseAtom(const std::string & atomString) {
     string predicateName;
     unsigned i = 0;
     for (i = 0; i < atomString.size(); i++) {
@@ -55,7 +63,7 @@ aspc::Atom parseAtom(const std::string & atomString) {
             predicateName = atomString.substr(0);
         }
     }
-    vector<string> terms;
+    aspc::Atom* atom = new aspc::Atom(predicateName);
     for (; i < atomString.size(); i++) {
         char c = atomString[i];
         if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_') {
@@ -70,21 +78,21 @@ aspc::Atom parseAtom(const std::string & atomString) {
                 i++;
                 c = atomString[i];
             }
-            terms.push_back(atomString.substr(start, i - start));
+            atom->addTerm(atomString.substr(start, i - start));
         }
     }
-    return aspc::Atom(predicateName, terms);
+    return atom;
 
 }
 
-void LazyConstraintImpl::addedVarName(int var, std::string atomString) {
+void LazyConstraintImpl::addedVarName(int var, const std::string & atomString) {
     //cout<<atomString<<endl;
-    const aspc::Atom & atom = parseAtom(atomString);
+    aspc::Atom * atom = parseAtom(atomString);
     //atom.print();
     //cout<<endl;
     this->atoms[var] = atom;
-    atomsMap[atomString] = var;
-    if (compilationManager.getBodyPredicates().count(atom.getPredicateName())) {
+    atomsMap[*atom] = var;
+    if (compilationManager.getBodyPredicates().count(atom->getPredicateName())) {
         watchedAtoms.push_back(var);
     }
 
@@ -93,9 +101,9 @@ void LazyConstraintImpl::addedVarName(int var, std::string atomString) {
 bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation) {
 
     //add only needed atoms
-    std::vector<aspc::Atom> facts;
+    std::vector<aspc::Atom*> facts;
     for (unsigned atomId : watchedAtoms) {
-        if (interpretation[atomId]>0)
+        if (interpretation[atomId] > 0)
             facts.push_back(atoms[atomId]);
     }
     executionManager.executeProgramOnFacts(facts);
@@ -104,30 +112,48 @@ bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation)
 }
 
 const std::vector<unsigned int> & LazyConstraintImpl::getVariablesToFreeze() {
-    return  watchedAtoms;
+    return watchedAtoms;
 }
 
 void LazyConstraintImpl::onCheckFail(std::vector<int> & constraints) {
     //For every failed constraint, the list of atoms that failed the constraint
     constraints.push_back(0);
+    //executionManager.shuffleFailedConstraints();
     for (unsigned i = 0; i < executionManager.getFailedConstraints().size(); i++) {
         //cout << "reasons: \n";
+        //        cerr<<"transitivity violation! ";
         for (const aspc::Literal & literal : executionManager.getFailedConstraints()[i]) {
-            //literal.print();
-            //cout << " ";
-            if (!atomsMap.count(literal.getAtom().toString())) {
-                continue;
-            }
-            if (literal.isNegated()) {
-                constraints.push_back(atomsMap[literal.getAtom().toString()]);
+            //TODO avoid double access
+            const auto& atomIt = atomsMap.find(literal.getAtom());
+            if (!literal.isNegated()) {
+                //cerr << literal.getAtom().getTermAt(0) << " ";
             } else {
-                constraints.push_back(-atomsMap[literal.getAtom().toString()]);
+                //cerr << literal.getAtom().getTermAt(1) << " ";
+            }
+
+            if (atomIt != atomsMap.end()) {
+                //                literal.print();
+                if (literal.isNegated()) {
+                    constraints.push_back(atomIt->second);
+                } else {
+                    constraints.push_back(-atomIt->second);
+                }
             }
         }
+        //cerr << endl;
         constraints.push_back(0);
+    }
+    if (constraints.size() > 2) {
+        cerr << " bad " << executionManager.getFailedConstraints().size() << endl;
     }
 }
 
 const string& LazyConstraintImpl::getFilepath() const {
     return filepath;
+}
+
+LazyConstraintImpl::~LazyConstraintImpl() {
+    for (auto & a : atoms) {
+        delete a.second;
+    }
 }

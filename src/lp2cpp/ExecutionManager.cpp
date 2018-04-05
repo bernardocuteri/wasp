@@ -32,25 +32,26 @@
 #include "language/Program.h"
 #include <cassert>
 
-
 ExecutionManager::ExecutionManager() {
 }
 
 ExecutionManager::~ExecutionManager() {
-
+#ifndef LP2CPP_DEBUG
     destroy(executor);
+#else 
+    delete executor;
+#endif
 }
 
 void ExecutionManager::launchExecutorOnFile(const char *filename) {
     executor->executeFromFile(filename);
-    failedConstraints = executor->getFailedConstraints();
     //print failed constraints
-    if (!failedConstraints.empty()) {
+    if (!executor->getFailedConstraints().empty()) {
         cout << "failed constraints:" << endl;
     }
-    for (unsigned i = 0; i < failedConstraints.size(); i++) {
-        for (unsigned j = 0; j < failedConstraints[i].size(); j++) {
-            failedConstraints[i][j].print();
+    for (unsigned i = 0; i < executor->getFailedConstraints().size(); i++) {
+        for (unsigned j = 0; j < executor->getFailedConstraints()[i].size(); j++) {
+            executor->getFailedConstraints()[i][j].print();
             cout << " ";
         }
         cout << "\n";
@@ -68,9 +69,11 @@ void ExecutionManager::parseFactsAndExecute(const char *filename) {
     delete builder;
 }
 
+#ifndef LP2CPP_DEBUG
 void ExecutionManager::compileDynamicLibrary(const string & executablePath) {
+
     string command = "cd " + executablePath + " && make -f DynamicLibraryMake -s";
-    cout<<command<<endl;
+    //cout<<command<<endl;
     int commandReturn = system(command.c_str());
     if (commandReturn) {
         throw std::string("Failed to execute command " + command);
@@ -91,17 +94,26 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath) {
 
     executor = (Executor*) create();
 }
+#else 
+void ExecutionManager::compileDynamicLibrary(const string &) {
+    executor = new Executor();
+}
+#endif
 
-void ExecutionManager::executeProgramOnFacts(const std::vector<aspc::Atom> & program) {
+void ExecutionManager::executeProgramOnFacts(const std::vector<aspc::Atom*> & program) {
     executor->executeProgramOnFacts(program);
-    failedConstraints = executor->getFailedConstraints();
 
 }
 
 const std::vector<std::vector<aspc::Literal> > & ExecutionManager::getFailedConstraints() {
-    return failedConstraints;
+    return executor->getFailedConstraints();
 }
 
 const Executor & ExecutionManager::getExecutor() {
     return *executor;
+}
+
+void ExecutionManager::shuffleFailedConstraints() {
+    executor-> shuffleFailedConstraints();
+    
 }

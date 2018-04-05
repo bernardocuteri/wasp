@@ -324,6 +324,8 @@ ExternalPropagator::getReasonForCheckFailure(
     assert( clause->size() == 0 );
     delete clause;
     
+//    std::random_shuffle(clauses.begin(), clauses.end());
+    
     if( clauses.size() == 1 && !toKeep )
     {
         if( clauses[ 0 ]->size() >= 2 )

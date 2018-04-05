@@ -27,6 +27,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include "lp2cpp/CompilationManager.h"
 #include "lp2cpp/ExecutionManager.h"
 #include "lp2cpp/LazyConstraint.h"
@@ -50,6 +51,7 @@ void my_handler(int) {
 
 int main(int argc, char** argv) {
 
+//    srand(unsigned(time(NULL)));
     if(false) {
         string executablePathAndName = argv[0];
         string executablePath = executablePathAndName;
@@ -63,13 +65,12 @@ int main(int argc, char** argv) {
         std::ofstream outfile(executablePath + "/src/lp2cpp/Executor.cpp");
         CompilationManager manager;
         manager.setOutStream(&outfile);
-        manager.lp2cpp(executablePath+"/encodings/constants");
+        manager.lp2cpp(argv[1]);//"/encodings/constants");
         outfile.close();
         ExecutionManager execManager;
         execManager.compileDynamicLibrary(executablePath);
-        if (true) {
-            execManager.launchExecutorOnFile((executablePath+"/instances/constants").c_str());
-        }
+        //execManager.launchExecutorOnFile((executablePath+"/instances/constants").c_str());
+        execManager.launchExecutorOnFile(argv[2]);
         return 0;
     }
     

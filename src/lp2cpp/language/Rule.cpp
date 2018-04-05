@@ -20,34 +20,53 @@
 #include "ArithmeticExpression.h"
 #include <iostream>
 #include <cassert>
+#include <algorithm>
 
 
 unsigned aspc::Rule::rulesCounter = 0;
 string aspc::Rule::inequalityStrings[] = {">=", "<=", ">", "<", "!=", "=="};
 
-aspc::Rule::Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & body, const vector<aspc::ArithmeticRelation> & arithmeticRelations) : head(head), body(body), ruleId(rulesCounter), arithmeticRelations(arithmeticRelations) {
+aspc::Rule::Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & body, const vector<aspc::ArithmeticRelation> & arithmeticRelations) : head(head), bodyLiterals(body), ruleId(rulesCounter), arithmeticRelations(arithmeticRelations) {
     rulesCounter++;
 }
 
 aspc::Rule::Rule(const vector<Atom>& head, const vector<Literal> & body, const vector<aspc::ArithmeticRelation>& arithmeticRelations, bool) : Rule(head, body, arithmeticRelations) {
-    vector<Literal> orderedBody(body.size());
-    int start = 0;
-    int end = body.size() - 1;
-    for (unsigned i = 0; i < body.size(); i++) {
-        if (body[i].isNegated()) {
-            orderedBody[end--] = body[i];
-        } else {
-            orderedBody[start++] = body[i];
-        }
+//    if(true) {
+//        std::random_shuffle(bodyLiterals.begin(), bodyLiterals.end());
+//        
+//    }
+    for (unsigned i = 0; i < bodyLiterals.size(); i++) {
+        formulas.push_back(new Literal(bodyLiterals.at(i)));
+
     }
-    this->body = orderedBody;
+    for (unsigned i = 0; i < arithmeticRelations.size(); i++) {
+        formulas.push_back(new ArithmeticRelation(arithmeticRelations[i]));
+    }
+    
+   
+    
+}
+
+aspc::Rule::Rule(const Rule& other) :
+head(other.head), bodyLiterals(other.bodyLiterals), ruleId(other.ruleId), arithmeticRelations(other.arithmeticRelations), orderedBodyByStarters(other.orderedBodyByStarters), orderedBodyIndexesByStarters(other.orderedBodyIndexesByStarters) {
+    for (unsigned i = 0; i < bodyLiterals.size(); i++) {
+        formulas.push_back(new Literal(bodyLiterals.at(i)));
+
+    }
+    for (unsigned i = 0; i < arithmeticRelations.size(); i++) {
+        formulas.push_back(new ArithmeticRelation(arithmeticRelations[i]));
+    }
 }
 
 aspc::Rule::~Rule() {
+
+    for (const Formula* f : formulas) {
+        delete f;
+    }
 }
 
-const vector<aspc::Literal> & aspc::Rule::getBody() const {
-    return body;
+const vector<aspc::Literal> & aspc::Rule::getBodyLiterals() const {
+    return bodyLiterals;
 }
 
 const vector<aspc::Atom> & aspc::Rule::getHead() const {
@@ -61,26 +80,12 @@ RuleType aspc::Rule::getType() const {
     return GENERATIVE_RULE;
 }
 
-vector<unsigned> aspc::Rule::getHeadToBodyVariableMap() const {
-    vector<unsigned>headToBodyVariableMap(head.front().getAriety(), -1);
-    for (unsigned i = 0; i < head.front().getTermsSize(); i++) {
-        for (unsigned j = 0; j < body.size(); j++) {
-            for (unsigned k = 0; k < body[j].getAtom().getTermsSize(); k++) {
-                if (head.front().isVariableTermAt(i) && head.front().getTermAt(i) == body[j].getTermAt(k)) {
-                    headToBodyVariableMap[i] = k;
-                }
-            }
-        }
-    }
-    return headToBodyVariableMap;
-}
-
 unsigned aspc::Rule::getRuleId() const {
     return ruleId;
 }
 
 unsigned aspc::Rule::getBodySize() const {
-    return body.size();
+    return formulas.size();
 }
 
 vector<map<unsigned, pair<unsigned, unsigned> > > aspc::Rule::getJoinIndicesWithJoinOrder(const vector<unsigned>& order) const {
@@ -90,15 +95,21 @@ vector<map<unsigned, pair<unsigned, unsigned> > > aspc::Rule::getJoinIndicesWith
     for (unsigned i = 0; i < orderSize - 1; i++) {
         unsigned o_i = order[i + 1];
         //for all term T1 in X
-        for (unsigned t1 = 0; t1 < body[o_i].getAriety(); t1++) {
-            //for all atom Y preceding X in the join
-            for (unsigned j = 0; j <= i; j++) {
-                unsigned o_j = order[j];
-                //for all term T2 in Y
-                for (unsigned t2 = 0; t2 < body[o_j].getAriety(); t2++) {
-                    if (!body[o_j].isNegated() && body[o_i].isVariableTermAt(t1) && body[o_i].getTermAt(t1) == body[o_j].getTermAt(t2)) {
-                        pair<unsigned, unsigned> toAdd(j, t2);
-                        result[i][t1] = toAdd;
+        if (formulas[o_i]->isLiteral()) {
+            Literal *literal = (Literal *) formulas[o_i];
+            for (unsigned t1 = 0; t1 < literal->getAriety(); t1++) {
+                //for all atom Y preceding X in the join
+                for (unsigned j = 0; j <= i; j++) {
+                    unsigned o_j = order[j];
+                    //for all term T2 in Y
+                    if (formulas[o_j]->isLiteral()) {
+                        Literal *literal2 = (Literal *) formulas[o_j];
+                        for (unsigned t2 = 0; t2 < literal2->getAriety(); t2++) {
+                            if (!literal2->isNegated() && literal->isVariableTermAt(t1) && literal->getTermAt(t1) == literal2->getTermAt(t2)) {
+                                pair<unsigned, unsigned> toAdd(j, t2);
+                                result[i][t1] = toAdd;
+                            }
+                        }
                     }
                 }
             }
@@ -113,13 +124,15 @@ map<unsigned, pair<unsigned, unsigned> > aspc::Rule::getBodyToHeadVariablesMap()
     const Atom & headAtom = head.front();
     for (unsigned t1 = 0; t1 < headAtom.getAriety(); t1++) {
         if (headAtom.isVariableTermAt(t1)) {
-            for (unsigned i = 0; i < body.size(); i++) {
-                Literal bodyLiteral = body[i];
-                if (!bodyLiteral.isNegated()) {
-                    for (unsigned t2 = 0; t2 < bodyLiteral.getAriety(); t2++) {
-                        if (bodyLiteral.getTermAt(t2) == headAtom.getTermAt(t1)) {
-                            pair<unsigned, unsigned> toAddPair(i, t2);
-                            resultMap[t1] = toAddPair;
+            for (unsigned i = 0; i < formulas.size(); i++) {
+                if (formulas[i]->isLiteral()) {
+                    Literal* bodyLiteral = (Literal*) formulas[i];
+                    if (!bodyLiteral->isNegated()) {
+                        for (unsigned t2 = 0; t2 < bodyLiteral->getAriety(); t2++) {
+                            if (bodyLiteral->getTermAt(t2) == headAtom.getTermAt(t1)) {
+                                pair<unsigned, unsigned> toAddPair(i, t2);
+                                resultMap[t1] = toAddPair;
+                            }
                         }
                     }
                 }
@@ -139,20 +152,25 @@ void aspc::Rule::print() const {
         std::cout << " ";
     }
     std::cout << ":-";
-    for (const aspc::Literal & literal : body) {
-        literal.print();
+    for (const Formula* f : formulas) {
+        f->print();
         cout << " ";
     }
-    for (const ArithmeticRelation & arithmeticRelation : arithmeticRelations) {
-        arithmeticRelation.print();
-        cout << " ";
-    }
-    cout << "\n";
+    cout << endl;
+    //    for (const aspc::Literal & literal : bodyLiterals) {
+    //        literal.print();
+    //        cout << " ";
+    //    }
+    //    for (const ArithmeticRelation & arithmeticRelation : arithmeticRelations) {
+    //        arithmeticRelation.print();
+    //        cout << " ";
+    //    }
+    //    cout << "\n";
 }
 
 bool aspc::Rule::containsNegation() const {
-    for (unsigned i = 0; i < body.size(); i++) {
-        if (body[i].isNegated()) {
+    for (unsigned i = 0; i < bodyLiterals.size(); i++) {
+        if (bodyLiterals[i].isNegated()) {
             return true;
         }
     }
@@ -165,48 +183,46 @@ bool aspc::Rule::isConstraint() const {
 
 void aspc::Rule::bodyReordering() {
     vector<unsigned> starters;
-    for(unsigned i = 0;i<body.size();i++) {
-        if(body[i].isPositiveLiteral()) {
+    for (unsigned i = 0; i < formulas.size(); i++) {
+        if (formulas[i]->isPositiveLiteral()) {
             starters.push_back(i);
             break;
         }
     }
     bodyReordering(starters);
-    
+
 }
 
 void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
 
-    if(starters.empty()) {
+    if (starters.empty()) {
         bodyReordering();
     }
 
     for (unsigned starter : starters) {
 
         set<string> boundVariables;
-        body[starter].addVariablesToSet(boundVariables);
+        formulas[starter]->addVariablesToSet(boundVariables);
 
-        orderedBodyByStarter[starter].push_back(&body[starter]);
+        orderedBodyByStarters[starter].push_back(formulas[starter]);
+        orderedBodyIndexesByStarters[starter].push_back(starter);
 
-        list<Formula*> allFormulas;
-        for (unsigned i = 0; i < body.size(); i++) {
-            if (i != starter) {
-                allFormulas.push_back(& body[i]);
+        list<const Formula*> allFormulas;
+        //TODO improve
+        for(const Formula* f:formulas) {
+            if(f!=formulas[starter]) {
+                allFormulas.push_back(f);
             }
-
-        }
-        for (unsigned i = 0; i < arithmeticRelations.size(); i++) {
-            allFormulas.push_back(& arithmeticRelations[i]);
         }
         while (!allFormulas.empty()) {
-            Formula* boundExpression = NULL;
-            Formula* boundLiteral = NULL;
-            Formula* boundValueAssignment = NULL;
-            Formula* positiveLiteral = NULL;
-            Formula* selectedFormula = NULL;
+            const Formula* boundExpression = NULL;
+            const Formula* boundLiteral = NULL;
+            const Formula* boundValueAssignment = NULL;
+            const Formula* positiveLiteral = NULL;
+            const Formula* selectedFormula = NULL;
 
-            for (list<Formula*>::reverse_iterator formula = allFormulas.rbegin(); formula != allFormulas.rend(); formula++) {
-                if ((*formula)->isBoundedExpression(boundVariables)) {
+            for (list<const Formula*>::const_reverse_iterator formula = allFormulas.rbegin(); formula != allFormulas.rend(); formula++) {
+                if ((*formula)->isBoundedRelation(boundVariables)) {
                     boundExpression = *formula;
                 } else if ((*formula)->isBoundedLiteral(boundVariables)) {
                     boundLiteral = *formula;
@@ -227,10 +243,22 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
                 selectedFormula = positiveLiteral;
             }
             assert(selectedFormula);
-            if(selectedFormula!=boundExpression && selectedFormula!=boundLiteral) {
+            if (selectedFormula != boundExpression && selectedFormula != boundLiteral) {
                 selectedFormula->addVariablesToSet(boundVariables);
             }
-            orderedBodyByStarter[starter].push_back(selectedFormula);
+            orderedBodyByStarters[starter].push_back(selectedFormula);
+
+            // TODO remove
+            unsigned selectedIndex = 0;
+            for (const Formula* f : formulas) {
+                if (f == selectedFormula) {
+                    break;
+                }
+                selectedIndex++;
+            }
+            orderedBodyIndexesByStarters[starter].push_back(selectedIndex);
+
+
             allFormulas.remove(selectedFormula);
 
         }
@@ -242,14 +270,49 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
 }
 
 void aspc::Rule::printOrderedBodies() const {
-    
-    for(const auto& entry:orderedBodyByStarter) {
-        for(Formula* f:entry.second) {
+
+    for (const auto& entry : orderedBodyByStarters) {
+        for (const Formula* f : entry.second) {
             f->print();
-            cout<<" ";
+            cout << " ";
         }
-        cout<<endl;
+        cout << endl;
     }
-    cout<<endl;
+    cout << endl;
+
+}
+
+pair<int, int> aspc::Rule::findFirstOccurrenceOfVariableByStarter(const string& var, unsigned starter) const {
+
+    for (unsigned i = 0; i < orderedBodyByStarters.at(starter).size(); i++) {
+        if (orderedBodyByStarters.at(starter)[i]->isLiteral()) {
+            int index = orderedBodyByStarters.at(starter)[i]->firstOccurrenceOfVariableInLiteral(var);
+            if (index != -1) {
+                return pair<int, int>(i, index);
+            }
+        }
+    }
+    return pair<int, int>(-1, -1);
+}
+
+const vector<unsigned>& aspc::Rule::getOrderedBodyIndexesByStarter(unsigned start) const {
+    return orderedBodyIndexesByStarters.at(start);
+}
+
+const vector<const aspc::Formula*> & aspc::Rule::getFormulas() const {
+    return formulas;
+}
+
+const vector<const aspc::Formula*>& aspc::Rule::getOrderedBodyByStarter(unsigned start) const {
+    return orderedBodyByStarters.at(start);
+}
+
+vector<unsigned> aspc::Rule::getStarters() const {
+    vector<unsigned> res;
+    for (const auto & entry : orderedBodyByStarters) {
+        res.push_back(entry.first);
+    }
+    return res;
+
 
 }

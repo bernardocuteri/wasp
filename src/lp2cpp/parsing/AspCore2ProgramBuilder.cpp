@@ -236,8 +236,6 @@ void AspCore2ProgramBuilder::onRule() {
     if (buildingBody.empty()) {
         program.addFact(buildingHead.back());
     } else {
-        //TODO check!
-        //program->addFact(buildingHead->back());
         aspc::Rule rule = aspc::Rule(buildingHead, buildingBody, inequalities, true);
         program.addRule(rule);
         //adding edges to dependency graph

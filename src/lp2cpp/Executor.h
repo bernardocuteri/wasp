@@ -27,19 +27,22 @@
 #include "language/Literal.h"
 #include "datastructures/AuxiliaryMap.h"
 #include <iostream>
+#include <algorithm>
 class Executor
 {
 public:
   Executor();
-  /* use virtual otherwise linker will try to perform static linkage */
   virtual ~Executor();
-  virtual void executeProgramOnFacts(const vector<aspc::Atom> & p);
+  virtual void executeProgramOnFacts(const vector<aspc::Atom*> & p);
   virtual void executeFromFile(const char* factsFile);
   virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {
       return failedConstraints;
   }
-  virtual const std::vector<std::string> getBodyLiterals() {
+  virtual const std::vector<std::string> & getBodyLiterals() {
       return bodyLiterals;
+  }
+  virtual void shuffleFailedConstraints() {
+      std::random_shuffle(failedConstraints.begin(), failedConstraints.end());
   }
 private:
   std::vector<std::vector<aspc::Literal> > failedConstraints;

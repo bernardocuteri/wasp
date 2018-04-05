@@ -12,27 +12,45 @@
  */
 
 #include "ArithmeticRelation.h"
+#include "Rule.h"
 #include <iostream>
 #include <cassert>
+
+
+
+std::map<aspc::ComparisonType, std::string> aspc::ArithmeticRelation::comparisonType2String = {
+    {GT, ">"},
+    {EQ, "=="},
+    {LT, "<"},
+    {GTE, ">="},
+    {LTE, "<="},
+    {NE, "!="}
+
+};
+
 bool isVariable(const string & v) {
-    return (v[0]>='A' && v[0]<='Z');
-    
+    return (v[0] >= 'A' && v[0] <= 'Z');
+
 }
 
-void aspc::ArithmeticRelation::addVariablesToSet(set<string>& set) {
+aspc::ArithmeticRelation::ArithmeticRelation(const aspc::ArithmeticExpression& left, const aspc::ArithmeticExpression& right, aspc::ComparisonType comparisonType) : left(left), right(right), comparisonType(comparisonType) {
+
+}
+
+void aspc::ArithmeticRelation::addVariablesToSet(set<string>& set) const {
     assert(isBoundedValueAssignment(set));
     set.insert(left.getTerm1());
 
 }
 
-bool aspc::ArithmeticRelation::isBoundedExpression(const set<string>& set) const {
-    for(const string & t: left.getAllTerms()) {
-        if(isVariable(t) && !set.count(t)) {
+bool aspc::ArithmeticRelation::isBoundedRelation(const set<string>& set) const {
+    for (const string & t : left.getAllTerms()) {
+        if (isVariable(t) && !set.count(t)) {
             return false;
         }
     }
-     for(const string & t: right.getAllTerms()) {
-        if(isVariable(t) && !set.count(t)) {
+    for (const string & t : right.getAllTerms()) {
+        if (isVariable(t) && !set.count(t)) {
             return false;
         }
     }
@@ -44,18 +62,33 @@ bool aspc::ArithmeticRelation::isBoundedLiteral(const set<string>&) const {
 }
 
 bool aspc::ArithmeticRelation::isBoundedValueAssignment(const set<string>& set) const {
-    
-    if(comparisonType == aspc::EQ && left.isSingleTerm() && isVariable(left.getTerm1()) && !set.count(left.getTerm1())) {
+
+    if (comparisonType == aspc::EQ && left.isSingleTerm() && isVariable(left.getTerm1()) && !set.count(left.getTerm1())) {
+        for (const string & t : right.getAllTerms()) {
+            if (isVariable(t) && !set.count(t)) {
+                return false;
+            }
+        }
         return true;
     }
     return false;
 }
 
 void aspc::ArithmeticRelation::print() const {
-    std::cout<<left<<" " << comparisonType<<" "<<right;
+    std::cout << left << " " << comparisonType << " " << right;
 
 }
 
 bool aspc::ArithmeticRelation::isPositiveLiteral() const {
     return false;
 }
+
+bool aspc::ArithmeticRelation::isLiteral() const {
+    return false;
+}
+
+unsigned aspc::ArithmeticRelation::firstOccurrenceOfVariableInLiteral(const string &) const {
+    return -1;
+}
+
+

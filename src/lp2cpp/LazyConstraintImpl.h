@@ -52,21 +52,36 @@
 #include <unordered_map>
 
 
+
+struct AtomHash {
+
+    size_t operator()(const aspc::Atom & v) const {
+        std::hash<unsigned> hasher;
+        size_t seed = 0;
+        for (unsigned i : v.getIntTuple()) {
+            seed ^= hasher(i) + (seed << 6) + (seed >> 2);
+        }
+        return (hash<string>()(v.getPredicateName())) ^ seed;
+    }
+};
+
 class LazyConstraintImpl: public LazyConstraint {
 public: 
     virtual void setFilename(const std::string & executablePath, const std::string & filename) override;
-    virtual void addedVarName(int var, std::string atomString) override;
+    virtual void addedVarName(int var, const std::string & atomString) override;
     virtual bool checkAnswerSet(const std::vector<int> & interpretation) override;
     virtual void onCheckFail(std::vector<int> & constraints) override;
     virtual const std::vector<unsigned int> & getVariablesToFreeze() override;
     virtual const string & getFilepath() const;
+    virtual ~LazyConstraintImpl();
+
 
 
 private:
-    std::map<int, aspc::Atom> atoms;
+    std::map<int, aspc::Atom*> atoms;
     ExecutionManager executionManager;
     CompilationManager compilationManager;
-    std::unordered_map<string, int> atomsMap;
+    std::unordered_map<aspc::Atom, int, AtomHash> atomsMap;
     std::vector<unsigned> watchedAtoms;
     string filepath;
     

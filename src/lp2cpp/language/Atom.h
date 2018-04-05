@@ -22,16 +22,27 @@
 #include <vector>
 using namespace std;
 
+
+
+
+
 namespace aspc {
 
     class Atom {
+
+
     public:
         Atom();
+
+        Atom(const string & predicateName) : predicateName(predicateName) {
+        }
+
         Atom(const string & predicateName, const vector<string> & terms);
         Atom(const Atom &);
         virtual ~Atom();
         const string & getPredicateName() const;
         const string & getTermAt(unsigned) const;
+        void addTerm(const string &);
         unsigned getTermsSize() const;
         const vector<string> & getTerms() const;
         unsigned getAriety() const;
@@ -39,6 +50,12 @@ namespace aspc {
         vector<unsigned> getIntTuple() const;
         void print() const;
         string toString() const;
+        
+        bool operator==(const Atom& right) const {
+            return predicateName == right.predicateName && terms == right.terms;
+        }
+
+        
     private:
         string predicateName;
         vector<string> terms;

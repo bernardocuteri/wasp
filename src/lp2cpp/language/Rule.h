@@ -25,7 +25,6 @@
 #include <tuple>
 #include "Atom.h"
 #include "Literal.h"
-#include "ArithmeticExpression.h"
 #include "ArithmeticRelation.h"
 
 enum RuleType {
@@ -36,6 +35,7 @@ enum RuleType {
 
 
 namespace aspc {
+    
 
     class Rule {
     public:
@@ -43,11 +43,12 @@ namespace aspc {
         static string inequalityStrings[];
         Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & body, const vector<ArithmeticRelation> & arithmeticRelation);
         Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & body, const vector<ArithmeticRelation> & inequalities, bool reorderBody);
+        Rule(const Rule& other);
+
         virtual ~Rule();
         const vector<aspc::Atom> & getHead() const;
-        const vector<aspc::Literal> & getBody() const;
+        const vector<aspc::Literal> & getBodyLiterals() const;
         const vector<ArithmeticRelation> & getArithmeticRelations() const;
-        vector<unsigned> getHeadToBodyVariableMap() const;
         RuleType getType() const;
         unsigned getRuleId() const;
         vector<map<unsigned, pair<unsigned, unsigned> > > getJoinIndicesWithJoinOrder(const vector<unsigned> & order) const;
@@ -56,17 +57,29 @@ namespace aspc {
         void print() const;
         bool containsNegation() const;
         bool isConstraint() const;
-        
+        pair<int, int> findFirstOccurrenceOfVariableByStarter(const string & var, unsigned starter) const;
+
         void bodyReordering();
         void bodyReordering(const vector<unsigned> & starters);
         void printOrderedBodies() const;
+
+
+        const vector<unsigned> & getOrderedBodyIndexesByStarter(unsigned start) const;
+        const vector<const aspc::Formula*>& getOrderedBodyByStarter(unsigned start) const;
+        vector<unsigned> getStarters() const;
+
+        const vector<const aspc::Formula*> & getFormulas() const;
+
+
     private:
         vector<aspc::Atom> head;
-        vector<aspc::Literal> body;
+        vector<aspc::Literal> bodyLiterals;
         int ruleId;
         vector<ArithmeticRelation> arithmeticRelations;
-        
-        unordered_map<unsigned, vector<aspc::Formula*> > orderedBodyByStarter;
+        vector<const aspc::Formula*> formulas;
+
+        unordered_map<unsigned, vector<const aspc::Formula*> > orderedBodyByStarters;
+        unordered_map<unsigned, vector<unsigned> > orderedBodyIndexesByStarters;
 
     };
 }

@@ -40,6 +40,7 @@ namespace wasp
             static TraceLevels traceLevels;
             #endif
 
+            static string arg0;
             static void parse( int argc, char* const* argv );
             static void setOptions( WaspFacade& waspFacade );
             static unsigned int maxCost;        

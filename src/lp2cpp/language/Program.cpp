@@ -32,7 +32,7 @@ aspc::Program::~Program() {
 
 void aspc::Program::addRule(const Rule & r) {
     rules.push_back(r);
-    for (const Literal & literal : r.getBody()) {
+    for (const Literal & literal : r.getBodyLiterals()) {
         rules_by_type[r.getType()][literal.getPredicateName()].insert(rules.size()-1);
     }
 
@@ -100,8 +100,8 @@ const set<pair<string, unsigned> >& aspc::Program::getPredicates() const {
 set<string> aspc::Program::getBodyPredicates() const {
 
     set<string> res;
-    for(Rule r:rules) {
-       for(Literal l: r.getBody()) {
+    for(const Rule & r:rules) {
+       for(const Literal & l: r.getBodyLiterals()) {
            res.insert(l.getPredicateName());
        }
     }
@@ -109,7 +109,7 @@ set<string> aspc::Program::getBodyPredicates() const {
 }
 
 bool aspc::Program::hasConstraint() const {
-    for(Rule r: rules) {
+    for(const Rule & r: rules) {
         if(r.isConstraint()) {
             return true;
         }

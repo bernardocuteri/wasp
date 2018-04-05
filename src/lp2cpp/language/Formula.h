@@ -20,12 +20,16 @@ namespace aspc {
 
     class Formula {
     public:
-        virtual bool isBoundedExpression(const set<string> &) const = 0;
+        virtual bool isBoundedRelation(const set<string> &) const = 0;
         virtual bool isBoundedLiteral(const set<string> &) const = 0;
         virtual bool isBoundedValueAssignment(const set<string> &) const = 0;
         virtual bool isPositiveLiteral() const = 0;
-        virtual void addVariablesToSet(set<string> &) = 0;
+        virtual void addVariablesToSet(set<string> &) const = 0;
         virtual void print() const = 0;
+        virtual bool isLiteral() const = 0;
+        virtual unsigned firstOccurrenceOfVariableInLiteral(const string &) const = 0;
+        virtual ~Formula(){};
+
 
     };
 }

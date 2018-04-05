@@ -36,6 +36,10 @@ aspc::Atom::~Atom() {
 
 }
 
+void aspc::Atom::addTerm(const string& t) {
+    terms.push_back(t);
+}
+
 
 const std::string & aspc::Atom::getTermAt(unsigned i) const {
     return terms[i];

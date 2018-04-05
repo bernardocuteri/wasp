@@ -40,10 +40,10 @@ public:
     void parseFactsAndExecute(const char *filename);
     void launchExecutorOnFile(const char *filename);
     const std::vector<std::vector<aspc::Literal> > & getFailedConstraints();
-    void executeProgramOnFacts(const std::vector<aspc::Atom> & problemIstance);
+    void executeProgramOnFacts(const std::vector<aspc::Atom*> & problemIstance);
     const Executor & getExecutor();
+    void shuffleFailedConstraints();
 private:
-    std::vector<std::vector<aspc::Literal> > failedConstraints;
     Executor* executor;
     void (*destroy)(Executor*);
         

@@ -73,7 +73,7 @@ const vector<string>& aspc::Literal::getTerms() const {
     return atom.getTerms();
 }
 
-void aspc::Literal::addVariablesToSet(set<string>& set) {
+void aspc::Literal::addVariablesToSet(set<string>& set) const {
     for (unsigned i = 0; i < getAriety(); i++) {
         if (isVariableTermAt(i)) {
             set.insert(getTermAt(i));
@@ -82,7 +82,7 @@ void aspc::Literal::addVariablesToSet(set<string>& set) {
 
 }
 
-bool aspc::Literal::isBoundedExpression(const set<string>&) const {
+bool aspc::Literal::isBoundedRelation(const set<string>&) const {
     return false;
 }
 
@@ -104,8 +104,19 @@ bool aspc::Literal::isPositiveLiteral() const {
     return !negated;
 }
 
+bool aspc::Literal::isLiteral() const {
+    return true;
+}
 
+unsigned aspc::Literal::firstOccurrenceOfVariableInLiteral(const string & v) const {
 
+    for(unsigned i=0;i<getAriety();i++) {
+        if(atom.getTermAt(i)==v) {
+            return i;
+        }
+    }
+    return -1;
+}
 
 
 

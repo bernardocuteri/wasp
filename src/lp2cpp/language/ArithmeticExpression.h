@@ -16,9 +16,13 @@
 
 #include<string>
 #include<ostream>
-#include "Formula.h"
+#include<set>
+#include<string>
+
 namespace aspc {
 
+    class Rule;
+    
     class ArithmeticExpression {
 
         friend std::ostream & operator<<(std::ostream & out, const ArithmeticExpression & e) {
@@ -30,8 +34,7 @@ namespace aspc {
         }
     public:
 
-        ArithmeticExpression() {
-        };
+        ArithmeticExpression();
         ArithmeticExpression(const std::string &, const std::string &, char operation);
         ArithmeticExpression(const std::string &);
         bool isSingleTerm() const;
@@ -47,8 +50,9 @@ namespace aspc {
         char getOperation() const {
             return operation;
         }
-        
+
         std::set<std::string> getAllTerms() const;
+
 
     private:
         std::string term1;

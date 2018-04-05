@@ -44,7 +44,7 @@ private:
     bool checkInequalities(const aspc::Rule & rule, Indentation & ind);
     void declareArithmeticVariables(const aspc::Rule & rule, Indentation & ind);
     bool handleEqualCardsAndConstants(const aspc::Rule & r,unsigned i,const vector<unsigned>& joinOrder);
-    void handleExpressions(const aspc::Rule& r, unsigned i, const vector<unsigned>& joinOrder);
+    bool handleExpression(const aspc::Rule& r, const aspc::ArithmeticRelation &, unsigned, const set<string> &);
     
     std::ostream* out;
     std::set<std::string> bodyPredicates;

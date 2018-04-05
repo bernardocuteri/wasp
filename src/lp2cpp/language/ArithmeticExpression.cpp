@@ -13,6 +13,11 @@
 
 #include "ArithmeticExpression.h"
 
+aspc::ArithmeticExpression::ArithmeticExpression() {
+
+}
+
+
 aspc::ArithmeticExpression::ArithmeticExpression(const std::string& term1, const std::string& term2, char operation):term1(term1), term2(term2), operation(operation), singleTerm(false){
 }
 
