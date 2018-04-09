@@ -28,7 +28,6 @@
 #include <bits/unordered_map.h>
 #include "DLV2libs/input/InputDirector.h"
 #include "parsing/AspCore2ProgramBuilder.h"
-#include "datastructures/PredicateWSet.h"
 #include "language/ArithmeticExpression.h"
 #include "language/ArithmeticRelation.h"
 using namespace std;
@@ -216,8 +215,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     }
     *out << --ind << "}\n";
     *out << ind++ << "else {\n";
-    *out << ind << "vector<unsigned> tuple = program[i]->getIntTuple();\n";
-    *out << ind << "const auto& insertResult=it->second->insert(tuple);\n";
+    *out << ind << "const auto& insertResult=it->second->insert(program[i]->getIntTuple());\n";
 
     *out << ind++ << "if(insertResult.second){\n";
     //    *out << ind << "it->second->insert(tuple);\n";
@@ -360,26 +358,36 @@ void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
 
                 aspc::Literal* l = (aspc::Literal*)body[joinOrder[i]];
                 if (l->isNegated()) {
-                    *out << ind << "vector<unsigned> key" << i - 1 << "(" << l->getAriety() << ");\n";
                     auto it = joinKeys[r.getRuleId()][start][i - 1].begin();
+
+                    *out << ind++ << "if(w" << l->getPredicateName() << ".find({";
+
                     for (unsigned j = 0; j < l->getAriety(); j++) {
                         if (!l->isVariableTermAt(j)) {
-                            *out << ind << "key" << i - 1 << "[" << j << "]=" + l->getTermAt(j) + ";\n";
+                            *out << l->getTermAt(j);
                         } else {
-                            *out << ind << "key" << i - 1 << "[" << j << "]=tuple" << it->first << "[" << it->second << "];\n";
+                            *out << "tuple" << it->first << "[" << it->second << "]";
                             it++;
                         }
+                        if (j < l->getAriety() - 1) {
+                            *out << ",";
+                        }
                     }
-                    *out << ind++ << "if(w" << l->getPredicateName() << ".find(key" << i - 1 << ")==w" << l->getPredicateName() << ".end()){\n";
+
+                    *out << "})==w" << l->getPredicateName() << ".end()){\n";
 
                 } else {
-                    *out << ind << "vector<unsigned> key" << i - 1 << "(" << joinKeys[r.getRuleId()][start][i - 1].size() << ");\n";
                     unsigned counter = 0;
+                    *out << ind << "const vector<const vector <unsigned>* >& tuples = p" << auxiliaryMapsNameByRuleAndStartIndex[r.getRuleId()][start][i - 1] << ".getValues({";
                     for (const auto& keyPair : joinKeys[r.getRuleId()][start][i - 1]) {
-                        *out << ind << "key" << i - 1 << "[" << counter << "]=tuple" << keyPair.first << "[" << keyPair.second << "];\n";
+                        *out << "tuple" << keyPair.first << "[" << keyPair.second << "]";
+                        if (counter < joinKeys[r.getRuleId()][start][i - 1].size() - 1) {
+                            *out << ",";
+                        }
                         counter++;
                     }
-                    *out << ind << "const vector<const vector <unsigned>* >& tuples = p" << auxiliaryMapsNameByRuleAndStartIndex[r.getRuleId()][start][i - 1] << ".getValues(key" << i - 1 << ");\n";
+
+                    *out << "});\n";
                     *out << ind++ << "for( unsigned i=0; i< tuples.size();i++){\n";
                     *out << ind << "const vector<unsigned>& tuple" << i << " = *tuples[i];\n";
                     //                *out << ind++ << "for( const vector<unsigned>& tuple" << i << ": tuples){\n";
@@ -404,26 +412,30 @@ void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
 
             if (!r.isConstraint()) {
 
-                *out << ind << "vector <unsigned> head(" << r.getHead().front().getTermsSize() << ");\n";
-                for (const auto& headLiteralToBodyLiteral : r.getBodyToHeadVariablesMap()) {
-                    unsigned k;
-                    for (k = 0; k < joinOrder.size(); k++) {
-                        if (joinOrder[k] == headLiteralToBodyLiteral.second.first)
-                            break;
-                    }
+                *out << ind << "const auto & insertResult = w" << r.getHead().front().getPredicateName() << ".insert({";
 
-                    *out << ind << "head[" << headLiteralToBodyLiteral.first << "]=tuple" << k << "[" << headLiteralToBodyLiteral.second.second << "];\n";
-                }
                 for (unsigned th = 0; th < r.getHead().front().getTermsSize(); th++) {
                     if (!r.getHead().front().isVariableTermAt(th)) {
                         if (isUnsignedInteger(r.getHead().front().getTermAt(th))) {
-                            *out << ind << "head[" << th << "]=" << r.getHead().front().getTermAt(th) << ";\n";
+                            *out << r.getHead().front().getTermAt(th);
                         } else {
-                            *out << ind << "head[" << th << "]=ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(r.getHead().front().getTermAt(th)) << "\");\n";
+                            *out << "ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(r.getHead().front().getTermAt(th)) << "\"";
                         }
+                    } else {
+                        unsigned k;
+                        for (k = 0; k < joinOrder.size(); k++) {
+                            if (joinOrder[k] == r.getBodyToHeadVariablesMap()[th].first)
+                                break;
+                        }
+                        *out << "tuple" << k << "[" << r.getBodyToHeadVariablesMap()[th].second << "]";
+                    }
+                    if (th < r.getHead().front().getTermsSize() - 1) {
+                        *out << ",";
                     }
                 }
-                *out << ind << "const auto & insertResult = w" << r.getHead().front().getPredicateName() << ".insert(head);\n";
+
+
+                *out << "});\n";
                 *out << ind++ << "if(insertResult.second){\n";
                 *out << ind << "tuples_" << r.getHead().front().getPredicateName() << ".push_back(&(*insertResult.first));\n";
                 //            *out << ind++ << "if(!w" << r.getHead().front().getPredicateName() << ".contains(head)){\n";

@@ -51,7 +51,7 @@ void AuxiliaryMap::insert2(const vector<unsigned>& value) {
     tuples[std::move(key)].push_back(&value);    
 }
 
-const vector< const vector<unsigned>* >& AuxiliaryMap::getValues(vector<unsigned>& tuple) const {
+const vector< const vector<unsigned>* >& AuxiliaryMap::getValues(const vector<unsigned>& tuple) const {
 
     const auto it = tuples.find(tuple);
     if(it == tuples.end()) {

@@ -24,7 +24,7 @@
  */
 
 #ifndef AUXILIARY_MAP_H
-#define	AUXILIARY_MAP_H
+#define AUXILIARY_MAP_H
 #include <list>
 #include <vector>
 #include <unordered_map>
@@ -32,14 +32,15 @@
 using namespace std;
 
 struct VectorHash {
-    size_t operator()(const std::vector<unsigned>& v) const {
-        std::hash<unsigned> hasher;
+
+    inline size_t operator()(const std::vector<unsigned>& v) const {
         size_t seed = 0;
         for (unsigned i : v) {
-            seed ^= hasher(i) + (seed << 6) + (seed >> 2);
+            seed ^= i + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         }
         return seed;
     }
+
 };
 
 class AuxiliaryMap {
@@ -47,13 +48,13 @@ public:
     AuxiliaryMap();
     AuxiliaryMap(vector<unsigned> * keyIndices);
     void insert2(const vector<unsigned> & value);
-    const vector<const vector<unsigned>* >& getValues(vector<unsigned>& tuple) const ;
+    const vector<const vector<unsigned>* >& getValues(const vector<unsigned>& tuple) const;
 protected:
     unordered_map<vector<unsigned>, vector< const vector<unsigned>* >, VectorHash > tuples;
     unsigned keySize;
-    vector<unsigned>* keyIndices;    
+    vector<unsigned>* keyIndices;
     static const vector< const vector <unsigned >* > EMPTY_RESULT;
 };
 
-#endif	/* AUXILIARYMAP_H */
+#endif /* AUXILIARYMAP_H */
 

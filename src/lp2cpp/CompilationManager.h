@@ -22,7 +22,6 @@
 #include "language/Program.h"
 #include "parsing/AspCore2ProgramBuilder.h"
 #include "utils/Indentation.h"
-#include "datastructures/PredicateWSet.h"
 #include <string>
 #include <set>
 
