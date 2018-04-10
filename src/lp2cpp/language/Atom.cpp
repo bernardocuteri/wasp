@@ -24,11 +24,11 @@
 aspc::Atom::Atom() {
 }
 
-aspc::Atom::Atom(const std::string & predicateName, const std::vector<std::string> & terms): predicateName(predicateName), terms(terms) {
-    
+aspc::Atom::Atom(const std::string & predicateName, const std::vector<std::string> & terms) : predicateName(predicateName), terms(terms) {
+
 }
 
-aspc::Atom::Atom(const aspc::Atom& b):predicateName(b.predicateName), terms(b.terms) {
+aspc::Atom::Atom(const aspc::Atom& b) : predicateName(b.predicateName), terms(b.terms) {
 
 }
 
@@ -40,7 +40,6 @@ void aspc::Atom::addTerm(const string& t) {
     terms.push_back(t);
 }
 
-
 const std::string & aspc::Atom::getTermAt(unsigned i) const {
     return terms[i];
 }
@@ -50,8 +49,8 @@ unsigned aspc::Atom::getAriety() const {
 }
 
 bool aspc::Atom::isVariableTermAt(unsigned i) const {
-    return (terms[i][0]>='A' && terms[i][0]<='Z') || terms[i]=="_";
-    
+    return (terms[i][0] >= 'A' && terms[i][0] <= 'Z') || terms[i] == "_";
+
 }
 
 const string & aspc::Atom::getPredicateName() const {
@@ -60,9 +59,18 @@ const string & aspc::Atom::getPredicateName() const {
 
 vector<unsigned> aspc::Atom::getIntTuple() const {
     vector<unsigned> tuple(terms.size());
-    for(unsigned i=0;i<terms.size();i++) {
+    for (unsigned i = 0; i < terms.size(); i++) {
         tuple[i] = ConstantsManager::getInstance().mapConstant(terms[i]);
         //tuple[i] = stoi((*terms)[i]);
+    }
+    return tuple;
+}
+
+Tuple aspc::Atom::getTuple(unsigned id) const {
+    Tuple tuple(id, predicateName);
+    tuple.resize(terms.size());
+    for (unsigned i = 0; i < terms.size(); i++) {
+        tuple[i] = ConstantsManager::getInstance().mapConstant(terms[i]);
     }
     return tuple;
 }
@@ -76,25 +84,25 @@ unsigned aspc::Atom::getTermsSize() const {
 }
 
 void aspc::Atom::print() const {
-    std::cout<<predicateName<<"(";
-    for(unsigned i=0;i<terms.size();i++) {
-        cout<<terms[i];
-        if(i!=terms.size()-1) {
-            cout<<",";
+    std::cout << predicateName << "(";
+    for (unsigned i = 0; i < terms.size(); i++) {
+        cout << terms[i];
+        if (i != terms.size() - 1) {
+            cout << ",";
         }
     }
-    cout<<")";
+    cout << ")";
 }
 
 string aspc::Atom::toString() const {
     string result;
-    result+=(predicateName+"(");
-    for(unsigned i=0;i<terms.size();i++) {
-        result+=terms[i];
-        if(i!=terms.size()-1) {
-            result+=",";
+    result += (predicateName + "(");
+    for (unsigned i = 0; i < terms.size(); i++) {
+        result += terms[i];
+        if (i != terms.size() - 1) {
+            result += ",";
         }
     }
-    result+=")";
+    result += ")";
     return result;
 }

@@ -28,6 +28,7 @@
 #include <list>
 #include <vector>
 #include <unordered_map>
+#include "Tuple.h"
 
 using namespace std;
 
@@ -47,13 +48,13 @@ class AuxiliaryMap {
 public:
     AuxiliaryMap();
     AuxiliaryMap(vector<unsigned> * keyIndices);
-    void insert2(const vector<unsigned> & value);
-    const vector<const vector<unsigned>* >& getValues(const vector<unsigned>& tuple) const;
+    void insert2(const Tuple & value);
+    const vector<const Tuple* >& getValues(const vector<unsigned>& tuple) const;
 protected:
-    unordered_map<vector<unsigned>, vector< const vector<unsigned>* >, VectorHash > tuples;
+    unordered_map<vector<unsigned>, vector< const Tuple* >, VectorHash > tuples;
     unsigned keySize;
     vector<unsigned>* keyIndices;
-    static const vector< const vector <unsigned >* > EMPTY_RESULT;
+    static const vector< const Tuple* > EMPTY_RESULT;
 };
 
 #endif /* AUXILIARYMAP_H */

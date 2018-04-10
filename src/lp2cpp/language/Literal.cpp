@@ -29,6 +29,14 @@ aspc::Literal::Literal(bool negated, const aspc::Atom & atom) : atom(atom), nega
 aspc::Literal::Literal(const Literal& b): atom(b.atom), negated(b.negated) {
 
 }
+aspc::Literal::Literal(const string& predicateName): atom(predicateName), negated(false) {
+    
+}
+
+void aspc::Literal::addTerm(const string& t) {
+    atom.addTerm(t);
+}
+
 
 aspc::Literal::~Literal() {
 

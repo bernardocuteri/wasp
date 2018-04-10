@@ -32,7 +32,7 @@
 #include <climits>
 #include <unordered_map>
 
-const vector<const vector<unsigned>* > AuxiliaryMap::EMPTY_RESULT;
+const vector<const Tuple* > AuxiliaryMap::EMPTY_RESULT;
 
 AuxiliaryMap::AuxiliaryMap(vector<unsigned> * keyIndices) :
 keySize(keyIndices->size()), keyIndices(keyIndices) {
@@ -43,7 +43,7 @@ AuxiliaryMap::AuxiliaryMap() {
 }
 
 
-void AuxiliaryMap::insert2(const vector<unsigned>& value) {
+void AuxiliaryMap::insert2(const Tuple & value) {
     vector<unsigned> key(keySize);
     for(unsigned i = 0;i<keySize;i++) {
         key[i] = value[(*keyIndices)[i]];
@@ -51,9 +51,9 @@ void AuxiliaryMap::insert2(const vector<unsigned>& value) {
     tuples[std::move(key)].push_back(&value);    
 }
 
-const vector< const vector<unsigned>* >& AuxiliaryMap::getValues(const vector<unsigned>& tuple) const {
+const vector< const Tuple* >& AuxiliaryMap::getValues(const vector<unsigned>& key) const {
 
-    const auto it = tuples.find(tuple);
+    const auto it = tuples.find(key);
     if(it == tuples.end()) {
         return EMPTY_RESULT;
     }

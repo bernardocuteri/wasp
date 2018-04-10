@@ -20,6 +20,7 @@
 #define ATOM_H_ASPC
 #include <string>
 #include <vector>
+#include "../datastructures/Tuple.h"
 using namespace std;
 
 
@@ -48,6 +49,7 @@ namespace aspc {
         unsigned getAriety() const;
         bool isVariableTermAt(unsigned) const;
         vector<unsigned> getIntTuple() const;
+        Tuple getTuple(unsigned id) const;
         void print() const;
         string toString() const;
         

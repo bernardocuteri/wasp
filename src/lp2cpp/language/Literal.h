@@ -27,6 +27,7 @@ namespace aspc {
     class Literal : public aspc::Formula {
     public:
         Literal();
+        Literal(const string & predicateName);
         Literal(bool negated, const aspc::Atom & atom);
         Literal(const Literal &);
         virtual ~Literal();
@@ -39,6 +40,7 @@ namespace aspc {
         unsigned getAriety() const;
         const aspc::Atom & getAtom() const;
         const vector<string>& getTerms() const;
+        void addTerm(const string &);
         
         virtual bool isBoundedRelation(const set<string> &) const override;
         virtual bool isBoundedLiteral(const set<string> &) const override;
