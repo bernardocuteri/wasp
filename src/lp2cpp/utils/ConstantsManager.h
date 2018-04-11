@@ -22,6 +22,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <unordered_set>
 using namespace std;
 
 class ConstantsManager {
@@ -33,10 +34,13 @@ public:
     ConstantsManager();
     unsigned mapConstant(const std::string & constant);
     string unmapConstant(unsigned mapped) const;
+    const string & getPredicateName(const string & predicateName);
+
 private:
     unordered_map<string, int> constantToIntMap;
     vector<string> inverseMap;
     int constantsCounter;
+    unordered_set<string> predicateNames;
 };
 
 #endif	/* CONSTANTSMANAGER_H */

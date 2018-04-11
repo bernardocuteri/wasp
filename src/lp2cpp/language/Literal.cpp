@@ -20,8 +20,7 @@
 #include <iostream>
 #include <set>
 
-aspc::Literal::Literal() {
-}
+
 
 aspc::Literal::Literal(bool negated, const aspc::Atom & atom) : atom(atom), negated(negated) {
 }

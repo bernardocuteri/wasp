@@ -21,15 +21,14 @@
 #include <climits>
 #include <iostream>
 
-const unsigned halfMaxInt = UINT_MAX/2;
+const unsigned halfMaxInt = UINT_MAX / 2;
 
 ConstantsManager::ConstantsManager() : constantsCounter(halfMaxInt) {
 
 }
 
 unsigned ConstantsManager::mapConstant(const std::string & key) {
-    //TODO is it feasible?
-    if(isUnsignedInteger(key)) {        
+    if (isUnsignedInteger(key)) {
         return stoi(key);
     }
     if (!constantToIntMap.count(key)) {
@@ -42,10 +41,18 @@ unsigned ConstantsManager::mapConstant(const std::string & key) {
     return constantToIntMap[key];
 }
 
-string ConstantsManager::unmapConstant(unsigned mapped) const{
-    if(mapped>=halfMaxInt) {
-        return inverseMap[mapped-halfMaxInt];
+string ConstantsManager::unmapConstant(unsigned mapped) const {
+    if (mapped >= halfMaxInt) {
+        return inverseMap[mapped - halfMaxInt];
     }
     return to_string(mapped);
 }
 
+const string& ConstantsManager::getPredicateName(const string& predicateName) {
+
+    const auto & find = predicateNames.find(predicateName);
+    if (find != predicateNames.end()) {
+        return *find;
+    }
+    return *(predicateNames.insert(predicateName).first);
+}

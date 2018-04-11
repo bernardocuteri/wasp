@@ -26,7 +26,6 @@ namespace aspc {
 
     class Literal : public aspc::Formula {
     public:
-        Literal();
         Literal(const string & predicateName);
         Literal(bool negated, const aspc::Atom & atom);
         Literal(const Literal &);

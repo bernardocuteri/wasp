@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 #include "../datastructures/Tuple.h"
+#include "../utils/ConstantsManager.h"
 using namespace std;
 
 
@@ -33,9 +34,8 @@ namespace aspc {
 
 
     public:
-        Atom();
 
-        Atom(const string & predicateName) : predicateName(predicateName) {
+        Atom(const string & predicateName) : predicateName(ConstantsManager::getInstance().getPredicateName(predicateName)) {
         }
 
         Atom(const string & predicateName, const vector<string> & terms);
@@ -59,7 +59,7 @@ namespace aspc {
 
         
     private:
-        string predicateName;
+        const string & predicateName;
         vector<string> terms;
     };
 

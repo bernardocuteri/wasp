@@ -454,11 +454,15 @@ void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
                         }
                     } else {
                         unsigned k;
-                        for (k = 0; k < joinOrder.size(); k++) {
-                            if (joinOrder[k] == r.getBodyToHeadVariablesMap()[th].first)
-                                break;
+                        if (r.getBodyToHeadVariablesMap().count(th)) {
+                            for (k = 0; k < joinOrder.size(); k++) {
+                                if (joinOrder[k] == r.getBodyToHeadVariablesMap()[th].first)
+                                    break;
+                            }
+                            *out << "(*tuple" << k << ")[" << r.getBodyToHeadVariablesMap()[th].second << "]";
+                        } else {
+                            *out << r.getHead().front().getTermAt(th);
                         }
-                        *out << "(*tuple" << k << ")[" << r.getBodyToHeadVariablesMap()[th].second << "]";
                     }
                     if (th < r.getHead().front().getTermsSize() - 1) {
                         *out << ",";
@@ -500,6 +504,7 @@ void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
                 *out << ind++ << "for(const Tuple * reason: reasons) {\n";
                 *out << ind << "failedConstraints.back().push_back(tupleToLiteral(reason));\n";
                 *out << --ind << "}\n";
+                //*out << ind << "cout<<\"failed constraint\"<<endl;\n";
 
                 //                for (unsigned i = 0; i < body.size(); i++) {
                 //                    if (body[joinOrder[i]]->isLiteral()) {
