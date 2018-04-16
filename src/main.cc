@@ -33,6 +33,7 @@
 #include "lp2cpp/LazyConstraint.h"
 #include "lp2cpp/LazyConstraintImpl.h"
 #include "lp2cpp/utils/GraphWithTarjanAlgorithm.h"
+#include "lp2cpp/datastructures/Tuple.h"
 using namespace std;
 
 int EXIT_CODE = 0;
@@ -51,8 +52,8 @@ void my_handler(int) {
 
 int main(int argc, char** argv) {
 
-//    srand(unsigned(time(NULL)));
-    if(false) {
+    //    srand(unsigned(time(NULL)));
+    if (true) {
         string executablePathAndName = argv[0];
         string executablePath = executablePathAndName;
         for (int i = executablePath.size() - 1; i >= 0; i--) {
@@ -61,11 +62,10 @@ int main(int argc, char** argv) {
                 break;
             }
         }
-
         std::ofstream outfile(executablePath + "/src/lp2cpp/Executor.cpp");
         CompilationManager manager;
         manager.setOutStream(&outfile);
-        manager.lp2cpp(argv[1]);//"/encodings/constants");
+        manager.lp2cpp(argv[1]); //"/encodings/constants");
         outfile.close();
         ExecutionManager execManager;
         execManager.compileDynamicLibrary(executablePath);
@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
         execManager.launchExecutorOnFile(argv[2]);
         return 0;
     }
-    
+
 
 
     wasp::Options::parse(argc, argv);
@@ -85,7 +85,18 @@ int main(int argc, char** argv) {
     signal(SIGTERM, my_handler);
     signal(SIGXCPU, my_handler);
 
-    waspFacade.readInput(cin);
+    //TEST READING FROM FILE
+    bool readFromFile = false;
+    std::filebuf fb;
+    if (readFromFile) {
+        if (fb.open("test.in", std::ios::in)) {
+            std::istream in(&fb);
+            waspFacade.readInput(in);
+        }
+    } else {
+        waspFacade.readInput(cin);
+    }
+
     if (wasp::Options::predMinimizationAlgorithm != NO_PREDMINIMIZATION) {
         PredicateMinimization p(waspFacade);
         p.solve();
@@ -101,5 +112,9 @@ int main(int argc, char** argv) {
     waspFacade.onFinish();
     delete waspFacadePointer;
     Statistics::clean();
+
+    if (readFromFile) {
+        fb.close();
+    }
     return EXIT_CODE;
 }

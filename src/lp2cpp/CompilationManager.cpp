@@ -57,6 +57,8 @@ void CompilationManager::lp2cpp(const string &filename) {
 }
 
 void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & program, AspCore2ProgramBuilder* builder) {
+    
+    bool programHasConstraint = program.hasConstraint();
 
     *out << ind << "#include \"Executor.h\"\n\n";
     *out << ind << "#include \"utils/ConstantsManager.h\"\n\n";
@@ -182,7 +184,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind << "unordered_map <string, vector <AuxiliaryMap*> > predicateToAuxiliaryMaps;\n";
     unsigned sccsSize = sccs.size();
-    if (program.hasConstraint()) {
+    if (programHasConstraint) {
         sccsSize++;
     }
     vector< unordered_map<string, vector<unsigned>>> starterToExitRulesByComponent(sccsSize);
@@ -238,7 +240,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     //*out << ind << "cout<<i<<\"\\n\";\n";
     *out << ind << "map<string,PredicateWSet*>::iterator it = predicateWSetMap.find(program[i]->getPredicateName());\n";
     *out << ind++ << "if(it==predicateWSetMap.end()) {\n";
-    if (!program.hasConstraint()) {
+    if (!programHasConstraint) {
         *out << ind << "program[i]->print();\n";
         *out << ind << "cout<<\".\\n\";\n";
     }
@@ -312,7 +314,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << --ind << "}\n";
 
     }
-    if (!program.hasConstraint()) {
+    if (!programHasConstraint) {
         for (const pair<string, unsigned>& predicate : predicates) {
             *out << ind << "printTuples(\"" << predicate.first << "\",tuples_" << predicate.first << ");\n";
 
