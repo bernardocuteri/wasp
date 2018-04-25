@@ -53,7 +53,10 @@ void my_handler(int) {
 int main(int argc, char** argv) {
 
     //    srand(unsigned(time(NULL)));
-    if (true) {
+    
+    // put true to test lp2cpp 
+    // usage ./exec encoding instance
+    if (false) {
         string executablePathAndName = argv[0];
         string executablePath = executablePathAndName;
         for (int i = executablePath.size() - 1; i >= 0; i--) {
@@ -85,7 +88,7 @@ int main(int argc, char** argv) {
     signal(SIGTERM, my_handler);
     signal(SIGXCPU, my_handler);
 
-    //TEST READING FROM FILE
+    //test reading from hardcoded file
     bool readFromFile = false;
     std::filebuf fb;
     if (readFromFile) {

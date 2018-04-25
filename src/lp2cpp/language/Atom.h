@@ -20,6 +20,7 @@
 #define ATOM_H_ASPC
 #include <string>
 #include <vector>
+#include <iostream>
 #include "../datastructures/Tuple.h"
 #include "../utils/ConstantsManager.h"
 using namespace std;
@@ -54,7 +55,10 @@ namespace aspc {
         string toString() const;
         
         bool operator==(const Atom& right) const {
-            return predicateName == right.predicateName && terms == right.terms;
+                
+            return predicateName == (right.predicateName) && terms == right.terms;
+            //TODO shared singleton for compiler and compiled
+            //return &predicateName == &(right.predicateName) && terms == right.terms;
         }
 
         

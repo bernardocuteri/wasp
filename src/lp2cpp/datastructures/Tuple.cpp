@@ -15,11 +15,11 @@
 
 
 
-Tuple::Tuple(size_type id, const string& predicateName) : id(id), predicateName(predicateName) {
+Tuple::Tuple(size_type id, const string& predicateName, bool negated) : id(id), predicateName(predicateName), negated(negated) {
 }
 
 
-Tuple::Tuple(const Tuple& orig):vector<unsigned>(orig), id(orig.id), predicateName(orig.predicateName) {
+Tuple::Tuple(const Tuple& orig):vector<unsigned>(orig), id(orig.id), predicateName(orig.predicateName), negated(orig.negated) {
 }
 
 Tuple::~Tuple() {

@@ -121,7 +121,6 @@ void LazyConstraintImpl::onCheckFail(std::vector<int> & constraints) {
     //executionManager.shuffleFailedConstraints();
     for (unsigned i = 0; i < executionManager.getFailedConstraints().size(); i++) {
         //cout << "reasons: \n";
-        //        cerr<<"transitivity violation! ";
         for (const aspc::Literal & literal : executionManager.getFailedConstraints()[i]) {
             //TODO avoid double access
             const auto& atomIt = atomsMap.find(literal.getAtom());
@@ -132,12 +131,14 @@ void LazyConstraintImpl::onCheckFail(std::vector<int> & constraints) {
             }
 
             if (atomIt != atomsMap.end()) {
-                //                literal.print();
+                literal.print();
                 if (literal.isNegated()) {
                     constraints.push_back(atomIt->second);
                 } else {
                     constraints.push_back(-atomIt->second);
                 }
+            } else {
+//                cerr<<"literal not found\n";
             }
         }
         //cerr << endl;

@@ -16,7 +16,9 @@ Executor::~Executor() {}
 
 Executor::Executor() {}
 
-typedef vector<const vector<unsigned>* > Tuples;
+typedef vector<const Tuple* > Tuples;
+typedef vector<vector<const Tuple* > >Reasons;
+typedef vector<unordered_set<Tuple, TupleHash> >NegativeReasons;
 void printTuples(const string & predicateName, const Tuples & tuples) {
     for (const vector<unsigned> * tuple : tuples) {
         cout <<predicateName<< "(";
@@ -40,142 +42,108 @@ void Executor::executeFromFile(const char* filename) {
     delete builder;
 }
 
-using PredicateWSet = std::unordered_set<std::vector<unsigned>, VectorHash>;
+using PredicateWSet = std::unordered_set<Tuple, TupleHash>;
+
+void addReasons(const Tuple * tuple, vector<const Tuple*> & outputReasons, const map<string, Reasons* > & predicateReasonsMap, const map<string, NegativeReasons* > & predicateNegativeReasonsMap) {
+    const std::vector<const Tuple*> & tupleReasons = predicateReasonsMap.at(tuple->getPredicateName())->at(tuple->getId());
+     if (tupleReasons.empty()) {
+        outputReasons.push_back(tuple);
+    }
+    else {
+        for (const Tuple * reason : tupleReasons) {
+            addReasons(reason, outputReasons, predicateReasonsMap, predicateNegativeReasonsMap);
+        }
+    }
+    const std::unordered_set<Tuple, TupleHash> & tupleNegativeReasons = predicateNegativeReasonsMap.at(tuple->getPredicateName())->at(tuple->getId());
+    for (const Tuple & reason : tupleNegativeReasons) {
+        outputReasons.push_back(&reason);
+    }
+}
+
+aspc::Literal tupleToLiteral(const Tuple & tuple) {
+    aspc::Literal literal(tuple.getPredicateName(), tuple.isNegated());
+    for (unsigned v : tuple) {
+        literal.addTerm(ConstantsManager::getInstance().unmapConstant(v));
+    }
+    return literal;
+}
 void Executor::executeProgramOnFacts(const vector<aspc::Atom*> & program) {
+    const string cl = "cl";
+    const string set = "set";
     failedConstraints.clear();
     map<string, PredicateWSet*> predicateWSetMap;
     map<string, Tuples* > predicateTuplesMap;
-    Tuples tuples_p_0;
-    PredicateWSet wp_0;
-    predicateWSetMap["p_0"]=&wp_0;
-    predicateTuplesMap["p_0"]=&tuples_p_0;
-    Tuples tuples_p_2;
-    PredicateWSet wp_2;
-    predicateWSetMap["p_2"]=&wp_2;
-    predicateTuplesMap["p_2"]=&tuples_p_2;
-    Tuples tuples_p_4;
-    PredicateWSet wp_4;
-    predicateWSetMap["p_4"]=&wp_4;
-    predicateTuplesMap["p_4"]=&tuples_p_4;
-    Tuples tuples_p_5;
-    PredicateWSet wp_5;
-    predicateWSetMap["p_5"]=&wp_5;
-    predicateTuplesMap["p_5"]=&tuples_p_5;
+    map<string, Reasons* > predicateReasonsMap;
+    map<string, NegativeReasons* > predicateNegativeReasonsMap;
+    Tuples tuples_cl;
+    Reasons reasons_cl;
+    NegativeReasons negativeReasons_cl;
+    PredicateWSet wcl;
+    predicateWSetMap[cl]=&wcl;
+    predicateTuplesMap[cl]=&tuples_cl;
+    predicateReasonsMap[cl]=&reasons_cl;
+    predicateNegativeReasonsMap[cl]=&negativeReasons_cl;
+    Tuples tuples_set;
+    Reasons reasons_set;
+    NegativeReasons negativeReasons_set;
+    PredicateWSet wset;
+    predicateWSetMap[set]=&wset;
+    predicateTuplesMap[set]=&tuples_set;
+    predicateReasonsMap[set]=&reasons_set;
+    predicateNegativeReasonsMap[set]=&negativeReasons_set;
     unordered_map <string, vector <AuxiliaryMap*> > predicateToAuxiliaryMaps;
-    vector<unsigned> keyIndexesp_0_0_1_2_3_;
-    keyIndexesp_0_0_1_2_3_.push_back(0);
-    keyIndexesp_0_0_1_2_3_.push_back(1);
-    keyIndexesp_0_0_1_2_3_.push_back(2);
-    keyIndexesp_0_0_1_2_3_.push_back(3);
-    AuxiliaryMap pp_0_0_1_2_3_(&keyIndexesp_0_0_1_2_3_);
-    predicateToAuxiliaryMaps["p_0"].push_back(&pp_0_0_1_2_3_);
-    vector<unsigned> keyIndexesp_0_0_1_2_;
-    keyIndexesp_0_0_1_2_.push_back(0);
-    keyIndexesp_0_0_1_2_.push_back(1);
-    keyIndexesp_0_0_1_2_.push_back(2);
-    AuxiliaryMap pp_0_0_1_2_(&keyIndexesp_0_0_1_2_);
-    predicateToAuxiliaryMaps["p_0"].push_back(&pp_0_0_1_2_);
+    vector<unsigned> keyIndexesset_0_1_;
+    keyIndexesset_0_1_.push_back(0);
+    keyIndexesset_0_1_.push_back(1);
+    AuxiliaryMap pset_0_1_(&keyIndexesset_0_1_);
+    predicateToAuxiliaryMaps["set"].push_back(&pset_0_1_);
     for(unsigned i=0;i<program.size();i++) {
         map<string,PredicateWSet*>::iterator it = predicateWSetMap.find(program[i]->getPredicateName());
         if(it==predicateWSetMap.end()) {
-            program[i]->print();
-            cout<<".\n";
         }
         else {
-            vector<unsigned> tuple = program[i]->getIntTuple();
-            const auto& insertResult=it->second->insert(tuple);
+            const auto& insertResult=it->second->insert(program[i]->getTuple(it->second->size()));
             if(insertResult.second){
                 Tuples & tuples = *predicateTuplesMap[program[i]->getPredicateName()];
+                Reasons & reasons = *predicateReasonsMap[program[i]->getPredicateName()];
+                NegativeReasons & negativeReasons = *predicateNegativeReasonsMap[program[i]->getPredicateName()];
                 tuples.push_back(&(*(insertResult.first)));
+                reasons.push_back(vector<const Tuple* >());
+                negativeReasons.push_back(unordered_set<Tuple, TupleHash>());
                 for(AuxiliaryMap* auxMap:predicateToAuxiliaryMaps[it->first]){
                     auxMap -> insert2(*tuples.back());
                 }
             }
         }
     }
-    unsigned index_p_0=0;
-    unsigned index_p_2=0;
-    unsigned index_p_4=0;
-    unsigned index_p_5=0;
-    while(index_p_5!=tuples_p_5.size() || index_p_4!=tuples_p_4.size() || index_p_2!=tuples_p_2.size()){
-        while(index_p_4!=tuples_p_4.size()){
-            const vector<unsigned>& tuple0 = *tuples_p_4[index_p_4];
-            {
-                if( tuple0[0] == tuple0[1]){
-                    vector<unsigned> key0(3);
-                    key0[0]=tuple0[0];
-                    key0[1]=tuple0[0];
-                    key0[2]=tuple0[0];
-                    const vector<const vector <unsigned>* >& tuples = pp_0_0_1_2_.getValues(key0);
-                    for( unsigned i=0; i< tuples.size();i++){
-                        const vector<unsigned>& tuple1 = *tuples[i];
-                        if( tuple1[0] == tuple1[1] && tuple1[0] == tuple1[2] && tuple1[1] == tuple1[2]){
-                            vector <unsigned> head(4);
-                            head[0]=tuple0[1];
-                            head[1]=tuple0[1];
-                            head[2]=tuple0[1];
-                            head[3]=tuple0[1];
-                            const auto & insertResult = wp_5.insert(head);
-                            if(insertResult.second){
-                                tuples_p_5.push_back(&(*insertResult.first));
-                            }
-                        }
-                    }
-                }
-            }
-            index_p_4++;
-        }
-        while(index_p_2!=tuples_p_2.size()){
-            const vector<unsigned>& tuple0 = *tuples_p_2[index_p_2];
-            {
-                vector<unsigned> key0(4);
-                key0[0]=tuple0[0];
-                key0[1]=tuple0[0];
-                key0[2]=tuple0[1];
-                key0[3]=tuple0[1];
-                const vector<const vector <unsigned>* >& tuples = pp_0_0_1_2_3_.getValues(key0);
+    unsigned index_cl=0;
+    unsigned index_set=0;
+    index_cl=0;
+    while(index_cl!=tuples_cl.size()){
+        const Tuple * tuple0 = tuples_cl[index_cl];
+        {
+            const vector<const Tuple* >& tuples = pset_0_1_.getValues({(*tuple0)[1],(*tuple0)[2]});
+            for( unsigned i=0; i< tuples.size();i++){
+                const Tuple * tuple1 = tuples[i];
+                const vector<const Tuple* >& tuples = pset_0_1_.getValues({(*tuple0)[3],(*tuple0)[4]});
                 for( unsigned i=0; i< tuples.size();i++){
-                    const vector<unsigned>& tuple1 = *tuples[i];
-                    if( tuple1[0] == tuple1[1] && tuple1[2] == tuple1[3]){
-                        vector <unsigned> head(2);
-                        head[0]=tuple0[0];
-                        head[1]=tuple0[1];
-                        const auto & insertResult = wp_4.insert(head);
-                        if(insertResult.second){
-                            tuples_p_4.push_back(&(*insertResult.first));
+                    const Tuple * tuple2 = tuples[i];
+                    const vector<const Tuple* >& tuples = pset_0_1_.getValues({(*tuple0)[5],(*tuple0)[6]});
+                    for( unsigned i=0; i< tuples.size();i++){
+                        const Tuple * tuple3 = tuples[i];
+                        failedConstraints.push_back(vector<aspc::Literal>());
+                        vector<const Tuple *> reasons;
+                        addReasons(tuple0, reasons, predicateReasonsMap, predicateNegativeReasonsMap);
+                        addReasons(tuple1, reasons, predicateReasonsMap, predicateNegativeReasonsMap);
+                        addReasons(tuple2, reasons, predicateReasonsMap, predicateNegativeReasonsMap);
+                        addReasons(tuple3, reasons, predicateReasonsMap, predicateNegativeReasonsMap);
+                        for(const Tuple * reason: reasons) {
+                            failedConstraints.back().push_back(tupleToLiteral(*reason));
                         }
                     }
                 }
             }
-            {
-                vector <unsigned> head(2);
-                head[0]=tuple0[0];
-                head[1]=tuple0[1];
-                const auto & insertResult = wp_4.insert(head);
-                if(insertResult.second){
-                    tuples_p_4.push_back(&(*insertResult.first));
-                }
-            }
-            index_p_2++;
         }
-        while(index_p_5!=tuples_p_5.size()){
-            const vector<unsigned>& tuple0 = *tuples_p_5[index_p_5];
-            {
-                if( tuple0[0] == tuple0[2] && tuple0[0] == tuple0[3] && tuple0[2] == tuple0[3]){
-                    vector <unsigned> head(2);
-                    head[0]=tuple0[1];
-                    head[1]=tuple0[3];
-                    const auto & insertResult = wp_2.insert(head);
-                    if(insertResult.second){
-                        tuples_p_2.push_back(&(*insertResult.first));
-                    }
-                }
-            }
-            index_p_5++;
-        }
+        index_cl++;
     }
-    printTuples("p_0",tuples_p_0);
-    printTuples("p_2",tuples_p_2);
-    printTuples("p_4",tuples_p_4);
-    printTuples("p_5",tuples_p_5);
 }

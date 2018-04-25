@@ -57,7 +57,7 @@ void CompilationManager::lp2cpp(const string &filename) {
 }
 
 void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & program, AspCore2ProgramBuilder* builder) {
-    
+
     bool programHasConstraint = program.hasConstraint();
 
     *out << ind << "#include \"Executor.h\"\n\n";
@@ -83,6 +83,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind << "typedef vector<const Tuple* > Tuples;\n";
     *out << ind << "typedef vector<vector<const Tuple* > >Reasons;\n";
+    *out << ind << "typedef vector<unordered_set<Tuple, TupleHash> >NegativeReasons;\n";
 
     //print tuples 
     *out << ind++ << "void printTuples(const string & predicateName, const Tuples & tuples) {\n";
@@ -110,21 +111,27 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << --ind << "}\n\n";
     *out << ind << "using PredicateWSet = std::unordered_set<Tuple, TupleHash>;\n\n";
 
-    *out << ind++ << "void addReasons(const Tuple * tuple, vector<const Tuple*> & reasons, const map<string, Reasons* > & predicateReasonsMap) {\n";
+    *out << ind++ << "void addReasons(const Tuple * tuple, vector<const Tuple*> & outputReasons, const map<string, Reasons* > & predicateReasonsMap, const map<string, NegativeReasons* > & predicateNegativeReasonsMap) {\n";
     *out << ind << "const std::vector<const Tuple*> & tupleReasons = predicateReasonsMap.at(tuple->getPredicateName())->at(tuple->getId());\n";
     *out << ind++ << " if (tupleReasons.empty()) {\n";
-    *out << ind << "reasons.push_back(tuple);\n";
+    *out << ind << "outputReasons.push_back(tuple);\n";
     *out << --ind << "}\n";
     *out << ind++ << "else {\n";
     *out << ind++ << "for (const Tuple * reason : tupleReasons) {\n";
-    *out << ind << "addReasons(reason, reasons, predicateReasonsMap);\n";
+    *out << ind << "addReasons(reason, outputReasons, predicateReasonsMap, predicateNegativeReasonsMap);\n";
     *out << --ind << "}\n";
+
+
+    *out << --ind << "}\n";
+    *out << ind << "const std::unordered_set<Tuple, TupleHash> & tupleNegativeReasons = predicateNegativeReasonsMap.at(tuple->getPredicateName())->at(tuple->getId());\n";
+    *out << ind++ << "for (const Tuple & reason : tupleNegativeReasons) {\n";
+    *out << ind << "outputReasons.push_back(&reason);\n";
     *out << --ind << "}\n";
     *out << --ind << "}\n\n";
 
-    *out << ind++ << "aspc::Literal tupleToLiteral(const Tuple * tuple) {\n";
-    *out << ind << "aspc::Literal literal(tuple->getPredicateName());\n";
-    *out << ind++ << "for (unsigned v : *tuple) {\n";
+    *out << ind++ << "aspc::Literal tupleToLiteral(const Tuple & tuple) {\n";
+    *out << ind << "aspc::Literal literal(tuple.getPredicateName(), tuple.isNegated());\n";
+    *out << ind++ << "for (unsigned v : tuple) {\n";
     *out << ind << "literal.addTerm(ConstantsManager::getInstance().unmapConstant(v));\n";
     *out << --ind << "}\n";
     *out << ind << "return literal;\n";
@@ -145,14 +152,17 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "map<string, PredicateWSet*> predicateWSetMap;\n";
     *out << ind << "map<string, Tuples* > predicateTuplesMap;\n";
     *out << ind << "map<string, Reasons* > predicateReasonsMap;\n";
+    *out << ind << "map<string, NegativeReasons* > predicateNegativeReasonsMap;\n";
 
     for (const pair<string, unsigned>& predicate : predicates) {
         *out << ind << "Tuples tuples_" << predicate.first << ";\n";
         *out << ind << "Reasons reasons_" << predicate.first << ";\n";
+        *out << ind << "NegativeReasons negativeReasons_" << predicate.first << ";\n";
         *out << ind << "PredicateWSet w" << predicate.first << ";\n";
         *out << ind << "predicateWSetMap[" << predicate.first << "]=&w" << predicate.first << ";\n";
         *out << ind << "predicateTuplesMap[" << predicate.first << "]=&tuples_" << predicate.first << ";\n";
         *out << ind << "predicateReasonsMap[" << predicate.first << "]=&reasons_" << predicate.first << ";\n";
+        *out << ind << "predicateNegativeReasonsMap[" << predicate.first << "]=&negativeReasons_" << predicate.first << ";\n";
     }
 
 
@@ -252,8 +262,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     //    *out << ind << "it->second->insert(tuple);\n";
     *out << ind << "Tuples & tuples = *predicateTuplesMap[program[i]->getPredicateName()];\n";
     *out << ind << "Reasons & reasons = *predicateReasonsMap[program[i]->getPredicateName()];\n";
+    *out << ind << "NegativeReasons & negativeReasons = *predicateNegativeReasonsMap[program[i]->getPredicateName()];\n";
     *out << ind << "tuples.push_back(&(*(insertResult.first)));\n";
     *out << ind << "reasons.push_back(vector<const Tuple* >());\n";
+    *out << ind << "negativeReasons.push_back(unordered_set<Tuple, TupleHash>());\n";
     *out << ind++ << "for(AuxiliaryMap* auxMap:predicateToAuxiliaryMaps[it->first]){\n";
     *out << ind << "auxMap -> insert2(*tuples.back());\n";
     //    *out << ind << "cout<<it->first<<endl;\n";
@@ -384,6 +396,7 @@ void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
 
     unsigned closingParenthesis = 0;
     set<string> boundVariables;
+    //join loops, for each body formula
     for (unsigned i = 0; i < body.size(); i++) {
 
         if (i != 0) {
@@ -440,6 +453,7 @@ void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
 
         if (handleEqualCardsAndConstants(r, i, joinOrder))
             closingParenthesis++;
+        //rule fires
         if (i == body.size() - 1) {
 
 
@@ -480,6 +494,27 @@ void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
                 for (unsigned i = 0; i < body.size(); i++) {
                     if (body[joinOrder[i]]->isPositiveLiteral()) {
                         *out << ind << "reasons_" << r.getHead().front().getPredicateName() << ".back().push_back(tuple" << i << ");\n";
+                    } else if (body[joinOrder[i]]->isLiteral()) {
+
+
+                        aspc::Literal* l = (aspc::Literal*)body[joinOrder[i]];
+                        *out << ind << "negativeReasons_" << r.getHead().front().getPredicateName() << ".back().insert({";
+                        //DUPLICATED CODE
+                        auto it = joinKeys[r.getRuleId()][start][i - 1].begin();
+                        for (unsigned j = 0; j < l->getAriety(); j++) {
+                            if (!l->isVariableTermAt(j)) {
+                                *out << l->getTermAt(j);
+                            } else {
+                                *out << "(*tuple" << it->first << ")[" << it->second << "]";
+                                it++;
+                            }
+                            if (j < l->getAriety() - 1) {
+                                *out << ",";
+                            }
+                        }
+                        *out << "});\n";
+
+
                     }
                 }
 
@@ -497,37 +532,31 @@ void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
 
                 for (unsigned i = 0; i < body.size(); i++) {
                     if (body[joinOrder[i]]->isLiteral()) {
-                        if (body[joinOrder[i]]->isPositiveLiteral()) {
-                            aspc::Literal* l = (aspc::Literal*) body[joinOrder[i]];
-                            *out << ind << "addReasons(tuple" << i << ", reasons, predicateReasonsMap);\n";
+                        aspc::Literal* l = (aspc::Literal*) body[joinOrder[i]];
+                        if (l->isPositiveLiteral()) {
+                            *out << ind << "addReasons(tuple" << i << ", reasons, predicateReasonsMap, predicateNegativeReasonsMap);\n";
+                        } else {
+                            *out << ind << "failedConstraints.back().push_back(tupleToLiteral(Tuple({";
+                            //DUPLICATED CODE
+                            auto it = joinKeys[r.getRuleId()][start][i - 1].begin();
+                            for (unsigned j = 0; j < l->getAriety(); j++) {
+                                if (!l->isVariableTermAt(j)) {
+                                    *out << l->getTermAt(j);
+                                } else {
+                                    *out << "(*tuple" << it->first << ")[" << it->second << "]";
+                                    it++;
+                                }
+                                if (j < l->getAriety() - 1) {
+                                    *out << ",";
+                                }
+                            }
+                            *out << "}, 0, ConstantsManager::getInstance().getPredicateName(\"" << l->getPredicateName() << "\"), true)));\n";
                         }
                     }
                 }
                 *out << ind++ << "for(const Tuple * reason: reasons) {\n";
-                *out << ind << "failedConstraints.back().push_back(tupleToLiteral(reason));\n";
+                *out << ind << "failedConstraints.back().push_back(tupleToLiteral(*reason));\n";
                 *out << --ind << "}\n";
-                //*out << ind << "cout<<\"failed constraint\"<<endl;\n";
-
-                //                for (unsigned i = 0; i < body.size(); i++) {
-                //                    if (body[joinOrder[i]]->isLiteral()) {
-                //                        aspc::Literal* l = (aspc::Literal*) body[joinOrder[i]];
-                //                        *out << ind << "vector<string> terms" << i << ";\n";
-                //                        //                        *out << ind << "cout<<\"" + l->getPredicateName() + "\"<<\" \";\n";
-                //                        if (l->isNegated()) {
-                //                            *out << ind++ << "for(unsigned v:key" << i - 1 << ") {\n";
-                //                        } else {
-                //                            *out << ind++ << "for(unsigned v:*tuple" << i << ") {\n";
-                //                        }
-                //                        *out << ind << "terms" << i << ".push_back(ConstantsManager::getInstance().unmapConstant(v));\n";
-                //                        //                        *out << ind << "cout<<terms" << i << ".back()<<\" \";\n";
-                //                        *out << --ind << "}\n";
-                //                        string p = l->isNegated() ? "true" : "false";
-                //                        *out << ind << "failedConstraints.back().push_back(aspc::Literal(" + p + ", aspc::Atom(\"" + l->getPredicateName() + "\", terms" << i << ")));\n";
-                //                    }
-                //
-                //
-                //                }
-                //                *out << ind << "cout<<\"failed constraint\"<<endl;\n";
 
             }
 

@@ -17,22 +17,20 @@
 #include <string>
 using namespace std;
 
-
-
 class Tuple : public vector<unsigned> {
 public:
-    Tuple(size_type id, const string& predicateName);
+    Tuple(size_type id, const string& predicateName, bool negated=false);
 
     Tuple(const Tuple& orig);
     virtual ~Tuple();
 
-    Tuple(const std::initializer_list<unsigned> & l, size_type id, const string & predicateName) : vector<unsigned>(l), id(id), predicateName(predicateName) {
+    Tuple(const std::initializer_list<unsigned> & l, size_type id, const string & predicateName, bool negated = false) :
+        vector<unsigned>(l), id(id), predicateName(predicateName), negated(negated) {
     }
 
-    
-    Tuple(const std::initializer_list<unsigned> & l) : vector<unsigned>(l), predicateName("") {
+    Tuple(const std::initializer_list<unsigned> & l) : vector<unsigned>(l), predicateName(""), negated(false) {
     }
-    
+
     size_type getId() const {
         return id;
     }
@@ -40,10 +38,16 @@ public:
     const string& getPredicateName() const {
         return predicateName;
     }
+
+    bool isNegated() const {
+        return negated;
+    }
+
     
 private:
     size_type id;
     const string & predicateName;
+    bool negated;
 
 };
 
