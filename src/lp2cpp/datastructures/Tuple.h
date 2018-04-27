@@ -28,9 +28,6 @@ public:
         vector<unsigned>(l), id(id), predicateName(predicateName), negated(negated) {
     }
 
-    Tuple(const std::initializer_list<unsigned> & l) : vector<unsigned>(l), predicateName(""), negated(false) {
-    }
-
     size_type getId() const {
         return id;
     }

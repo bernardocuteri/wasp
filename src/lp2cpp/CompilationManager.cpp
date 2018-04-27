@@ -604,6 +604,7 @@ bool CompilationManager::handleExpression(const aspc::Rule& r, const aspc::Arith
         return false;
     }
     assert(false);
+    return false;
 
 }
 
