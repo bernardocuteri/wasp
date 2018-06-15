@@ -15,7 +15,7 @@
 
 
 
-Tuple::Tuple(size_type id, const string& predicateName, bool negated) : id(id), predicateName(predicateName), negated(negated) {
+Tuple::Tuple(size_type id, const string* predicateName, bool negated) : id(id), predicateName(predicateName), negated(negated) {
 }
 
 

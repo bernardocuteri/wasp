@@ -52,6 +52,7 @@ private:
     
     std::set<std::string> declaredMaps;
     
+    //rule id, starter, index in join, 
     vector< unordered_map < unsigned, vector< vector< pair < unsigned , unsigned > > > > >  joinKeys; 
     
     vector< vector < vector < string > > > auxiliaryMapsNameByRuleAndStartIndex;

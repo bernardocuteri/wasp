@@ -112,7 +112,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "using PredicateWSet = std::unordered_set<Tuple, TupleHash>;\n\n";
 
     *out << ind++ << "void addReasons(const Tuple * tuple, vector<const Tuple*> & outputReasons, const map<string, Reasons* > & predicateReasonsMap, const map<string, NegativeReasons* > & predicateNegativeReasonsMap) {\n";
-    *out << ind << "const std::vector<const Tuple*> & tupleReasons = predicateReasonsMap.at(tuple->getPredicateName())->at(tuple->getId());\n";
+    *out << ind << "const std::vector<const Tuple*> & tupleReasons = predicateReasonsMap.at(*tuple->getPredicateName())->at(tuple->getId());\n";
     *out << ind++ << " if (tupleReasons.empty()) {\n";
     *out << ind << "outputReasons.push_back(tuple);\n";
     *out << --ind << "}\n";
@@ -123,14 +123,14 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
 
     *out << --ind << "}\n";
-    *out << ind << "const std::unordered_set<Tuple, TupleHash> & tupleNegativeReasons = predicateNegativeReasonsMap.at(tuple->getPredicateName())->at(tuple->getId());\n";
+    *out << ind << "const std::unordered_set<Tuple, TupleHash> & tupleNegativeReasons = predicateNegativeReasonsMap.at(*tuple->getPredicateName())->at(tuple->getId());\n";
     *out << ind++ << "for (const Tuple & reason : tupleNegativeReasons) {\n";
     *out << ind << "outputReasons.push_back(&reason);\n";
     *out << --ind << "}\n";
     *out << --ind << "}\n\n";
 
     *out << ind++ << "aspc::Literal tupleToLiteral(const Tuple & tuple) {\n";
-    *out << ind << "aspc::Literal literal(tuple.getPredicateName(), tuple.isNegated());\n";
+    *out << ind << "aspc::Literal literal(*tuple.getPredicateName(), tuple.isNegated());\n";
     *out << ind++ << "for (unsigned v : tuple) {\n";
     *out << ind << "literal.addTerm(ConstantsManager::getInstance().unmapConstant(v));\n";
     *out << --ind << "}\n";
@@ -486,7 +486,7 @@ void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
                 }
 
 
-                *out << "},w" << r.getHead().front().getPredicateName() << ".size(), " << r.getHead().front().getPredicateName() << "});\n";
+                *out << "},w" << r.getHead().front().getPredicateName() << ".size(), &" << r.getHead().front().getPredicateName() << "});\n";
                 *out << ind++ << "if(insertResult.second){\n";
                 *out << ind << "tuples_" << r.getHead().front().getPredicateName() << ".push_back(&(*insertResult.first));\n";
                 *out << ind << "reasons_" << r.getHead().front().getPredicateName() << ".push_back(vector<const Tuple*>());\n";

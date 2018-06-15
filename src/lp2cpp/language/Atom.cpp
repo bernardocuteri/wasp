@@ -66,7 +66,7 @@ vector<unsigned> aspc::Atom::getIntTuple() const {
 }
 
 Tuple aspc::Atom::getTuple(unsigned id) const {
-    Tuple tuple(id, predicateName);
+    Tuple tuple(id, &predicateName);
     tuple.resize(terms.size());
     for (unsigned i = 0; i < terms.size(); i++) {
         tuple[i] = ConstantsManager::getInstance().mapConstant(terms[i]);

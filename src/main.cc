@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
     
     // put true to test lp2cpp 
     // usage ./exec encoding instance
-    if (false) {
+    if (true) {
         string executablePathAndName = argv[0];
         string executablePath = executablePathAndName;
         for (int i = executablePath.size() - 1; i >= 0; i--) {
@@ -77,8 +77,8 @@ int main(int argc, char** argv) {
         return 0;
     }
 
-
-
+    
+    
     wasp::Options::parse(argc, argv);
     waspFacadePointer = new WaspFacade();
     WaspFacade& waspFacade = *waspFacadePointer;
