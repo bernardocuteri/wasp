@@ -33,7 +33,7 @@ class Executor
 public:
   Executor();
   virtual ~Executor();
-  virtual void executeProgramOnFacts(const vector<aspc::Atom*> & p);
+  virtual void executeProgramOnFacts(const vector<aspc::Literal*> & p);
   virtual void executeFromFile(const char* factsFile);
   virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {
       return failedConstraints;

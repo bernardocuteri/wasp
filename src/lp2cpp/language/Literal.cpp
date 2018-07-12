@@ -130,5 +130,15 @@ unsigned aspc::Literal::firstOccurrenceOfVariableInLiteral(const string & v) con
     return -1;
 }
 
+bool aspc::Literal::operator==(const aspc::Literal& right) const {
+    return this->atom == right.atom;
 
+}
 
+Tuple aspc::Literal::getTuple(unsigned id) const {
+    return this->atom.getTuple(id);
+}
+
+void aspc::Literal::setNegated(bool negated) {
+    this->negated = negated;
+}

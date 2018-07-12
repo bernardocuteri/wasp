@@ -70,13 +70,15 @@ void ExecutionManager::parseFactsAndExecute(const char *filename) {
 }
 
 #ifndef LP2CPP_DEBUG
-void ExecutionManager::compileDynamicLibrary(const string & executablePath) {
+void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool fileHasChanged) {
 
-    string command = "cd " + executablePath + " && make -f DynamicLibraryMake -s";
-    //cout<<command<<endl;
-    int commandReturn = system(command.c_str());
-    if (commandReturn) {
-        throw std::string("Failed to execute command " + command);
+    if(fileHasChanged) {
+        string command = "cd " + executablePath + " && make -f DynamicLibraryMake -s";
+        //cout<<command<<endl;
+        int commandReturn = system(command.c_str());
+        if (commandReturn) {
+            throw std::string("Failed to execute command " + command);
+        }
     }
     string executorFile = executablePath + "/Executor.so";
     void* handle = dlopen(executorFile.c_str(), RTLD_LAZY);
@@ -100,7 +102,7 @@ void ExecutionManager::compileDynamicLibrary(const string &) {
 }
 #endif
 
-void ExecutionManager::executeProgramOnFacts(const std::vector<aspc::Atom*> & program) {
+void ExecutionManager::executeProgramOnFacts(const std::vector<aspc::Literal*> & program) {
     executor->executeProgramOnFacts(program);
 
 }

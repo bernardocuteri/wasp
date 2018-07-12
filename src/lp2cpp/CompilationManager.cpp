@@ -138,7 +138,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << --ind << "}\n";
 
 
-    *out << ind++ << "void Executor::executeProgramOnFacts(const vector<aspc::Atom*> & program) {\n";
+    *out << ind++ << "void Executor::executeProgramOnFacts(const vector<aspc::Literal*> & facts) {\n";
     const set< pair<string, unsigned> >& predicates = program.getPredicates();
     //data structure init
 
@@ -151,15 +151,18 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind << "map<string, PredicateWSet*> predicateWSetMap;\n";
     *out << ind << "map<string, Tuples* > predicateTuplesMap;\n";
+    *out << ind << "map<string, Tuples* > predicateNegativeTuplesMap;\n";    
     *out << ind << "map<string, Reasons* > predicateReasonsMap;\n";
     *out << ind << "map<string, NegativeReasons* > predicateNegativeReasonsMap;\n";
 
     for (const pair<string, unsigned>& predicate : predicates) {
         *out << ind << "Tuples tuples_" << predicate.first << ";\n";
+        *out << ind << "Tuples negativeTuples_" << predicate.first << ";\n";
         *out << ind << "Reasons reasons_" << predicate.first << ";\n";
         *out << ind << "NegativeReasons negativeReasons_" << predicate.first << ";\n";
         *out << ind << "PredicateWSet w" << predicate.first << ";\n";
         *out << ind << "predicateWSetMap[" << predicate.first << "]=&w" << predicate.first << ";\n";
+        *out << ind << "predicateNegativeTuplesMap[" << predicate.first << "]=&negativeTuples_" << predicate.first << ";\n";
         *out << ind << "predicateTuplesMap[" << predicate.first << "]=&tuples_" << predicate.first << ";\n";
         *out << ind << "predicateReasonsMap[" << predicate.first << "]=&reasons_" << predicate.first << ";\n";
         *out << ind << "predicateNegativeReasonsMap[" << predicate.first << "]=&negativeReasons_" << predicate.first << ";\n";
@@ -235,7 +238,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             exitRules[r.getRuleId()] = true;
         }
         for (unsigned starter : r.getStarters()) {
-            handleDataStructuresDeclaration(r, starter);
+            declareDataStructures(r, starter);
         }
 
     }
@@ -246,29 +249,31 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     //feed facts
     //*out << ind << "cout<<\"facts\\n\";\n";
-    *out << ind++ << "for(unsigned i=0;i<program.size();i++) {\n";
+    *out << ind++ << "for(unsigned i=0;i<facts.size();i++) {\n";
+    *out << ind++ << "if(!facts[i]->isNegated()) {\n";
     //*out << ind << "cout<<i<<\"\\n\";\n";
-    *out << ind << "map<string,PredicateWSet*>::iterator it = predicateWSetMap.find(program[i]->getPredicateName());\n";
+    *out << ind << "map<string,PredicateWSet*>::iterator it = predicateWSetMap.find(facts[i]->getPredicateName());\n";
     *out << ind++ << "if(it==predicateWSetMap.end()) {\n";
     if (!programHasConstraint) {
-        *out << ind << "program[i]->print();\n";
+        *out << ind << "facts[i]->print();\n";
         *out << ind << "cout<<\".\\n\";\n";
     }
     *out << --ind << "}\n";
     *out << ind++ << "else {\n";
-    *out << ind << "const auto& insertResult=it->second->insert(program[i]->getTuple(it->second->size()));\n";
+    *out << ind << "const auto& insertResult=it->second->insert(facts[i]->getTuple(it->second->size()));\n";
 
     *out << ind++ << "if(insertResult.second){\n";
     //    *out << ind << "it->second->insert(tuple);\n";
-    *out << ind << "Tuples & tuples = *predicateTuplesMap[program[i]->getPredicateName()];\n";
-    *out << ind << "Reasons & reasons = *predicateReasonsMap[program[i]->getPredicateName()];\n";
-    *out << ind << "NegativeReasons & negativeReasons = *predicateNegativeReasonsMap[program[i]->getPredicateName()];\n";
+    *out << ind << "Tuples & tuples = *predicateTuplesMap[facts[i]->getPredicateName()];\n";
+    *out << ind << "Reasons & reasons = *predicateReasonsMap[facts[i]->getPredicateName()];\n";
+    *out << ind << "NegativeReasons & negativeReasons = *predicateNegativeReasonsMap[facts[i]->getPredicateName()];\n";
     *out << ind << "tuples.push_back(&(*(insertResult.first)));\n";
     *out << ind << "reasons.push_back(vector<const Tuple* >());\n";
     *out << ind << "negativeReasons.push_back(unordered_set<Tuple, TupleHash>());\n";
     *out << ind++ << "for(AuxiliaryMap* auxMap:predicateToAuxiliaryMaps[it->first]){\n";
     *out << ind << "auxMap -> insert2(*tuples.back());\n";
     //    *out << ind << "cout<<it->first<<endl;\n";
+    *out << --ind << "}\n";
     *out << --ind << "}\n";
     *out << --ind << "}\n";
     *out << --ind << "}\n";
@@ -288,7 +293,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             for (unsigned ruleId : rulesByPredicate.second) {
                 const aspc::Rule& r = program.getRule(ruleId);
                 *out << ind++ << "{\n";
-                handleRuleLoops(r, r.getStarters()[0]);
+                compileRule(r, r.getStarters()[0]);
                 *out << --ind << "}\n";
 
             }
@@ -315,7 +320,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             for (const auto& ruleAndStarterIndex : rulesByStarter.second) {
                 const aspc::Rule& r = program.getRule(ruleAndStarterIndex.first);
                 *out << ind++ << "{\n";
-                handleRuleLoops(r, ruleAndStarterIndex.second);
+                compileRule(r, ruleAndStarterIndex.second);
                 *out << --ind << "}\n";
 
             }
@@ -338,7 +343,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     //*out << ind << "w" << predicateIdPair.first << ".printTuples(\"" << predicateIdPair.first << "\");\n";
 }
 
-void CompilationManager::handleDataStructuresDeclaration(const aspc::Rule& r, unsigned start) {
+void CompilationManager::declareDataStructures(const aspc::Rule& r, unsigned start) {
 
     const vector<unsigned> & joinOrder = r.getOrderedBodyIndexesByStarter(start);
 
@@ -389,7 +394,7 @@ void CompilationManager::handleDataStructuresDeclaration(const aspc::Rule& r, un
     }
 }
 
-void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
+void CompilationManager::compileRule(const aspc::Rule & r, unsigned start) {
     //Iterate over starting workingset
     vector<unsigned> joinOrder = r.getOrderedBodyIndexesByStarter(start);
     const vector<const aspc::Formula*>& body = r.getFormulas();
@@ -456,9 +461,9 @@ void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
         //rule fires
         if (i == body.size() - 1) {
 
-
             if (!r.isConstraint()) {
 
+                //a rule is firing
                 *out << ind << "const auto & insertResult = w" << r.getHead().front().getPredicateName() << ".insert({{";
 
                 for (unsigned th = 0; th < r.getHead().front().getTermsSize(); th++) {
@@ -526,6 +531,7 @@ void CompilationManager::handleRuleLoops(const aspc::Rule & r, unsigned start) {
                 *out << --ind << "}\n";
             } else {
 
+                //we are handling a constraint
                 *out << ind << "failedConstraints.push_back(vector<aspc::Literal>());\n";
 
                 *out << ind << "vector<const Tuple *> reasons;\n";

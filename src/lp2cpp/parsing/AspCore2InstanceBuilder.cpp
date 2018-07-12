@@ -141,7 +141,7 @@ void AspCore2InstanceBuilder::onHead() {
 }
 
 void AspCore2InstanceBuilder::onHeadAtom() {
-    problemInstance.push_back(new aspc::Atom(predicateName, buildingTerms));
+    problemInstance.push_back(new aspc::Literal(false, aspc::Atom(predicateName, buildingTerms)));
     buildingTerms.clear();
 }
 
@@ -205,12 +205,12 @@ void AspCore2InstanceBuilder::onWeightAtLevels(int, int, int) {
 
 }
 
-const vector<aspc::Atom*> & AspCore2InstanceBuilder::getProblemInstance() {
+const vector<aspc::Literal*> & AspCore2InstanceBuilder::getProblemInstance() {
     return problemInstance;
 }
 
 AspCore2InstanceBuilder::~AspCore2InstanceBuilder() {
-    for(aspc::Atom* a: problemInstance) {
+    for(aspc::Literal* a: problemInstance) {
         delete a;
     }
 }

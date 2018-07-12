@@ -41,6 +41,9 @@ namespace aspc {
         const aspc::Atom & getAtom() const;
         const vector<string>& getTerms() const;
         void addTerm(const string &);
+        bool operator==(const Literal& right) const;
+        Tuple getTuple(unsigned id) const;
+        void setNegated(bool);
         
         virtual bool isBoundedRelation(const set<string> &) const override;
         virtual bool isBoundedLiteral(const set<string> &) const override;
@@ -50,6 +53,8 @@ namespace aspc {
         virtual void print() const override;
         virtual bool isLiteral() const override;
         virtual unsigned firstOccurrenceOfVariableInLiteral(const string & v) const override;
+        
+
 
         
     private:

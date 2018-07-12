@@ -53,12 +53,12 @@
 
 
 
-struct AtomHash {
+struct LiteralHash {
 
-    size_t operator()(const aspc::Atom & v) const {
+    size_t operator()(const aspc::Literal & v) const {
         std::hash<unsigned> hasher;
         size_t seed = 0;
-        for (unsigned i : v.getIntTuple()) {
+        for (unsigned i : v.getAtom().getIntTuple()) {
             seed ^= hasher(i) + (seed << 6) + (seed >> 2);
         }
         return (hash<string>()(v.getPredicateName())) ^ seed;
@@ -78,10 +78,10 @@ public:
 
 
 private:
-    std::map<int, aspc::Atom*> atoms;
+    std::map<int, aspc::Literal*> literals;
     ExecutionManager executionManager;
     CompilationManager compilationManager;
-    std::unordered_map<aspc::Atom, int, AtomHash> atomsMap;
+    std::unordered_map<aspc::Literal, int, LiteralHash> literalsMap;
     std::vector<unsigned> watchedAtoms;
     string filepath;
     

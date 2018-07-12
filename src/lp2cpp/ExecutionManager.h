@@ -36,11 +36,11 @@ class ExecutionManager {
 public:
     ExecutionManager();
     ~ExecutionManager();
-    void compileDynamicLibrary(const string & executablePath);
+    void compileDynamicLibrary(const string & executablePath, bool fileHasChanged);
     void parseFactsAndExecute(const char *filename);
     void launchExecutorOnFile(const char *filename);
     const std::vector<std::vector<aspc::Literal> > & getFailedConstraints();
-    void executeProgramOnFacts(const std::vector<aspc::Atom*> & problemIstance);
+    void executeProgramOnFacts(const std::vector<aspc::Literal*> & problemIstance);
     const Executor & getExecutor();
     void shuffleFailedConstraints();
 private:

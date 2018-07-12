@@ -35,8 +35,8 @@ public:
     
 private:
     
-    void handleRuleLoops(const aspc::Rule& r,unsigned start) ;
-    void handleDataStructuresDeclaration(const aspc::Rule& r, unsigned start);
+    void compileRule(const aspc::Rule& r,unsigned start) ;
+    void declareDataStructures(const aspc::Rule& r, unsigned start);
     bool matchConstants(const aspc::Rule & rule, const aspc::Atom & atom, Indentation & ind);
     void generateHeadTupleAndMatchConstants(const aspc::Rule & rule, Indentation & ind, const set<string> & bodyPredicates);
     void setHeadVariables(Indentation & ind, const aspc::Rule & rule);

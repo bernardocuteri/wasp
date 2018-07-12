@@ -29,6 +29,7 @@
 #include "ExecutionManager.h"
 #include "language/Literal.h"
 #include "../util/WaspOptions.h"
+#include "utils/FileHasher.h"
 
 void LazyConstraintImpl::setFilename(const std::string & fileDirectory, const std::string & filename) {
 
@@ -41,31 +42,36 @@ void LazyConstraintImpl::setFilename(const std::string & fileDirectory, const st
         }
     }
 
-    std::ofstream outfile(executablePath + "/src/lp2cpp/Executor.cpp");
+    string executorPath = executablePath + "/src/lp2cpp/Executor.cpp";
+    FileHasher hasher;
+    string hash = hasher.computeMD5(executorPath);
+    std::ofstream outfile(executorPath);
     compilationManager.setOutStream(&outfile);
     filepath = fileDirectory + "/" + filename;
     compilationManager.lp2cpp(filepath);
     outfile.close();
-    executionManager.compileDynamicLibrary(executablePath);
+    string newHash = hasher.computeMD5(executorPath);
+    executionManager.compileDynamicLibrary(executablePath, newHash != hash);
+    
 
 
 }
 
-aspc::Atom* parseAtom(const std::string & atomString) {
+aspc::Literal* parseLiteral(const std::string & literalString) {
     string predicateName;
     unsigned i = 0;
-    for (i = 0; i < atomString.size(); i++) {
-        if (atomString[i] == '(') {
-            predicateName = atomString.substr(0, i);
+    for (i = 0; i < literalString.size(); i++) {
+        if (literalString[i] == '(') {
+            predicateName = literalString.substr(0, i);
             break;
         }
-        if (i == atomString.size() - 1) {
-            predicateName = atomString.substr(0);
+        if (i == literalString.size() - 1) {
+            predicateName = literalString.substr(0);
         }
     }
-    aspc::Atom* atom = new aspc::Atom(predicateName);
-    for (; i < atomString.size(); i++) {
-        char c = atomString[i];
+    aspc::Literal* literal = new aspc::Literal(predicateName);
+    for (; i < literalString.size(); i++) {
+        char c = literalString[i];
         if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_') {
             int start = i;
             int openBrackets = 0;
@@ -76,22 +82,22 @@ aspc::Atom* parseAtom(const std::string & atomString) {
                     openBrackets--;
                 }
                 i++;
-                c = atomString[i];
+                c = literalString[i];
             }
-            atom->addTerm(atomString.substr(start, i - start));
+            literal->addTerm(literalString.substr(start, i - start));
         }
     }
-    return atom;
+    return literal;
 
 }
 
-void LazyConstraintImpl::addedVarName(int var, const std::string & atomString) {
+void LazyConstraintImpl::addedVarName(int var, const std::string & literalString) {
     //cout<<atomString<<endl;
-    aspc::Atom * atom = parseAtom(atomString);
+    aspc::Literal * atom = parseLiteral(literalString);
     //atom.print();
     //cout<<endl;
-    this->atoms[var] = atom;
-    atomsMap[*atom] = var;
+    this->literals[var] = atom;
+    literalsMap[*atom] = var;
     if (compilationManager.getBodyPredicates().count(atom->getPredicateName())) {
         watchedAtoms.push_back(var);
     }
@@ -101,10 +107,15 @@ void LazyConstraintImpl::addedVarName(int var, const std::string & atomString) {
 bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation) {
 
     //add only needed atoms
-    std::vector<aspc::Atom*> facts;
+    std::vector<aspc::Literal*> facts;
     for (unsigned atomId : watchedAtoms) {
-        if (interpretation[atomId] > 0)
-            facts.push_back(atoms[atomId]);
+        aspc::Literal* lit = literals[atomId];
+        if(interpretation[atomId] > 0) {
+            lit->setNegated(false);
+        } else {
+            lit->setNegated(true);
+        }
+        facts.push_back(lit);
     }
     executionManager.executeProgramOnFacts(facts);
     return executionManager.getFailedConstraints().empty();
@@ -123,15 +134,15 @@ void LazyConstraintImpl::onCheckFail(std::vector<int> & constraints) {
         //cout << "reasons: \n";
         for (const aspc::Literal & literal : executionManager.getFailedConstraints()[i]) {
             //TODO avoid double access
-            const auto& atomIt = atomsMap.find(literal.getAtom());
+            const auto& atomIt = literalsMap.find(literal);
             if (!literal.isNegated()) {
                 //cerr << literal.getAtom().getTermAt(0) << " ";
             } else {
                 //cerr << literal.getAtom().getTermAt(1) << " ";
             }
 
-            if (atomIt != atomsMap.end()) {
-                literal.print();
+            if (atomIt != literalsMap.end()) {
+                //literal.print();
                 if (literal.isNegated()) {
                     constraints.push_back(atomIt->second);
                 } else {
@@ -145,7 +156,7 @@ void LazyConstraintImpl::onCheckFail(std::vector<int> & constraints) {
         constraints.push_back(0);
     }
     if (constraints.size() > 2) {
-        cerr << " bad " << executionManager.getFailedConstraints().size() << endl;
+        //cerr << " bad " << executionManager.getFailedConstraints().size() << endl;
     }
 }
 
@@ -154,7 +165,7 @@ const string& LazyConstraintImpl::getFilepath() const {
 }
 
 LazyConstraintImpl::~LazyConstraintImpl() {
-    for (auto & a : atoms) {
+    for (auto & a : literals) {
         delete a.second;
     }
 }

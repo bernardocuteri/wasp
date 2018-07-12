@@ -27,13 +27,13 @@
 #define ASPCORE2INSTANCEBUILDER_H
 
 #include "../DLV2libs/input/InputBuilder.h"
-#include "../language/Atom.h"
+#include "../language/Literal.h"
 
 
 class AspCore2InstanceBuilder : public DLV2::InputBuilder{
     
 private:
-    std::vector<aspc::Atom*> problemInstance;
+    std::vector<aspc::Literal*> problemInstance;
     std::vector<std::string> buildingTerms;
     std::string predicateName;
 public:
@@ -129,7 +129,7 @@ public:
 
     virtual void onWeightAtLevels(int nWeight, int nLevel, int nTerm);
     
-    const std::vector<aspc::Atom*> & getProblemInstance();
+    const std::vector<aspc::Literal*> & getProblemInstance();
     
     virtual ~AspCore2InstanceBuilder();
 

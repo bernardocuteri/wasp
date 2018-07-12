@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
     
     // put true to test lp2cpp 
     // usage ./exec encoding instance
-    if (true) {
+    if (false) {
         string executablePathAndName = argv[0];
         string executablePath = executablePathAndName;
         for (int i = executablePath.size() - 1; i >= 0; i--) {
@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
         manager.lp2cpp(argv[1]); //"/encodings/constants");
         outfile.close();
         ExecutionManager execManager;
-        execManager.compileDynamicLibrary(executablePath);
+        execManager.compileDynamicLibrary(executablePath, true);
         //execManager.launchExecutorOnFile((executablePath+"/instances/constants").c_str());
         execManager.launchExecutorOnFile(argv[2]);
         return 0;
