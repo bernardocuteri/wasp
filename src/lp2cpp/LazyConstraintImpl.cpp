@@ -31,6 +31,33 @@
 #include "../util/WaspOptions.h"
 #include "utils/FileHasher.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/file.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+int tryGetLock( char const *lockName )
+{
+    mode_t m = umask( 0 );
+    int fd = open( lockName, O_RDWR|O_CREAT, 0666 );
+    umask( m );
+    if( fd >= 0 && flock( fd, LOCK_EX ) < 0 )
+    {
+        close( fd );
+        fd = -1;
+    }
+    return fd;
+}
+
+void releaseLock( int fd, char const *lockName )
+{
+    if( fd < 0 )
+        return;
+    remove( lockName );
+    close( fd );
+}
+
 void LazyConstraintImpl::setFilename(const std::string & fileDirectory, const std::string & filename) {
 
     string executablePathAndName = wasp::Options::arg0;
@@ -43,6 +70,11 @@ void LazyConstraintImpl::setFilename(const std::string & fileDirectory, const st
     }
 
     string executorPath = executablePath + "/src/lp2cpp/Executor.cpp";
+    string executorLock = executorPath + ".lock";
+    int fd = tryGetLock(executorLock.c_str());
+    if(fd < 0) {
+        throw std::runtime_error(executorLock+" lock failed");
+    }
     FileHasher hasher;
     string hash = hasher.computeMD5(executorPath);
     std::ofstream outfile(executorPath);
@@ -52,6 +84,7 @@ void LazyConstraintImpl::setFilename(const std::string & fileDirectory, const st
     outfile.close();
     string newHash = hasher.computeMD5(executorPath);
     executionManager.compileDynamicLibrary(executablePath, newHash != hash);
+    releaseLock(fd, executorLock.c_str());
     
 
 
@@ -101,6 +134,7 @@ void LazyConstraintImpl::addedVarName(int var, const std::string & literalString
     if (compilationManager.getBodyPredicates().count(atom->getPredicateName())) {
         watchedAtoms.push_back(var);
     }
+    compilationManager.insertModelGeneratorPredicate(atom->getPredicateName());
 
 }
 

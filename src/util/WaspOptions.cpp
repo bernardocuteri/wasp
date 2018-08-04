@@ -137,6 +137,8 @@ namespace wasp
 #define OPTIONID_predminimizationpredicate ( 'z' + 351 )
 #define OPTIONID_predminimizationchunkpercentage ( 'z' + 352 )
     
+#define OPTIONID_lp2cpp_datalog ( 'z' + 400 )
+    
 #ifdef TRACE_ON
 TraceLevels Options::traceLevels;
 #endif
@@ -262,6 +264,8 @@ unsigned int Options::initMinisatHeuristic = INIT_MINISAT_ALL_EQUALS;
 unsigned int Options::initValue = 0;
 unsigned int Options::initSign = INIT_SIGN_MINISAT_ALLFALSE;
 
+bool Options::lp2cppDatalog = false;
+
 string Options::arg0 = "";
 
 void
@@ -325,6 +329,9 @@ Options::parse(
                 { "minimize-predicates", required_argument, NULL, OPTIONID_predminimizationpredicate },
                 { "minimization-algorithm", required_argument, NULL, OPTIONID_predminimizationalgorithm },
                 { "min-chunk-percentage", required_argument, NULL, OPTIONID_predminimizationchunkpercentage },
+                
+                //options for running lp2cpp
+                { "lp2cpp-datalog", no_argument, NULL, OPTIONID_lp2cpp_datalog },
                 
                 #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL) || defined(ENABLE_CPP)
                 /* HEURISTIC */
@@ -878,6 +885,11 @@ Options::parse(
                 }
                 break;                    
                 
+            case OPTIONID_lp2cpp_datalog:
+                lp2cppDatalog = true;
+                break;
+                   
+             
             default:
                 WaspErrorMessage::errorGeneric( "This option is not supported." );
                 break;

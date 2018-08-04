@@ -97,7 +97,7 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool
     executor = (Executor*) create();
 }
 #else 
-void ExecutionManager::compileDynamicLibrary(const string &) {
+void ExecutionManager::compileDynamicLibrary(const string &, bool) {
     executor = new Executor();
 }
 #endif

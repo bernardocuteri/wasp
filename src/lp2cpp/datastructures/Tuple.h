@@ -15,7 +15,10 @@
 #define TUPLE_H
 #include <vector>
 #include <string>
+#include <unordered_set>
 using namespace std;
+
+struct TupleHash;
 
 class Tuple : public vector<unsigned> {
 public:
@@ -43,13 +46,31 @@ public:
     bool isNegated() const {
         return negated;
     }
+    
+    void addPositiveReason(const Tuple* r) const {
+        positiveReasons.push_back(r);
+    }
+    
+    void addNegativeReason(const Tuple & r) const {
+        negativeReasons.push_back(r);
+    }
 
+    
+    const vector<const Tuple*> & getPositiveReasons() const {
+        return positiveReasons;
+    }
+    
+    const vector<Tuple> & getNegativeReasons() const {
+        return negativeReasons;
+    }
     
 private:
     size_type id;
     const string * predicateName;
     bool negated;
-
+    mutable vector<const Tuple*> positiveReasons;
+    mutable vector<Tuple> negativeReasons;
+    
 };
 
 struct TupleHash {
@@ -63,6 +84,8 @@ struct TupleHash {
     }
 
 };
+
+
 
 #endif /* TUPLE_H */
 

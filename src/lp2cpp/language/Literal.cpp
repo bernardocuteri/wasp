@@ -142,3 +142,47 @@ Tuple aspc::Literal::getTuple(unsigned id) const {
 void aspc::Literal::setNegated(bool negated) {
     this->negated = negated;
 }
+
+unordered_set<string> aspc::Literal::getVariables() const {
+    unordered_set<string> res;
+    for(unsigned i=0;i<getAriety();i++) {
+        if(atom.isVariableTermAt(i)) {
+            res.insert(atom.getTermAt(i));
+        }
+    }
+    return res;
+
+}
+
+bool aspc::Literal::unifies(const aspc::Atom& right) const {
+    
+    return atom.unifies(right);
+}
+
+
+bool aspc::Literal::unifies(const aspc::Literal& right) const {
+    
+    return atom.unifies(right.atom);
+}
+
+string aspc::Literal::getCanonicalRepresentation() const {
+    string res = "";
+    if(negated) {
+        res+="not ";
+    }
+    return res+atom.getCanonicalRepresentation();
+}
+
+void aspc::Literal::transformToCanonicalRep() {
+    atom.transformToCanonicalRep();
+
+}
+
+bool aspc::Literal::isGround() const {
+    for(unsigned i = 0; i < getAriety(); i++) {
+        if(atom.isVariableTermAt(i)) {
+            return false;
+        }
+    }
+    return true;
+}

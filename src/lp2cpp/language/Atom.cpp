@@ -21,8 +21,6 @@
 #include <string>
 #include <iostream>
 
-
-
 aspc::Atom::Atom(const std::string & predicateName, const std::vector<std::string> & terms) : predicateName(ConstantsManager::getInstance().getPredicateName(predicateName)), terms(terms) {
 
 }
@@ -104,4 +102,78 @@ string aspc::Atom::toString() const {
     }
     result += ")";
     return result;
+}
+
+bool aspc::Atom::unifies(const aspc::Atom& right) const {
+    if (predicateName != right.predicateName) {
+        return false;
+    }
+    for (unsigned i = 0; i < terms.size(); i++) {
+        if (!isVariableTermAt(i) && !right.isVariableTermAt(i) && terms[i] != right.terms[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+string aspc::Atom::getCanonicalRepresentation() const {
+    string res = predicateName+"(";
+    unordered_map<string, string> var2canonical;
+
+
+    for (unsigned i = 0; i < terms.size(); i++) {
+        if (isVariableTermAt(i)) {
+            const auto & it = var2canonical.find(terms[i]);
+            if (it != var2canonical.end()) {
+                res += it -> second;
+            } else {
+                string var = "X" + to_string(var2canonical.size());
+                res += var;
+                var2canonical[terms[i]] = var;
+            }
+        } else {
+            res += terms[i];
+        }
+        if (i != terms.size() - 1) {
+            res += ",";
+        }
+    }
+    return res+")";
+}
+
+void aspc::Atom::getCoveredVariables(const unordered_set<string>& boundVariables, vector<unsigned>& output) const {
+    
+    for(unsigned i = 0; i < terms.size(); i++) {
+        if(!isVariableTermAt(i) || boundVariables.count(terms[i])) {
+            output.push_back(i);
+        }
+    }
+    
+
+}
+
+void aspc::Atom::getBoundTermsMask(const unordered_set<string>& boundVariables, vector<bool>& output) const {
+    output.resize(terms.size(), false);
+    for(unsigned i = 0; i < terms.size(); i++) {
+        if(!isVariableTermAt(i) || boundVariables.count(terms[i])) {
+            output[i] = true;
+        }
+    }
+}
+
+
+void aspc::Atom::transformToCanonicalRep() {
+    unordered_map<string, string> var2canonical;
+    for (unsigned i = 0; i < terms.size(); i++) {
+        if (isVariableTermAt(i)) {
+            const auto & it = var2canonical.find(terms[i]);
+            if (it != var2canonical.end()) {
+                terms[i] = it -> second;
+            } else {
+                string var = "X" + to_string(var2canonical.size());
+                var2canonical[terms[i]] = var;
+                terms[i] = var;
+            }
+        } 
+    }
 }

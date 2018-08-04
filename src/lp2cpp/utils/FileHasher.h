@@ -18,7 +18,6 @@
 class FileHasher {
 public:
     FileHasher();
-    FileHasher(const FileHasher& orig);
     virtual ~FileHasher();
     std::string computeMD5(const std::string & file_name);
 private:

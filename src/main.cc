@@ -34,6 +34,7 @@
 #include "lp2cpp/LazyConstraintImpl.h"
 #include "lp2cpp/utils/GraphWithTarjanAlgorithm.h"
 #include "lp2cpp/datastructures/Tuple.h"
+#include "lp2cpp/language/Literal.h"
 using namespace std;
 
 int EXIT_CODE = 0;
@@ -51,12 +52,20 @@ void my_handler(int) {
 }
 
 int main(int argc, char** argv) {
-
-    //    srand(unsigned(time(NULL)));
     
-    // put true to test lp2cpp 
-    // usage ./exec encoding instance
-    if (false) {
+    //    srand(unsigned(time(NULL)));
+    wasp::Options::parse(argc, argv);
+    waspFacadePointer = new WaspFacade();
+    WaspFacade& waspFacade = *waspFacadePointer;
+    wasp::Options::setOptions(waspFacade);
+
+    signal(SIGINT, my_handler);
+    signal(SIGTERM, my_handler);
+    signal(SIGXCPU, my_handler);
+    
+    if (wasp::Options::lp2cppDatalog) {
+        // execute with option lp2cpp-datalog
+        // usage ./exec --lp2cpp-datalog encoding instance 
         string executablePathAndName = argv[0];
         string executablePath = executablePathAndName;
         for (int i = executablePath.size() - 1; i >= 0; i--) {
@@ -68,25 +77,14 @@ int main(int argc, char** argv) {
         std::ofstream outfile(executablePath + "/src/lp2cpp/Executor.cpp");
         CompilationManager manager;
         manager.setOutStream(&outfile);
-        manager.lp2cpp(argv[1]); //"/encodings/constants");
+        manager.lp2cpp(argv[2]); //"/encodings/constants");
         outfile.close();
         ExecutionManager execManager;
         execManager.compileDynamicLibrary(executablePath, true);
         //execManager.launchExecutorOnFile((executablePath+"/instances/constants").c_str());
-        execManager.launchExecutorOnFile(argv[2]);
+        execManager.launchExecutorOnFile(argv[3]);
         return 0;
     }
-
-    
-    
-    wasp::Options::parse(argc, argv);
-    waspFacadePointer = new WaspFacade();
-    WaspFacade& waspFacade = *waspFacadePointer;
-    wasp::Options::setOptions(waspFacade);
-
-    signal(SIGINT, my_handler);
-    signal(SIGTERM, my_handler);
-    signal(SIGXCPU, my_handler);
 
     //test reading from hardcoded file
     bool readFromFile = false;

@@ -126,6 +126,8 @@ namespace wasp
             
             static bool stats;
             
+            static bool lp2cppDatalog;
+            
             static unsigned int statsVerbosity;
             
             static double initVariableIncrement;

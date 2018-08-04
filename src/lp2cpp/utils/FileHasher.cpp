@@ -23,9 +23,6 @@
 FileHasher::FileHasher() {
 }
 
-FileHasher::FileHasher(const FileHasher& orig) {
-}
-
 FileHasher::~FileHasher() {
 }
 

@@ -53,7 +53,11 @@ namespace aspc {
         Tuple getTuple(unsigned id) const;
         void print() const;
         string toString() const;
-        
+        bool unifies(const Atom & right) const;
+        string getCanonicalRepresentation() const;
+        void transformToCanonicalRep();
+        void getCoveredVariables(const unordered_set<string> & variables, vector<unsigned> & output) const;
+        void getBoundTermsMask(const unordered_set<string> & boundVariables, vector<bool> & output) const;
         bool operator==(const Atom& right) const {
                 
             return predicateName == (right.predicateName) && terms == right.terms;

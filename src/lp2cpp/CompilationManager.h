@@ -24,6 +24,7 @@
 #include "utils/Indentation.h"
 #include <string>
 #include <set>
+#include "datastructures/BoundAnnotatedLiteral.h"
 
 class CompilationManager {
 public:
@@ -32,6 +33,10 @@ public:
     void generateStratifiedCompilableProgram(aspc::Program & program, AspCore2ProgramBuilder* builder);
     void setOutStream(std::ostream* outputTarget);
     const std::set<std::string> & getBodyPredicates();
+    void insertModelGeneratorPredicate(const string & p) {
+        modelGeneratorPredicates.insert(p);
+    }
+
     
 private:
     
@@ -44,6 +49,14 @@ private:
     void declareArithmeticVariables(const aspc::Rule & rule, Indentation & ind);
     bool handleEqualCardsAndConstants(const aspc::Rule & r,unsigned i,const vector<unsigned>& joinOrder);
     bool handleExpression(const aspc::Rule& r, const aspc::ArithmeticRelation &, unsigned, const set<string> &);
+    void writeNegativeTuple(const aspc::Rule & rule, vector<unsigned> & joinOrder, unsigned start, unsigned i);
+    void declareDataStructuresForReasonsOfNegative(const aspc::Program & program);
+    void declareDataStructuresForReasonsOfNegative(const aspc::Program & program, const aspc::Literal & lit, bool negationMet, unordered_set<string> & litBoundVariables, unordered_set<string> & openSet);
+    void writeNegativeReasonsFunctions(aspc::Program & program);
+    void writeNegativeReasonsFunctions(const aspc::Program & program, const BoundAnnotatedLiteral & lit, bool negationMet,
+        list<BoundAnnotatedLiteral> & toProcessLiterals, list<BoundAnnotatedLiteral> & processedLiterals, unordered_map <string, string> & functionsMap);
+    
+    
     
     std::ostream* out;
     std::set<std::string> bodyPredicates;
@@ -59,6 +72,11 @@ private:
     
     unordered_map<string, set<string> > predicateToAuxiliaryMaps;
 
+    unordered_map<string, set<string> > predicateToFalseAuxiliaryMaps;
+    
+    unordered_set<string> modelGeneratorPredicates;//{"a", "b", "c"};// =  {"a", "p5", "p1", "p2", "p7", "p8", "p9"};
+    
+    unordered_set<string> modelGeneratorPredicatesInNegativeReasons;
 };
 
 #endif	/* COMPILATIONMANAGER_H */

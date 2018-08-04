@@ -44,6 +44,7 @@ public:
   virtual void shuffleFailedConstraints() {
       std::random_shuffle(failedConstraints.begin(), failedConstraints.end());
   }
+  
 private:
   std::vector<std::vector<aspc::Literal> > failedConstraints;
   std::vector<std::string> bodyLiterals;

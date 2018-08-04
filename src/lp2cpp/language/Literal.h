@@ -44,7 +44,13 @@ namespace aspc {
         bool operator==(const Literal& right) const;
         Tuple getTuple(unsigned id) const;
         void setNegated(bool);
-        
+        unordered_set<string> getVariables() const;
+        bool unifies(const aspc::Literal & right) const;
+        bool unifies(const aspc::Atom & right) const;
+        string getCanonicalRepresentation() const;
+        void transformToCanonicalRep();
+        bool isGround() const;
+
         virtual bool isBoundedRelation(const set<string> &) const override;
         virtual bool isBoundedLiteral(const set<string> &) const override;
         virtual bool isBoundedValueAssignment(const set<string> &) const override;
@@ -53,10 +59,10 @@ namespace aspc {
         virtual void print() const override;
         virtual bool isLiteral() const override;
         virtual unsigned firstOccurrenceOfVariableInLiteral(const string & v) const override;
-        
 
 
-        
+
+
     private:
         aspc::Atom atom;
         bool negated;
