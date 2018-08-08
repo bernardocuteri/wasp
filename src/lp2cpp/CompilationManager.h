@@ -53,8 +53,12 @@ private:
     void declareDataStructuresForReasonsOfNegative(const aspc::Program & program);
     void declareDataStructuresForReasonsOfNegative(const aspc::Program & program, const aspc::Literal & lit, bool negationMet, unordered_set<string> & litBoundVariables, unordered_set<string> & openSet);
     void writeNegativeReasonsFunctions(aspc::Program & program);
-    void writeNegativeReasonsFunctions(const aspc::Program & program, const BoundAnnotatedLiteral & lit, bool negationMet,
+    void writeNegativeReasonsFunctionsPrototypes(aspc::Program & program);
+    void writeNegativeReasonsFunctions(const aspc::Program & program, const BoundAnnotatedLiteral & lit,
         list<BoundAnnotatedLiteral> & toProcessLiterals, list<BoundAnnotatedLiteral> & processedLiterals, unordered_map <string, string> & functionsMap);
+    void writeNegativeReasonsFunctionsPrototypes(const aspc::Program & program, const BoundAnnotatedLiteral & lit,
+        list<BoundAnnotatedLiteral> & toProcessLiterals, list<BoundAnnotatedLiteral> & processedLiterals, unordered_map <string, string> & functionsMap);
+    void initRuleBoundVariables(unordered_set<string> & ruleBoundVariables, const BoundAnnotatedLiteral & lit, const aspc::Atom & head, bool printVariablesDeclaration);
     
     
     
@@ -74,7 +78,7 @@ private:
 
     unordered_map<string, set<string> > predicateToFalseAuxiliaryMaps;
     
-    unordered_set<string> modelGeneratorPredicates;//{"a", "b", "c"};// =  {"a", "p5", "p1", "p2", "p7", "p8", "p9"};
+    unordered_set<string> modelGeneratorPredicates = {"at", "action", "prolog_h", "start", "coord", "prolog_step", "o", "n_prolog_h", "prolog_occupied", "goal", "goal_achieved", "end", "prolog_n", "prolog_k", "connected_to", "traversed"};//{"a", "p5", "p1", "p2", "p7", "p8", "p9", "p6"}; // = {"a", "b", "c"};
     
     unordered_set<string> modelGeneratorPredicatesInNegativeReasons;
 };

@@ -34,6 +34,10 @@ public:
     Tuple(const std::initializer_list<unsigned> & l, size_type id, const string * predicateName, bool negated = false) :
         vector<unsigned>(l), id(id), predicateName(predicateName), negated(negated) {
     }
+    
+     Tuple(const std::vector<unsigned> & l, size_type id, const string * predicateName, bool negated = false) :
+        vector<unsigned>(l), id(id), predicateName(predicateName), negated(negated) {
+    }
 
     size_type getId() const {
         return id;

@@ -46,14 +46,13 @@ struct VectorHash {
 
 class AuxiliaryMap {
 public:
-    AuxiliaryMap();
-    AuxiliaryMap(vector<unsigned> * keyIndices);
+    AuxiliaryMap(const vector<unsigned> & keyIndices);
     void insert2(const Tuple & value);
     const vector<const Tuple* >& getValues(const vector<unsigned>& tuple) const;
 protected:
     unordered_map<vector<unsigned>, vector< const Tuple* >, VectorHash > tuples;
     unsigned keySize;
-    vector<unsigned>* keyIndices;
+    vector<unsigned> keyIndices;
     static const vector< const Tuple* > EMPTY_RESULT;
 };
 

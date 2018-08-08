@@ -63,8 +63,8 @@ vector<unsigned> aspc::Atom::getIntTuple() const {
     return tuple;
 }
 
-Tuple aspc::Atom::getTuple(unsigned id) const {
-    Tuple tuple(id, &predicateName);
+Tuple aspc::Atom::getTuple(unsigned id, bool negated = false) const {
+    Tuple tuple(id, &predicateName, negated);
     tuple.resize(terms.size());
     for (unsigned i = 0; i < terms.size(); i++) {
         tuple[i] = ConstantsManager::getInstance().mapConstant(terms[i]);
@@ -148,8 +148,6 @@ void aspc::Atom::getCoveredVariables(const unordered_set<string>& boundVariables
             output.push_back(i);
         }
     }
-    
-
 }
 
 void aspc::Atom::getBoundTermsMask(const unordered_set<string>& boundVariables, vector<bool>& output) const {

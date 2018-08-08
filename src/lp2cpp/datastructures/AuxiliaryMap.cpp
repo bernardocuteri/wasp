@@ -34,19 +34,16 @@
 
 const vector<const Tuple* > AuxiliaryMap::EMPTY_RESULT;
 
-AuxiliaryMap::AuxiliaryMap(vector<unsigned> * keyIndices) :
-keySize(keyIndices->size()), keyIndices(keyIndices) {
+AuxiliaryMap::AuxiliaryMap(const vector<unsigned> & keyIndices) :
+keySize(keyIndices.size()), keyIndices(keyIndices) {
 
-}
-
-AuxiliaryMap::AuxiliaryMap() {
 }
 
 
 void AuxiliaryMap::insert2(const Tuple & value) {
     vector<unsigned> key(keySize);
     for(unsigned i = 0;i<keySize;i++) {
-        key[i] = value[(*keyIndices)[i]];
+        key[i] = value[keyIndices[i]];
     }
     tuples[std::move(key)].push_back(&value);    
 }

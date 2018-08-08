@@ -152,6 +152,7 @@ bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation)
         facts.push_back(lit);
     }
     executionManager.executeProgramOnFacts(facts);
+    cout<<"bad "<<executionManager.getFailedConstraints().size()<<endl;
     return executionManager.getFailedConstraints().empty();
 
 }

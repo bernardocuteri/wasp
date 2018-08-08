@@ -50,7 +50,7 @@ namespace aspc {
         unsigned getAriety() const;
         bool isVariableTermAt(unsigned) const;
         vector<unsigned> getIntTuple() const;
-        Tuple getTuple(unsigned id) const;
+        Tuple getTuple(unsigned id, bool) const;
         void print() const;
         string toString() const;
         bool unifies(const Atom & right) const;
