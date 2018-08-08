@@ -950,7 +950,7 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start) {
                 
                 *out << --ind << "}\n";
             } else {
-                *out << ind << "cout<<\"constraint failed\"<<endl;\n";
+                //*out << ind << "cout<<\"constraint failed\"<<endl;\n";
                 //we are handling a constraint
                 *out << ind << "failedConstraints.push_back(vector<aspc::Literal>());\n";
 

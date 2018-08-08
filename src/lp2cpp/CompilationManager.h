@@ -78,7 +78,7 @@ private:
 
     unordered_map<string, set<string> > predicateToFalseAuxiliaryMaps;
     
-    unordered_set<string> modelGeneratorPredicates = {"at", "action", "prolog_h", "start", "coord", "prolog_step", "o", "n_prolog_h", "prolog_occupied", "goal", "goal_achieved", "end", "prolog_n", "prolog_k", "connected_to", "traversed"};//{"a", "p5", "p1", "p2", "p7", "p8", "p9", "p6"}; // = {"a", "b", "c"};
+    unordered_set<string> modelGeneratorPredicates;
     
     unordered_set<string> modelGeneratorPredicatesInNegativeReasons;
 };

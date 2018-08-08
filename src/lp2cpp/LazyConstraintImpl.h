@@ -78,12 +78,17 @@ public:
 
 
 private:
+    void performCompilation();
     std::map<int, aspc::Literal*> literals;
     ExecutionManager executionManager;
     CompilationManager compilationManager;
     std::unordered_map<aspc::Literal, int, LiteralHash> literalsMap;
     std::vector<unsigned> watchedAtoms;
     string filepath;
+    bool compilationDone = false;
+    
+    std::string fileDirectory;
+    std::string filename;
     
 };
 

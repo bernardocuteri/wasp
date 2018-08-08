@@ -37,28 +37,26 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-int tryGetLock( char const *lockName )
-{
-    mode_t m = umask( 0 );
-    int fd = open( lockName, O_RDWR|O_CREAT, 0666 );
-    umask( m );
-    if( fd >= 0 && flock( fd, LOCK_EX ) < 0 )
-    {
-        close( fd );
+int tryGetLock(char const *lockName) {
+    mode_t m = umask(0);
+    int fd = open(lockName, O_RDWR | O_CREAT, 0666);
+    umask(m);
+    if (fd >= 0 && flock(fd, LOCK_EX) < 0) {
+        close(fd);
         fd = -1;
     }
     return fd;
 }
 
-void releaseLock( int fd, char const *lockName )
-{
-    if( fd < 0 )
+void releaseLock(int fd, char const *lockName) {
+    if (fd < 0)
         return;
-    remove( lockName );
-    close( fd );
+    remove(lockName);
+    close(fd);
 }
 
-void LazyConstraintImpl::setFilename(const std::string & fileDirectory, const std::string & filename) {
+void LazyConstraintImpl::performCompilation() {
+
 
     string executablePathAndName = wasp::Options::arg0;
     string executablePath = executablePathAndName;
@@ -72,11 +70,12 @@ void LazyConstraintImpl::setFilename(const std::string & fileDirectory, const st
     string executorPath = executablePath + "/src/lp2cpp/Executor.cpp";
     string executorLock = executorPath + ".lock";
     int fd = tryGetLock(executorLock.c_str());
-    if(fd < 0) {
-        throw std::runtime_error(executorLock+" lock failed");
+    if (fd < 0) {
+        throw std::runtime_error(executorLock + " lock failed");
     }
     FileHasher hasher;
     string hash = hasher.computeMD5(executorPath);
+
     std::ofstream outfile(executorPath);
     compilationManager.setOutStream(&outfile);
     filepath = fileDirectory + "/" + filename;
@@ -85,7 +84,12 @@ void LazyConstraintImpl::setFilename(const std::string & fileDirectory, const st
     string newHash = hasher.computeMD5(executorPath);
     executionManager.compileDynamicLibrary(executablePath, newHash != hash);
     releaseLock(fd, executorLock.c_str());
-    
+    compilationDone = true;
+}
+
+void LazyConstraintImpl::setFilename(const std::string & fileDirectory, const std::string & filename) {
+    this-> fileDirectory = fileDirectory;
+    this -> filename = filename;
 
 
 }
@@ -131,20 +135,26 @@ void LazyConstraintImpl::addedVarName(int var, const std::string & literalString
     //cout<<endl;
     this->literals[var] = atom;
     literalsMap[*atom] = var;
-    if (compilationManager.getBodyPredicates().count(atom->getPredicateName())) {
-        watchedAtoms.push_back(var);
-    }
     compilationManager.insertModelGeneratorPredicate(atom->getPredicateName());
 
 }
 
 bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation) {
 
+    if (!compilationDone) {
+        performCompilation();
+        for (const auto & entry : literals) {
+            if (compilationManager.getBodyPredicates().count(entry.second->getPredicateName())) {
+                watchedAtoms.push_back(entry.first);
+            }
+        }
+    }
+
     //add only needed atoms
     std::vector<aspc::Literal*> facts;
     for (unsigned atomId : watchedAtoms) {
         aspc::Literal* lit = literals[atomId];
-        if(interpretation[atomId] > 0) {
+        if (interpretation[atomId] > 0) {
             lit->setNegated(false);
         } else {
             lit->setNegated(true);
@@ -152,7 +162,7 @@ bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation)
         facts.push_back(lit);
     }
     executionManager.executeProgramOnFacts(facts);
-    cout<<"bad "<<executionManager.getFailedConstraints().size()<<endl;
+    cout << "bad " << executionManager.getFailedConstraints().size() << endl;
     return executionManager.getFailedConstraints().empty();
 
 }
@@ -184,7 +194,7 @@ void LazyConstraintImpl::onCheckFail(std::vector<int> & constraints) {
                     constraints.push_back(-atomIt->second);
                 }
             } else {
-//                cerr<<"literal not found\n";
+                //                cerr<<"literal not found\n";
             }
         }
         //cerr << endl;
@@ -204,3 +214,4 @@ LazyConstraintImpl::~LazyConstraintImpl() {
         delete a.second;
     }
 }
+
