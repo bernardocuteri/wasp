@@ -37,7 +37,8 @@ ExecutionManager::ExecutionManager() {
 
 ExecutionManager::~ExecutionManager() {
 #ifndef LP2CPP_DEBUG
-    destroy(executor);
+    if(executor)
+        destroy(executor);
 #else 
     delete executor;
 #endif
