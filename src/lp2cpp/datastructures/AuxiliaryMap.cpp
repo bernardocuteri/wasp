@@ -57,4 +57,6 @@ const vector< const Tuple* >& AuxiliaryMap::getValues(const vector<unsigned>& ke
     return it->second;
 }
 
-
+void AuxiliaryMap::clear() {
+    tuples.clear();
+}

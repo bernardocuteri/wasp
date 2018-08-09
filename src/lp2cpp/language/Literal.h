@@ -47,7 +47,7 @@ namespace aspc {
         unordered_set<string> getVariables() const;
         bool unifies(const aspc::Literal & right) const;
         bool unifies(const aspc::Atom & right) const;
-        string getCanonicalRepresentation() const;
+        string getCanonicalRepresentation(const unordered_set<string> & litBoundVariables) const;
         void transformToCanonicalRep();
         bool isGround() const;
 

@@ -49,6 +49,7 @@ public:
     AuxiliaryMap(const vector<unsigned> & keyIndices);
     void insert2(const Tuple & value);
     const vector<const Tuple* >& getValues(const vector<unsigned>& tuple) const;
+    void clear();
 protected:
     unordered_map<vector<unsigned>, vector< const Tuple* >, VectorHash > tuples;
     unsigned keySize;

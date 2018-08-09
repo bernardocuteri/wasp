@@ -190,7 +190,6 @@ void aspc::Rule::bodyReordering() {
         }
     }
     bodyReordering(starters);
-
 }
 
 void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {

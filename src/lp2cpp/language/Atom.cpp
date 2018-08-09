@@ -116,23 +116,27 @@ bool aspc::Atom::unifies(const aspc::Atom& right) const {
     return true;
 }
 
-string aspc::Atom::getCanonicalRepresentation() const {
+string aspc::Atom::getCanonicalRepresentation(const unordered_set<string> & litBoundVariables) const {
     string res = predicateName+"(";
     unordered_map<string, string> var2canonical;
 
 
     for (unsigned i = 0; i < terms.size(); i++) {
-        if (isVariableTermAt(i)) {
-            const auto & it = var2canonical.find(terms[i]);
-            if (it != var2canonical.end()) {
-                res += it -> second;
-            } else {
-                string var = "X" + to_string(var2canonical.size());
-                res += var;
-                var2canonical[terms[i]] = var;
-            }
+        if(litBoundVariables.count(terms[i])) {
+            res += "_";
         } else {
-            res += terms[i];
+            if (isVariableTermAt(i)) {
+                const auto & it = var2canonical.find(terms[i]);
+                if (it != var2canonical.end()) {
+                    res += it -> second;
+                } else {
+                    string var = "X" + to_string(var2canonical.size());
+                    res += var;
+                    var2canonical[terms[i]] = var;
+                }
+            } else {
+                res += terms[i];
+            }
         }
         if (i != terms.size() - 1) {
             res += ",";

@@ -54,7 +54,7 @@ namespace aspc {
         void print() const;
         string toString() const;
         bool unifies(const Atom & right) const;
-        string getCanonicalRepresentation() const;
+        string getCanonicalRepresentation(const unordered_set<string> & litBoundVariables) const;
         void transformToCanonicalRep();
         void getCoveredVariables(const unordered_set<string> & variables, vector<unsigned> & output) const;
         void getBoundTermsMask(const unordered_set<string> & boundVariables, vector<bool> & output) const;

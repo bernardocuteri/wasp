@@ -51,7 +51,7 @@ private:
     bool handleExpression(const aspc::Rule& r, const aspc::ArithmeticRelation &, unsigned, const set<string> &);
     void writeNegativeTuple(const aspc::Rule & rule, vector<unsigned> & joinOrder, unsigned start, unsigned i);
     void declareDataStructuresForReasonsOfNegative(const aspc::Program & program);
-    void declareDataStructuresForReasonsOfNegative(const aspc::Program & program, const aspc::Literal & lit, bool negationMet, unordered_set<string> & litBoundVariables, unordered_set<string> & openSet);
+    void declareDataStructuresForReasonsOfNegative(const aspc::Program & program, const aspc::Literal & lit, unordered_set<string> & litBoundVariables, unordered_set<string> & openSet);
     void writeNegativeReasonsFunctions(aspc::Program & program);
     void writeNegativeReasonsFunctionsPrototypes(aspc::Program & program);
     void writeNegativeReasonsFunctions(const aspc::Program & program, const BoundAnnotatedLiteral & lit,

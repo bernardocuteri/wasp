@@ -165,12 +165,12 @@ bool aspc::Literal::unifies(const aspc::Literal& right) const {
     return atom.unifies(right.atom);
 }
 
-string aspc::Literal::getCanonicalRepresentation() const {
+string aspc::Literal::getCanonicalRepresentation(const unordered_set<string> & litBoundVariables) const {
     string res = "";
     if(negated) {
         res+="not ";
     }
-    return res+atom.getCanonicalRepresentation();
+    return res+atom.getCanonicalRepresentation(litBoundVariables);
 }
 
 void aspc::Literal::transformToCanonicalRep() {
