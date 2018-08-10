@@ -61,6 +61,7 @@ namespace aspc {
             return right;
         }
 
+        string getStringRep() const;
 
 
 

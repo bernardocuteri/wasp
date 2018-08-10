@@ -75,7 +75,7 @@ bool aspc::ArithmeticRelation::isBoundedValueAssignment(const set<string>& set) 
 }
 
 void aspc::ArithmeticRelation::print() const {
-    std::cout << left << " " << comparisonType << " " << right;
+    std::cout << left << " " << comparisonType2String[comparisonType] << " " << right;
 
 }
 
@@ -91,4 +91,7 @@ unsigned aspc::ArithmeticRelation::firstOccurrenceOfVariableInLiteral(const stri
     return -1;
 }
 
+string aspc::ArithmeticRelation::getStringRep() const {
+    return left.getStringRep() + " " + comparisonType2String[comparisonType] + " " + right.getStringRep();
+}
 

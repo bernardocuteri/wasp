@@ -12,6 +12,7 @@
  */
 
 #include "ArithmeticExpression.h"
+#include <string>
 
 aspc::ArithmeticExpression::ArithmeticExpression() {
 
@@ -33,6 +34,16 @@ std::set<std::string> aspc::ArithmeticExpression::getAllTerms() const {
     res.insert(term1);
     if(!isSingleTerm()) {
         res.insert(term2);
+    }
+    return res;
+}
+
+std::string aspc::ArithmeticExpression::getStringRep() const {
+    std::string res = term1;
+    if (!singleTerm) {
+        res += " ";
+        res += operation;
+        res += " " + term2;
     }
     return res;
 }

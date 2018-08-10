@@ -135,7 +135,7 @@ void CompilationManager::writeNegativeReasonsFunctions(const aspc::Program & pro
         
     }
     
-    //TODO should I add positive to open set?
+    //TODO should I add positives to open set?
     
 
 
@@ -267,6 +267,14 @@ void CompilationManager::writeNegativeReasonsFunctions(const aspc::Program & pro
                             ruleBoundVariables.insert(bodyLit->getTermAt(t));
                         }
                     }
+                } else {
+                    //account value invention relations
+                    if(lit.isNegated()) {
+                        const aspc::ArithmeticRelation * relation = (const aspc::ArithmeticRelation *) f;
+                        *out << ind++ << "if(" << relation->getStringRep() << ") {\n";;
+                        forCounter++;
+                    }
+                    
                 }
             }
             for (unsigned i = 0; i < forCounter; i++) {

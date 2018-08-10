@@ -188,6 +188,7 @@ void LazyConstraintImpl::onCheckFail(std::vector<int> & constraints) {
 
             if (atomIt != literalsMap.end()) {
                 //literal.print();
+                //cout<<" ";
                 if (literal.isNegated()) {
                     constraints.push_back(atomIt->second);
                 } else {
@@ -197,7 +198,7 @@ void LazyConstraintImpl::onCheckFail(std::vector<int> & constraints) {
                 //                cerr<<"literal not found\n";
             }
         }
-        //cerr << endl;
+        //cout << endl;
         constraints.push_back(0);
     }
     if (constraints.size() > 2) {

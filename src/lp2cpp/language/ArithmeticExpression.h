@@ -52,6 +52,8 @@ namespace aspc {
         }
 
         std::set<std::string> getAllTerms() const;
+        
+        std::string getStringRep() const;
 
 
     private:
