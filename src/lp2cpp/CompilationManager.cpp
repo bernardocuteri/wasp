@@ -243,7 +243,7 @@ void CompilationManager::writeNegativeReasonsFunctions(const aspc::Program & pro
                         } else {
                             BoundAnnotatedLiteral bodyBoundLit = BoundAnnotatedLiteral(bodyLit->getPredicateName(), vector<bool>(bodyLit->getAriety(), true), false);
                             possiblyAddToProcessLiteral(bodyBoundLit, toProcessLiterals, processedLiterals);
-                            *out << ind << "explainPositiveLiteral(&*w"<<bodyLit->getPredicateName()<<".find({";
+                            *out << ind << "const auto & it = w"<<bodyLit->getPredicateName()<<".find({";
                             for (unsigned term = 0; term < bodyLit->getAriety(); term++) {
                                 if(term > 0) {
                                     *out << ",";
@@ -254,7 +254,13 @@ void CompilationManager::writeNegativeReasonsFunctions(const aspc::Program & pro
                                     *out << bodyLit->getTermAt(term);
                                 }
                             }
-                            *out << "}), open_set, output);\n";
+                            *out << "});\n";
+                            *out << ind++ << "if(it!=w"<<bodyLit->getPredicateName()<<".end()) {\n";
+                            *out << ind << "explainPositiveLiteral(&*it, open_set, output);\n";
+                            *out << --ind << "}\n";
+                            *out << ind++ << "else {\n";
+                            
+                            forCounter++;
                         }
                     } else {
                         if (bodyLit->isNegated()) {
@@ -955,9 +961,13 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start) {
                     if (body[joinOrder[i]]->isPositiveLiteral()) {
                         *out << ind << "insertResult.first->addPositiveReason(tuple" << i << ");\n";
                     } else if (body[joinOrder[i]]->isLiteral()) {
-                        *out << ind << "insertResult.first->addNegativeReason({";
+//                        *out << ind << "insertResult.first->addNegativeReason({";
+//                        writeNegativeTuple(r, joinOrder, start, i);
+//                        *out << "});\n";
+                        aspc::Literal* l = (aspc::Literal*) body[joinOrder[i]];
+                        *out << ind << "insertResult.first->addNegativeReason(Tuple({";
                         writeNegativeTuple(r, joinOrder, start, i);
-                        *out << "});\n";
+                        *out << "}, 0, &" << l->getPredicateName() << ", true));\n";
                     }
                 }
 

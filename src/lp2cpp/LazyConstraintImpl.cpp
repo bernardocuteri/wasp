@@ -37,6 +37,11 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#ifdef PRINT_EXEC_TIMES
+#include <chrono>
+using namespace std::chrono;
+#endif
+
 int tryGetLock(char const *lockName) {
     mode_t m = umask(0);
     int fd = open(lockName, O_RDWR | O_CREAT, 0666);
@@ -78,7 +83,6 @@ void LazyConstraintImpl::performCompilation() {
 
     std::ofstream outfile(executorPath);
     compilationManager.setOutStream(&outfile);
-    filepath = fileDirectory + "/" + filename;
     compilationManager.lp2cpp(filepath);
     outfile.close();
     string newHash = hasher.computeMD5(executorPath);
@@ -90,6 +94,7 @@ void LazyConstraintImpl::performCompilation() {
 void LazyConstraintImpl::setFilename(const std::string & fileDirectory, const std::string & filename) {
     this-> fileDirectory = fileDirectory;
     this -> filename = filename;
+    this -> filepath = fileDirectory + "/" + filename;
 
 
 }
@@ -139,7 +144,21 @@ void LazyConstraintImpl::addedVarName(int var, const std::string & literalString
 
 }
 
+#ifdef PRINT_EXEC_TIMES
+long prop_time = 0;
+long solv_time = 0;
+
+high_resolution_clock::time_point t1;
+high_resolution_clock::time_point t2 = high_resolution_clock::now();
+#endif
+
 bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation) {
+    #ifdef PRINT_EXEC_TIMES
+    t1 = high_resolution_clock::now();
+    auto solve_duration = duration_cast<microseconds>( t1 - t2 ).count();
+    solv_time += solve_duration;
+    cout<<"START lazy evaluation"<<endl;
+    #endif
 
     if (!compilationDone) {
         performCompilation();
@@ -163,7 +182,18 @@ bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation)
     }
     executionManager.executeProgramOnFacts(facts);
     cout << "bad " << executionManager.getFailedConstraints().size() << endl;
+    #ifdef PRINT_EXEC_TIMES
+    cout<<"END lazy evaluation"<<endl;
+    t2 = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(t2 - t1).count();
+
+    prop_time += duration;
+
+    cout << "tot_propr " << prop_time / 1000 << endl;
+    cout << "tot_solv " << solv_time / 1000 << endl;
+    #endif
     return executionManager.getFailedConstraints().empty();
+    
 
 }
 
