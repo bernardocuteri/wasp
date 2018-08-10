@@ -48,7 +48,7 @@ private:
     bool checkInequalities(const aspc::Rule & rule, Indentation & ind);
     void declareArithmeticVariables(const aspc::Rule & rule, Indentation & ind);
     bool handleEqualCardsAndConstants(const aspc::Rule & r,unsigned i,const vector<unsigned>& joinOrder);
-    bool handleExpression(const aspc::Rule& r, const aspc::ArithmeticRelation &, unsigned, const set<string> &);
+    bool handleExpression(const aspc::Rule& r, const aspc::ArithmeticRelation &, unsigned, const unordered_set<string> &);
     void writeNegativeTuple(const aspc::Rule & rule, vector<unsigned> & joinOrder, unsigned start, unsigned i);
     void declareDataStructuresForReasonsOfNegative(const aspc::Program & program);
     void declareDataStructuresForReasonsOfNegative(const aspc::Program & program, const aspc::Literal & lit, unordered_set<string> & litBoundVariables, unordered_set<string> & openSet);

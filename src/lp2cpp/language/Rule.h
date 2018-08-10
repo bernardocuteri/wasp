@@ -69,6 +69,7 @@ namespace aspc {
         vector<unsigned> getStarters() const;
 
         const vector<const aspc::Formula*> & getFormulas() const;
+        vector<const aspc::Formula*> getOrderedBodyForReasons(unordered_set<string> boundVariables) const;
 
 
     private:

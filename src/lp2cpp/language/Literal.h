@@ -51,10 +51,10 @@ namespace aspc {
         void transformToCanonicalRep();
         bool isGround() const;
 
-        virtual bool isBoundedRelation(const set<string> &) const override;
-        virtual bool isBoundedLiteral(const set<string> &) const override;
-        virtual bool isBoundedValueAssignment(const set<string> &) const override;
-        virtual void addVariablesToSet(set<string> &) const override;
+        virtual bool isBoundedRelation(const unordered_set<string> &) const override;
+        virtual bool isBoundedLiteral(const unordered_set<string> &) const override;
+        virtual bool isBoundedValueAssignment(const unordered_set<string> &) const override;
+        virtual void addVariablesToSet(unordered_set<string> &) const override;
         virtual bool isPositiveLiteral() const override;
         virtual void print() const override;
         virtual bool isLiteral() const override;

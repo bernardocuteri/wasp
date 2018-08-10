@@ -85,7 +85,7 @@ const vector<string>& aspc::Literal::getTerms() const {
     return atom.getTerms();
 }
 
-void aspc::Literal::addVariablesToSet(set<string>& set) const {
+void aspc::Literal::addVariablesToSet(unordered_set<string>& set) const {
     for (unsigned i = 0; i < getAriety(); i++) {
         if (isVariableTermAt(i)) {
             set.insert(getTermAt(i));
@@ -94,11 +94,11 @@ void aspc::Literal::addVariablesToSet(set<string>& set) const {
 
 }
 
-bool aspc::Literal::isBoundedRelation(const set<string>&) const {
+bool aspc::Literal::isBoundedRelation(const unordered_set<string>&) const {
     return false;
 }
 
-bool aspc::Literal::isBoundedLiteral(const set<string>& set) const {
+bool aspc::Literal::isBoundedLiteral(const unordered_set<string>& set) const {
     for (unsigned i = 0; i < getAriety(); i++) {
         if (isVariableTermAt(i) && !set.count(getTermAt(i))) {
             return false;
@@ -108,7 +108,7 @@ bool aspc::Literal::isBoundedLiteral(const set<string>& set) const {
 
 }
 
-bool aspc::Literal::isBoundedValueAssignment(const set<string>&) const {
+bool aspc::Literal::isBoundedValueAssignment(const unordered_set<string>&) const {
     return false;
 }
 

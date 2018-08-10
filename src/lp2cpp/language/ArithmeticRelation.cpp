@@ -37,13 +37,13 @@ aspc::ArithmeticRelation::ArithmeticRelation(const aspc::ArithmeticExpression& l
 
 }
 
-void aspc::ArithmeticRelation::addVariablesToSet(set<string>& set) const {
+void aspc::ArithmeticRelation::addVariablesToSet(unordered_set<string>& set) const {
     assert(isBoundedValueAssignment(set));
     set.insert(left.getTerm1());
 
 }
 
-bool aspc::ArithmeticRelation::isBoundedRelation(const set<string>& set) const {
+bool aspc::ArithmeticRelation::isBoundedRelation(const unordered_set<string>& set) const {
     for (const string & t : left.getAllTerms()) {
         if (isVariable(t) && !set.count(t)) {
             return false;
@@ -57,11 +57,11 @@ bool aspc::ArithmeticRelation::isBoundedRelation(const set<string>& set) const {
     return true;
 }
 
-bool aspc::ArithmeticRelation::isBoundedLiteral(const set<string>&) const {
+bool aspc::ArithmeticRelation::isBoundedLiteral(const unordered_set<string>&) const {
     return false;
 }
 
-bool aspc::ArithmeticRelation::isBoundedValueAssignment(const set<string>& set) const {
+bool aspc::ArithmeticRelation::isBoundedValueAssignment(const unordered_set<string>& set) const {
 
     if (comparisonType == aspc::EQ && left.isSingleTerm() && isVariable(left.getTerm1()) && !set.count(left.getTerm1())) {
         for (const string & t : right.getAllTerms()) {

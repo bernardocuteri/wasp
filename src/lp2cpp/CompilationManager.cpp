@@ -150,8 +150,9 @@ void CompilationManager::writeNegativeReasonsFunctions(const aspc::Program & pro
             unordered_set<string> ruleBoundVariables;
             const aspc::Atom & head = r.getHead()[0];
             initRuleBoundVariables(ruleBoundVariables, lit, head, lit.isNegated());
+            vector<const aspc::Formula*> orderedFormulas = r.getOrderedBodyForReasons(ruleBoundVariables);
             for (unsigned i = 0; i < r.getBodySize(); i++) {
-                const aspc::Formula * f = r.getFormulas()[i];
+                const aspc::Formula * f = orderedFormulas[i];
                 if (f -> isLiteral()) {
                     const aspc::Literal * bodyLit = (const aspc::Literal *) f;
                     if (lit.isNegated()) {
@@ -315,8 +316,9 @@ void CompilationManager::writeNegativeReasonsFunctionsPrototypes(const aspc::Pro
             unordered_set<string> ruleBoundVariables;
             const aspc::Atom & head = r.getHead()[0];
             initRuleBoundVariables(ruleBoundVariables, lit, head, false);
+            vector<const aspc::Formula*> orderedFormulas = r.getOrderedBodyForReasons(ruleBoundVariables);
             for (unsigned i = 0; i < r.getBodySize(); i++) {
-                const aspc::Formula * f = r.getFormulas()[i];
+                const aspc::Formula * f = orderedFormulas[i];
                 if (f -> isLiteral()) {
                     const aspc::Literal * bodyLit = (const aspc::Literal *) f;
                     if (lit.isNegated()) {
@@ -842,7 +844,7 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start) {
     vector<unsigned> joinOrder = r.getOrderedBodyIndexesByStarter(start);
     const vector<const aspc::Formula*>& body = r.getFormulas();
     unsigned closingParenthesis = 0;
-    set<string> boundVariables;
+    unordered_set<string> boundVariables;
     //join loops, for each body formula
     for (unsigned i = 0; i < body.size(); i++) {
 
@@ -1029,12 +1031,12 @@ void initRuleBoundVariablesAux(unordered_set<string> & output, const aspc::Liter
     }
 }
 
-void CompilationManager::declareDataStructuresForReasonsOfNegative(const aspc::Program & program, const aspc::Literal & lit, unordered_set<string> & litBoundVariables, unordered_set<string> & openSet) {
+void CompilationManager::declareDataStructuresForReasonsOfNegative(const aspc::Program & program, const aspc::Literal & lit, unordered_set<string> & boundVariables, unordered_set<string> & openSet) {
 
     //TODO use real MG predicates 
 
 
-    string canonicalRep = lit.getCanonicalRepresentation(litBoundVariables);
+    string canonicalRep = lit.getCanonicalRepresentation(boundVariables);
     if (openSet.count(canonicalRep)) {
         return;
     }
@@ -1049,9 +1051,10 @@ void CompilationManager::declareDataStructuresForReasonsOfNegative(const aspc::P
         if (!r.isConstraint() && lit.unifies(r.getHead()[0])) {
             unordered_set<string> ruleBoundVariables;
             const aspc::Atom & head = r.getHead()[0];
-            initRuleBoundVariablesAux(ruleBoundVariables, lit, litBoundVariables, head);
+            initRuleBoundVariablesAux(ruleBoundVariables, lit, boundVariables, head);
+            vector<const aspc::Formula*> orderedFormulas = r.getOrderedBodyForReasons(ruleBoundVariables);
             for (unsigned i = 0; i < r.getBodySize(); i++) {
-                const aspc::Formula * f = r.getFormulas()[i];
+                const aspc::Formula * f = orderedFormulas[i];
                 if (f -> isLiteral()) {
                     const aspc::Literal * bodyLit = (const aspc::Literal *) f;
                     if (lit.isNegated()) {
@@ -1174,7 +1177,7 @@ string evalExpression(const aspc::ArithmeticExpression & expr, const aspc::Rule&
 
 }
 
-bool CompilationManager::handleExpression(const aspc::Rule& r, const aspc::ArithmeticRelation& f, unsigned start, const set<string> & boundVariables) {
+bool CompilationManager::handleExpression(const aspc::Rule& r, const aspc::ArithmeticRelation& f, unsigned start, const unordered_set<string> & boundVariables) {
     if (f.isBoundedRelation(boundVariables)) {
         *out << ind++ << "if(" << evalExpression(f.getLeft(), r, start) + aspc::ArithmeticRelation::comparisonType2String[f.getComparisonType()] + evalExpression(f.getRight(), r, start) << ") {\n";
         return true;

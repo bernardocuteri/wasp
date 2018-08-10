@@ -31,10 +31,10 @@ aspc::Rule::Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & 
 }
 
 aspc::Rule::Rule(const vector<Atom>& head, const vector<Literal> & body, const vector<aspc::ArithmeticRelation>& arithmeticRelations, bool) : Rule(head, body, arithmeticRelations) {
-//    if(true) {
-//        std::random_shuffle(bodyLiterals.begin(), bodyLiterals.end());
-//        
-//    }
+    //    if(true) {
+    //        std::random_shuffle(bodyLiterals.begin(), bodyLiterals.end());
+    //        
+    //    }
     for (unsigned i = 0; i < bodyLiterals.size(); i++) {
         formulas.push_back(new Literal(bodyLiterals.at(i)));
 
@@ -42,9 +42,9 @@ aspc::Rule::Rule(const vector<Atom>& head, const vector<Literal> & body, const v
     for (unsigned i = 0; i < arithmeticRelations.size(); i++) {
         formulas.push_back(new ArithmeticRelation(arithmeticRelations[i]));
     }
-    
-   
-    
+
+
+
 }
 
 aspc::Rule::Rule(const Rule& other) :
@@ -200,7 +200,7 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
 
     for (unsigned starter : starters) {
 
-        set<string> boundVariables;
+        unordered_set<string> boundVariables;
         formulas[starter]->addVariablesToSet(boundVariables);
 
         orderedBodyByStarters[starter].push_back(formulas[starter]);
@@ -208,8 +208,8 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
 
         list<const Formula*> allFormulas;
         //TODO improve
-        for(const Formula* f:formulas) {
-            if(f!=formulas[starter]) {
+        for (const Formula* f : formulas) {
+            if (f != formulas[starter]) {
                 allFormulas.push_back(f);
             }
         }
@@ -266,6 +266,50 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
 
 
 
+}
+
+//TODO remove duplication: duplicated because value invention is treated as check for reasons building
+vector<const aspc::Formula*> aspc::Rule::getOrderedBodyForReasons(unordered_set<string> boundVariables) const {
+    
+    vector<const Formula*> res;
+    list<const Formula*> allFormulas;
+    //TODO improve
+    for (const Formula* f : formulas) {
+        allFormulas.push_back(f);
+    }
+    while (!allFormulas.empty()) {
+        const Formula* boundExpression = NULL;
+        const Formula* boundLiteral = NULL;
+        const Formula* positiveLiteral = NULL;
+        const Formula* selectedFormula = NULL;
+
+        for (list<const Formula*>::iterator formula = allFormulas.begin(); formula != allFormulas.end(); formula++) {
+            if ((*formula)->isBoundedRelation(boundVariables)) {
+                boundExpression = *formula;
+            } else if ((*formula)->isBoundedLiteral(boundVariables)) {
+                boundLiteral = *formula;
+            } else if ((*formula)->isPositiveLiteral()) {
+                positiveLiteral = *formula;
+            }
+        }
+
+        if (boundExpression) {
+            selectedFormula = boundExpression;
+        } else if (boundLiteral) {
+            selectedFormula = boundLiteral;
+        } else {
+            selectedFormula = positiveLiteral;
+        }
+        assert(selectedFormula);
+        if (selectedFormula != boundExpression && selectedFormula != boundLiteral) {
+            selectedFormula->addVariablesToSet(boundVariables);
+        }
+        
+        res.push_back(selectedFormula);
+
+        allFormulas.remove(selectedFormula);
+    }
+    return res;
 }
 
 void aspc::Rule::printOrderedBodies() const {
