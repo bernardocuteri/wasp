@@ -36,6 +36,8 @@ scriptsc.perl = -I/usr/local/include -I$(shell perl -MConfig -e 'print $$Config{
 scriptsld.perl = -L$(shell perl -MConfig -e 'print $$Config{archlib}')/CORE/ -L/usr/local/lib/ -lperl
 cxxscripts.perl = -DENABLE_PERL
 
+cxxscripts.cpp = -DENABLE_CPP
+
 scriptsc.python = $(shell python2.7-config --cflags | sed "s/-Wshorten-64-to-32//g" | sed "s/-Wstrict-prototypes//g" | sed "s/-arch i386//g" | sed "s/-DNDEBUG//g" | sed "s/-Os//g" )
 scriptsld.python = $(shell python2.7-config --ldflags | sed "s/-Wshorten-64-to-32//g" | sed "s/-Wstrict-prototypes//g")
 cxxscripts.python = -DENABLE_PYTHON
@@ -46,7 +48,7 @@ cxxscripts.python3 = -DENABLE_PYTHON -DPYTHON_THREE
 
 scriptsc.all = -I/usr/local/include -I$(shell perl -MConfig -e 'print $$Config{archlib}')/CORE/ $(shell python2.7-config --cflags | sed "s/-Wshorten-64-to-32//g" | sed "s/-Wstrict-prototypes//g" | sed "s/-arch i386//g" | sed "s/-DNDEBUG//g" | sed "s/-Os//g" )
 scriptsld.all = -L$(shell perl -MConfig -e 'print $$Config{archlib}')/CORE/ -L/usr/local/lib/ -lperl $(shell python2.7-config --ldflags | sed "s/-Wshorten-64-to-32//g" | sed "s/-Wstrict-prototypes//g")
-cxxscripts.all = -DENABLE_PERL -DENABLE_PYTHON
+cxxscripts.all = -DENABLE_PERL -DENABLE_PYTHON -DENABLE_CPP
 
 scriptsc.no =
 scriptld.no =
@@ -58,7 +60,7 @@ LIB_DIR = $(BUILD_DIR)/wasplib
 LIB_SRC_DIR = $(BUILD_DIR)/wasplib/src
 LIB_SRC_WASP_DIR = $(BUILD_DIR)/wasplib/wasp
 
-BINARY = $(BUILD_DIR)/wasp
+BINARY = wasp.bin
 GCC = g++
 CXX = $(GCC)
 CXXFLAGS = $(cxxflags.$(BUILD))
@@ -95,12 +97,14 @@ $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cc
 $(BUILD_DIR)/%.d: $(SOURCE_DIR)/%.cc
 	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(SCRIPT_CFLAGS) $(SCRIPT_LDFLAGS) $(CXX_SCRIPTS) -MM -MT '$(@:.d=.o)' $< -MF $@
+
+#why should I put ldl at the end again?
 	
 $(BINARY): $(OBJS) $(OBJSCC) $(DEPS) $(DEPSCC)
-	$(LINK) $(LINKFLAGS) $(SCRIPT_CFLAGS) $(CXX_SCRIPTS) $(LIBS) $(OBJS) $(OBJSCC) $(SCRIPT_LDFLAGS) -o $(BINARY)
+	$(LINK) $(LINKFLAGS) $(SCRIPT_CFLAGS) $(CXX_SCRIPTS) $(LIBS) $(OBJS) $(OBJSCC) $(SCRIPT_LDFLAGS) -o $(BINARY) -ldl
 
 static: $(OBJS) $(OBJSCC) $(DEPS) $(DEPSCC)
-	$(LINK) $(LINKFLAGS) $(SCRIPT_CFLAGS) $(CXX_SCRIPTS) $(LIBS) $(OBJS) $(OBJSCC) $(SCRIPT_LDFLAGS) -static -o $(BINARY)
+	$(LINK) $(LINKFLAGS) $(SCRIPT_CFLAGS) $(CXX_SCRIPTS) $(LIBS) $(OBJS) $(OBJSCC) $(SCRIPT_LDFLAGS) -static -o $(BINARY) -ldl
 
 $(BUILD_DIR)/wasp.a:
 	ar rcs $@ $(OBJS)
@@ -254,6 +258,7 @@ clean-dep:
 	rm -f $(DEPS)  $(DEPSCC)
 clean: clean-dep
 	rm -f $(OBJS)
+	make -f DynamicLibraryMake clean
 
 distclean: clean
 	rm -fr $(BUILD_DIR)
