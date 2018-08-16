@@ -161,7 +161,9 @@ bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation)
     #endif
 
     if (!compilationDone) {
+        cout<<"Writing executor file"<<endl;
         performCompilation();
+        cout<<"Compilation done"<<endl;
         for (const auto & entry : literals) {
             if (compilationManager.getBodyPredicates().count(entry.second->getPredicateName())) {
                 watchedAtoms.push_back(entry.first);
@@ -180,6 +182,7 @@ bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation)
         }
         facts.push_back(lit);
     }
+    cout << "Answer set check" << endl;
     executionManager.executeProgramOnFacts(facts);
     cout << "bad " << executionManager.getFailedConstraints().size() << endl;
     #ifdef PRINT_EXEC_TIMES

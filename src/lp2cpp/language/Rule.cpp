@@ -283,7 +283,7 @@ vector<const aspc::Formula*> aspc::Rule::getOrderedBodyForReasons(unordered_set<
         const Formula* positiveLiteral = NULL;
         const Formula* selectedFormula = NULL;
 
-        for (list<const Formula*>::iterator formula = allFormulas.begin(); formula != allFormulas.end(); formula++) {
+        for (list<const Formula*>::reverse_iterator formula = allFormulas.rbegin(); formula != allFormulas.rend(); formula++) {
             if ((*formula)->isBoundedRelation(boundVariables)) {
                 boundExpression = *formula;
             } else if ((*formula)->isBoundedLiteral(boundVariables)) {
