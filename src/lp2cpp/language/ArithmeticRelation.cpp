@@ -101,7 +101,7 @@ string aspc::ArithmeticRelation::getAssignedVariable(const unordered_set<string>
             return v;
         }
     }
-    throw "error in assignment";
+    throw std::runtime_error("error in assignment");
     
 }
 
@@ -139,7 +139,7 @@ string invertOperation(char op) {
         case '/':
             return "*";
     }
-    throw "unsupported operation "+op;
+    throw std::runtime_error("unsupported operation "+op);
 }
 
 string aspc::ArithmeticRelation::getAssignmentStringRep(const unordered_set<string>& boundVariables) const {
@@ -196,7 +196,7 @@ string aspc::ArithmeticRelation::getAssignmentStringRep(const unordered_set<stri
                 return res + evalRight.getTerm1() + invertOperation(evalRight.getOperation()) + evalRight.getTerm2() + " + " + evalLeft.getTerm1();
             }
         } else {
-            throw "unsupported assignment "+getStringRep();
+            throw std::runtime_error("unsupported assignment "+getStringRep());
         }
     }
 

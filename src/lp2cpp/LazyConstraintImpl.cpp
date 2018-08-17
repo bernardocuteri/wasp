@@ -29,36 +29,13 @@
 #include "ExecutionManager.h"
 #include "language/Literal.h"
 #include "../util/WaspOptions.h"
-#include "utils/FileHasher.h"
+#include "utils/FilesManagement.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/file.h>
-#include <fcntl.h>
-#include <unistd.h>
 
 #ifdef PRINT_EXEC_TIMES
 #include <chrono>
 using namespace std::chrono;
 #endif
-
-int tryGetLock(char const *lockName) {
-    mode_t m = umask(0);
-    int fd = open(lockName, O_RDWR | O_CREAT, 0666);
-    umask(m);
-    if (fd >= 0 && flock(fd, LOCK_EX) < 0) {
-        close(fd);
-        fd = -1;
-    }
-    return fd;
-}
-
-void releaseLock(int fd, char const *lockName) {
-    if (fd < 0)
-        return;
-    remove(lockName);
-    close(fd);
-}
 
 void LazyConstraintImpl::performCompilation() {
 
@@ -72,22 +49,17 @@ void LazyConstraintImpl::performCompilation() {
         }
     }
 
+    FilesManagement fileManagement;
     string executorPath = executablePath + "/src/lp2cpp/Executor.cpp";
-    string executorLock = executorPath + ".lock";
-    int fd = tryGetLock(executorLock.c_str());
-    if (fd < 0) {
-        throw std::runtime_error(executorLock + " lock failed");
-    }
-    FileHasher hasher;
-    string hash = hasher.computeMD5(executorPath);
-
+    int fd = fileManagement.tryGetLock(executorPath);
+    string hash = fileManagement.computeMD5(executorPath);
     std::ofstream outfile(executorPath);
     compilationManager.setOutStream(&outfile);
     compilationManager.lp2cpp(filepath);
     outfile.close();
-    string newHash = hasher.computeMD5(executorPath);
+    string newHash = fileManagement.computeMD5(executorPath);
     executionManager.compileDynamicLibrary(executablePath, newHash != hash);
-    releaseLock(fd, executorLock.c_str());
+    fileManagement.releaseLock(fd, executorPath);
     compilationDone = true;
 }
 

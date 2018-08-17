@@ -78,7 +78,7 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool
         //cout<<command<<endl;
         int commandReturn = system(command.c_str());
         if (commandReturn) {
-            throw std::string("Failed to execute command " + command);
+            throw std::runtime_error("Failed to execute command " + command);
         }
     }
     string executorFile = executablePath + "/Executor.so";

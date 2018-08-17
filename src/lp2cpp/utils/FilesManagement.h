@@ -15,12 +15,16 @@
 #define FILEHASHER_H
 #include <string>
 
-class FileHasher {
+class FilesManagement {
 public:
-    FileHasher();
-    virtual ~FileHasher();
+    FilesManagement();
+    virtual ~FilesManagement();
     std::string computeMD5(const std::string & file_name);
+    int tryGetLock(const std::string & path) const; 
+    void releaseLock(int fd, const std::string & path) const;
 private:
+    void releaseLock(int fd, char const *lockName) const;
+    int tryGetLock(char const *lockName) const;
 
 };
 

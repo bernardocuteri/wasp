@@ -59,7 +59,9 @@ private:
     void writeNegativeReasonsFunctionsPrototypes(const aspc::Program & program, const BoundAnnotatedLiteral & lit,
         list<BoundAnnotatedLiteral> & toProcessLiterals, list<BoundAnnotatedLiteral> & processedLiterals, unordered_map <string, string> & functionsMap);
     void initRuleBoundVariables(unordered_set<string> & ruleBoundVariables, const BoundAnnotatedLiteral & lit, const aspc::Atom & head, bool printVariablesDeclaration);
-    
+    void printLiteralTuple(const aspc::Literal* l, const vector<bool> & coveredMask) ;
+    void printLiteralTuple(const aspc::Literal* l, const unordered_set<string> & boundVariables);
+    void printLiteralTuple(const aspc::Literal* l);
     
     
     std::ostream* out;
@@ -70,9 +72,6 @@ private:
     std::set<std::string> declaredMaps;
     
     //rule id, starter, index in join, 
-    vector< unordered_map < unsigned, vector< vector< pair < unsigned , unsigned > > > > >  joinKeys; 
-    
-    vector< vector < vector < string > > > auxiliaryMapsNameByRuleAndStartIndex;
     
     unordered_map<string, set<string> > predicateToAuxiliaryMaps;
 
