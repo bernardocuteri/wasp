@@ -170,7 +170,7 @@ void CompilationManager::writeNegativeReasonsFunctions(const aspc::Program & pro
                                     if (!first) {
                                         *out << ",";
                                     }
-                                    *out << "ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(bodyLit->getTermAt(term)) << "\"";
+                                    *out << "ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(bodyLit->getTermAt(term)) << "\")";
                                     first = false;
                                 } else if (coveredMask[term]) {
                                     if (!first) {
@@ -199,7 +199,7 @@ void CompilationManager::writeNegativeReasonsFunctions(const aspc::Program & pro
                                             if (!first) {
                                                 *out << ",";
                                             }
-                                            *out << "ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(bodyLit->getTermAt(term)) << "\"";
+                                            *out << "ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(bodyLit->getTermAt(term)) << "\")";
                                             first = false;
                                         } else if (coveredMask[term]) {
                                             if (!first) {
@@ -219,7 +219,7 @@ void CompilationManager::writeNegativeReasonsFunctions(const aspc::Program & pro
                                             if (!first) {
                                                 *out << ",";
                                             }
-                                            *out << "ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(bodyLit->getTermAt(term)) << "\"";
+                                            *out << "ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(bodyLit->getTermAt(term)) << "\")";
                                             first = false;
                                         } else if (coveredMask[term]) {
                                             if (!first) {
@@ -250,7 +250,7 @@ void CompilationManager::writeNegativeReasonsFunctions(const aspc::Program & pro
                                     *out << ",";
                                 }
                                 if (!bodyLit->isVariableTermAt(term)) {
-                                    *out << "ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(bodyLit->getTermAt(term)) << "\"";
+                                    *out << "ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(bodyLit->getTermAt(term)) << "\")";
                                 } else {
                                     *out << bodyLit->getTermAt(term);
                                 }
@@ -278,9 +278,14 @@ void CompilationManager::writeNegativeReasonsFunctions(const aspc::Program & pro
                     //account value invention relations
                     if (lit.isNegated()) {
                         const aspc::ArithmeticRelation * relation = (const aspc::ArithmeticRelation *) f;
-                        *out << ind++ << "if(" << relation->getStringRep() << ") {\n";
-                        ;
-                        forCounter++;
+                        if(f->isBoundedValueAssignment(ruleBoundVariables)) {
+                            *out << ind << "unsigned " <<relation->getAssignmentStringRep(ruleBoundVariables)<<";\n";
+                            ruleBoundVariables.insert(relation->getAssignedVariable(ruleBoundVariables));
+                        }
+                        else {
+                            *out << ind++ << "if(" << relation->getStringRep() << ") {\n";
+                            forCounter++;
+                        }
                     }
 
                 }
@@ -1009,9 +1014,9 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start) {
                 *out << --ind << "}\n";
                 
                 //TESTING FEATURE, LIMIT NUMBER OF FAILED CONSTRAINTS
-                *out << ind++ << "if(failedConstraints.size() >= 1000) {\n";
-                *out << ind << "return;\n";
-                *out << --ind << "}\n";
+//                *out << ind++ << "if(failedConstraints.size() >= 1000) {\n";
+//                *out << ind << "return;\n";
+//                *out << --ind << "}\n";
 
             }
 
@@ -1038,8 +1043,6 @@ void initRuleBoundVariablesAux(unordered_set<string> & output, const aspc::Liter
 }
 
 void CompilationManager::declareDataStructuresForReasonsOfNegative(const aspc::Program & program, const aspc::Literal & lit, unordered_set<string> & boundVariables, unordered_set<string> & openSet) {
-
-    //TODO use real MG predicates 
 
 
     string canonicalRep = lit.getCanonicalRepresentation(boundVariables);

@@ -61,18 +61,50 @@ bool aspc::ArithmeticRelation::isBoundedLiteral(const unordered_set<string>&) co
     return false;
 }
 
-bool aspc::ArithmeticRelation::isBoundedValueAssignment(const unordered_set<string>& set) const {
+bool aspc::ArithmeticRelation::isBoundedValueAssignment(const unordered_set<string>& boundVariables) const {
 
-    if (comparisonType == aspc::EQ && left.isSingleTerm() && isVariable(left.getTerm1()) && !set.count(left.getTerm1())) {
-        for (const string & t : right.getAllTerms()) {
-            if (isVariable(t) && !set.count(t)) {
-                return false;
-            }
-        }
-        return true;
+    //    if (comparisonType == aspc::EQ && left.isSingleTerm() && isVariable(left.getTerm1()) && !set.count(left.getTerm1())) {
+    //        for (const string & t : right.getAllTerms()) {
+    //            if (isVariable(t) && !set.count(t)) {
+    //                return false;
+    //            }
+    //        }
+    //        return true;
+    //    }
+    //    return false;
+    if (comparisonType != aspc::EQ) {
+        return false;
     }
-    return false;
+    unsigned unassignedVariables = 0;
+    for (const string & v : left.getAllTerms()) {
+        if (!boundVariables.count(v) && isVariable(v)) {
+            unassignedVariables++;
+        }
+    }
+    for (const string & v : right.getAllTerms()) {
+        if (!boundVariables.count(v) && isVariable(v)) {
+            unassignedVariables++;
+        }
+    }
+    return unassignedVariables == 1;
 }
+
+string aspc::ArithmeticRelation::getAssignedVariable(const unordered_set<string>& boundVariables) const {
+    assert(isBoundedValueAssignment(boundVariables));
+    for (const string & v : left.getAllTerms()) {
+        if (!boundVariables.count(v) && isVariable(v)) {
+            return v;
+        }
+    }
+    for (const string & v : right.getAllTerms()) {
+        if (!boundVariables.count(v) && isVariable(v)) {
+            return v;
+        }
+    }
+    throw "error in assignment";
+    
+}
+
 
 void aspc::ArithmeticRelation::print() const {
     std::cout << left << " " << comparisonType2String[comparisonType] << " " << right;
@@ -95,3 +127,82 @@ string aspc::ArithmeticRelation::getStringRep() const {
     return left.getStringRep() + " " + comparisonType2String[comparisonType] + " " + right.getStringRep();
 }
 
+
+string invertOperation(char op) {
+    switch(op) {
+        case '+':
+            return "-";
+        case '-':
+            return "+";
+        case '*':
+            return "/";
+        case '/':
+            return "*";
+    }
+    throw "unsupported operation "+op;
+}
+
+string aspc::ArithmeticRelation::getAssignmentStringRep(const unordered_set<string>& boundVariables) const {
+    //    return left.getStringRep() + " = " + right.getStringRep();
+    string res = "";
+    bool leftContainsUnassigned = true;
+    string unassigned;
+    for (const string & v : left.getAllTerms()) {
+        if (!boundVariables.count(v) && isVariable(v)) {
+            res += v;
+            unassigned = v;
+        }
+    }
+    for (const string & v : right.getAllTerms()) {
+        if (!boundVariables.count(v) && isVariable(v)) {
+            res += v;
+            unassigned = v;
+            leftContainsUnassigned = false;
+        }
+    }
+
+    res += " = ";
+
+
+
+    ArithmeticExpression evalLeft = left;
+    ArithmeticExpression evalRight = right;
+
+    if (!leftContainsUnassigned) {
+        evalLeft = right;
+        evalRight = left;
+    }
+
+    //don't use right and left anymore
+    if (evalLeft.isSingleTerm()) {
+        return left.getStringRep() + " = " + right.getStringRep();
+    }
+
+
+    if (!evalLeft.isSingleTerm()) {
+        if (evalLeft.getOperation() == '+') {
+            if (evalLeft.getTerm1() == unassigned) {
+                return res + evalRight.getStringRep() + " - " + evalLeft.getTerm2();
+            }
+            else {
+                return res + evalRight.getStringRep() + " - " + evalLeft.getTerm1();
+            }
+        }
+        else if (evalLeft.getOperation() == '-') {
+            if (evalLeft.getTerm1() == unassigned) {
+                return res + evalRight.getStringRep() + " + " + evalLeft.getTerm2();
+            }
+            else {
+                return res + evalRight.getTerm1() + invertOperation(evalRight.getOperation()) + evalRight.getTerm2() + " + " + evalLeft.getTerm1();
+            }
+        } else {
+            throw "unsupported assignment "+getStringRep();
+        }
+    }
+
+
+
+
+
+
+}

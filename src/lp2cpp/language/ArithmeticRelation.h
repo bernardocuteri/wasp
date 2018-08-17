@@ -62,6 +62,10 @@ namespace aspc {
         }
 
         string getStringRep() const;
+        
+        string getAssignmentStringRep(const unordered_set<string>& boundVariables) const;
+        
+        string getAssignedVariable(const unordered_set<string>& boundVariables) const;
 
 
 

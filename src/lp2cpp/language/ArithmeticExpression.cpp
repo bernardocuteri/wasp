@@ -29,8 +29,8 @@ bool aspc::ArithmeticExpression::isSingleTerm() const{
     return singleTerm;
 }
 
-std::set<std::string> aspc::ArithmeticExpression::getAllTerms() const {
-    std::set<std::string> res;
+std::unordered_set<std::string> aspc::ArithmeticExpression::getAllTerms() const {
+    std::unordered_set<std::string> res;
     res.insert(term1);
     if(!isSingleTerm()) {
         res.insert(term2);

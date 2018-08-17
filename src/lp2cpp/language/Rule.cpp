@@ -231,6 +231,7 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
                     positiveLiteral = *formula;
                 }
             }
+            
 
             if (boundExpression) {
                 selectedFormula = boundExpression;
@@ -269,8 +270,9 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
 }
 
 //TODO remove duplication: duplicated because value invention is treated as check for reasons building
+
 vector<const aspc::Formula*> aspc::Rule::getOrderedBodyForReasons(unordered_set<string> boundVariables) const {
-    
+
     vector<const Formula*> res;
     list<const Formula*> allFormulas;
     //TODO improve
@@ -280,6 +282,7 @@ vector<const aspc::Formula*> aspc::Rule::getOrderedBodyForReasons(unordered_set<
     while (!allFormulas.empty()) {
         const Formula* boundExpression = NULL;
         const Formula* boundLiteral = NULL;
+        const Formula* boundValueAssignment = NULL;
         const Formula* positiveLiteral = NULL;
         const Formula* selectedFormula = NULL;
 
@@ -288,7 +291,11 @@ vector<const aspc::Formula*> aspc::Rule::getOrderedBodyForReasons(unordered_set<
                 boundExpression = *formula;
             } else if ((*formula)->isBoundedLiteral(boundVariables)) {
                 boundLiteral = *formula;
-            } else if ((*formula)->isPositiveLiteral()) {
+            } 
+            else if ((*formula)->isBoundedValueAssignment(boundVariables)) {
+                boundValueAssignment = *formula;
+            }
+            else if ((*formula)->isPositiveLiteral()) {
                 positiveLiteral = *formula;
             }
         }
@@ -297,6 +304,8 @@ vector<const aspc::Formula*> aspc::Rule::getOrderedBodyForReasons(unordered_set<
             selectedFormula = boundExpression;
         } else if (boundLiteral) {
             selectedFormula = boundLiteral;
+        } else if (boundValueAssignment) {
+            selectedFormula = boundValueAssignment;
         } else {
             selectedFormula = positiveLiteral;
         }
@@ -304,7 +313,7 @@ vector<const aspc::Formula*> aspc::Rule::getOrderedBodyForReasons(unordered_set<
         if (selectedFormula != boundExpression && selectedFormula != boundLiteral) {
             selectedFormula->addVariablesToSet(boundVariables);
         }
-        
+
         res.push_back(selectedFormula);
 
         allFormulas.remove(selectedFormula);
