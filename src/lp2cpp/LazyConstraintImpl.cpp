@@ -55,7 +55,7 @@ void LazyConstraintImpl::performCompilation() {
     string hash = fileManagement.computeMD5(executorPath);
     std::ofstream outfile(executorPath);
     compilationManager.setOutStream(&outfile);
-    compilationManager.lp2cpp(filepath);
+    compilationManager.lp2cpp();
     outfile.close();
     string newHash = fileManagement.computeMD5(executorPath);
     executionManager.compileDynamicLibrary(executablePath, newHash != hash);
@@ -67,6 +67,12 @@ void LazyConstraintImpl::setFilename(const std::string & fileDirectory, const st
     this-> fileDirectory = fileDirectory;
     this -> filename = filename;
     this -> filepath = fileDirectory + "/" + filename;
+    FilesManagement fileManagement;
+    if(!fileManagement.exists(filepath)) {
+        throw std::runtime_error("Failed to compile lazy program: file " + filepath +" does not exist.");
+    }
+    compilationManager.loadLazyProgram(filepath);
+    
 
 
 }
@@ -113,6 +119,9 @@ void LazyConstraintImpl::addedVarName(int var, const std::string & literalString
     this->literals[var] = atom;
     literalsMap[*atom] = var;
     compilationManager.insertModelGeneratorPredicate(atom->getPredicateName());
+    if (compilationManager.getBodyPredicates().count(atom->getPredicateName())) {
+        watchedAtoms.push_back(var);
+    }
 
 }
 

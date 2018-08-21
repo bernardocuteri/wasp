@@ -22,6 +22,7 @@ public:
     std::string computeMD5(const std::string & file_name);
     int tryGetLock(const std::string & path) const; 
     void releaseLock(int fd, const std::string & path) const;
+    bool exists (const std::string& name) const;
 private:
     void releaseLock(int fd, char const *lockName) const;
     int tryGetLock(char const *lockName) const;

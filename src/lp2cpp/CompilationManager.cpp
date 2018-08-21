@@ -44,19 +44,21 @@ void CompilationManager::setOutStream(std::ostream* outputTarget) {
     this->out = outputTarget;
 }
 
-void CompilationManager::lp2cpp(const string &filename) {
+void CompilationManager::lp2cpp() {
+    generateStratifiedCompilableProgram(builder->getProgram(), builder);
+    delete builder;
+}
+
+void CompilationManager::loadLazyProgram(const std::string& filename) {
     DLV2::InputDirector director;
-    AspCore2ProgramBuilder* builder = new AspCore2ProgramBuilder();
+    builder = new AspCore2ProgramBuilder();
     director.configureBuilder(builder);
     vector<const char*> fileNames;
     fileNames.push_back(filename.c_str());
     director.parse(fileNames);
-    //    generateCompilableProgram(builder->getProgram(), builder);
-    //builder->getProgram().print();
-    generateStratifiedCompilableProgram(builder->getProgram(), builder);
-    delete builder;
-
+    bodyPredicates = builder->getProgram().getBodyPredicates();
 }
+
 
 void CompilationManager::initRuleBoundVariables(unordered_set<string> & ruleBoundVariables, const BoundAnnotatedLiteral & lit, const aspc::Atom & head, bool printVariablesDeclaration) {
     unsigned counter = 0;
@@ -429,7 +431,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     //perform join functions    
 
-    bodyPredicates = program.getBodyPredicates();
 
     GraphWithTarjanAlgorithm& graphWithTarjanAlgorithm = builder->getGraphWithTarjanAlgorithm();
     vector< vector <int> > sccs = graphWithTarjanAlgorithm.SCC();
@@ -1054,7 +1055,7 @@ void CompilationManager::declareDataStructuresForReasonsOfNegative(const aspc::P
                             temp.setNegated(false);
                             declareDataStructuresForReasonsOfNegative(program, temp, ruleBoundVariables, openSet);
                         }
-                    } else if (!modelGeneratorPredicates.count(bodyLit -> getPredicateName())) {
+                    } else if (!modelGeneratorPredicates.count(bodyLit -> getPredicateName()) || bodyLit->isNegated()) {
                         unordered_set<string> bodyLitVariables = bodyLit->getVariables();
                         declareDataStructuresForReasonsOfNegative(program, *bodyLit, bodyLitVariables, openSet);
                     }

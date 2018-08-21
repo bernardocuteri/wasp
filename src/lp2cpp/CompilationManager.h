@@ -29,13 +29,14 @@
 class CompilationManager {
 public:
     CompilationManager();
-    void lp2cpp(const std::string & filename);
+    void lp2cpp();
     void generateStratifiedCompilableProgram(aspc::Program & program, AspCore2ProgramBuilder* builder);
     void setOutStream(std::ostream* outputTarget);
     const std::set<std::string> & getBodyPredicates();
     void insertModelGeneratorPredicate(const string & p) {
         modelGeneratorPredicates.insert(p);
     }
+    void loadLazyProgram(const std::string & filename);
 
     
 private:
@@ -65,19 +66,20 @@ private:
     
     
     std::ostream* out;
+    
     std::set<std::string> bodyPredicates;
     
     Indentation ind;
     
     std::set<std::string> declaredMaps;
     
-    //rule id, starter, index in join, 
+    AspCore2ProgramBuilder* builder;
     
     unordered_map<string, set<string> > predicateToAuxiliaryMaps;
 
     unordered_map<string, set<string> > predicateToFalseAuxiliaryMaps;
     
-    unordered_set<string> modelGeneratorPredicates;
+    unordered_set<string> modelGeneratorPredicates = {"reachable_from"};
     
     unordered_set<string> modelGeneratorPredicatesInNegativeReasons;
 };

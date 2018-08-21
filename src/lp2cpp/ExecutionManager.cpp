@@ -30,6 +30,7 @@
 #include <dlfcn.h>
 #include <stdlib.h>
 #include "language/Program.h"
+#include "utils/FilesManagement.h"
 #include <cassert>
 
 ExecutionManager::ExecutionManager() {
@@ -73,7 +74,9 @@ void ExecutionManager::parseFactsAndExecute(const char *filename) {
 #ifndef LP2CPP_DEBUG
 void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool fileHasChanged) {
 
-    if(fileHasChanged) {
+    string executorFile = executablePath + "/Executor.so";
+    FilesManagement fileManagement;
+    if(fileHasChanged || !fileManagement.exists(executorFile)) {
         string command = "cd " + executablePath + " && make -f DynamicLibraryMake -s";
         //cout<<command<<endl;
         int commandReturn = system(command.c_str());
@@ -81,7 +84,7 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool
             throw std::runtime_error("Failed to execute command " + command);
         }
     }
-    string executorFile = executablePath + "/Executor.so";
+    
     void* handle = dlopen(executorFile.c_str(), RTLD_LAZY);
     if (!handle) {
         fprintf(stderr, "%s\n", dlerror());

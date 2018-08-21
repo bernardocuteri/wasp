@@ -18,6 +18,7 @@
 #include <sys/file.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <fstream>
 
 #define STR_VALUE(val) #val
 #define STR(name) STR_VALUE(name)
@@ -51,7 +52,6 @@ std::string FilesManagement::computeMD5(const std::string & file_name) {
     return md5_sum;
 }
 
-
 int FilesManagement::tryGetLock(char const *lockName) const {
     mode_t m = umask(0);
     int fd = open(lockName, O_RDWR | O_CREAT, 0666);
@@ -63,9 +63,8 @@ int FilesManagement::tryGetLock(char const *lockName) const {
     return fd;
 }
 
-
 void FilesManagement::releaseLock(int fd, const std::string & path) const {
-    std::string lock = path+".lock";
+    std::string lock = path + ".lock";
     releaseLock(fd, lock.c_str());
 }
 
@@ -85,3 +84,7 @@ int FilesManagement::tryGetLock(const std::string& path) const {
     return fd;
 }
 
+bool FilesManagement::exists(const std::string& name) const {
+    std::ifstream f(name.c_str());
+    return f.good();
+}
