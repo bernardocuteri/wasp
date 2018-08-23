@@ -30,8 +30,6 @@
 #include <unordered_map>
 #include "Tuple.h"
 
-using namespace std;
-
 struct VectorHash {
 
     inline size_t operator()(const std::vector<unsigned>& v) const {
@@ -46,15 +44,15 @@ struct VectorHash {
 
 class AuxiliaryMap {
 public:
-    AuxiliaryMap(const vector<unsigned> & keyIndices);
+    AuxiliaryMap(const std::vector<unsigned> & keyIndices);
     void insert2(const Tuple & value);
-    const vector<const Tuple* >& getValues(const vector<unsigned>& tuple) const;
+    const std::vector<const Tuple* >& getValues(const std::vector<unsigned>& tuple) const;
     void clear();
 protected:
-    unordered_map<vector<unsigned>, vector< const Tuple* >, VectorHash > tuples;
+    std::unordered_map<std::vector<unsigned>, std::vector< const Tuple* >, VectorHash > tuples;
     unsigned keySize;
-    vector<unsigned> keyIndices;
-    static const vector< const Tuple* > EMPTY_RESULT;
+    std::vector<unsigned> keyIndices;
+    static const std::vector< const Tuple* > EMPTY_RESULT;
 };
 
 #endif /* AUXILIARYMAP_H */

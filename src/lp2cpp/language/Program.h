@@ -33,29 +33,29 @@ namespace aspc {
         virtual ~Program();
         void addRule(const aspc::Rule & r);
         void addFact(const aspc::Atom & f);
-        void addPredicate(const string& name, const unsigned ariety);
-        const set< pair<string, unsigned> >& getPredicates() const;
+        void addPredicate(const std::string& name, const unsigned ariety);
+        const std::set< std::pair<std::string, unsigned> >& getPredicates() const;
         unsigned getRulesSize() const;
-        const vector<aspc::Rule>& getRules() const;
-        vector<aspc::Rule>& getRules();
+        const std::vector<aspc::Rule>& getRules() const;
+        std::vector<aspc::Rule>& getRules();
         unsigned getFactsSize() const;
         const aspc::Rule & getRule(unsigned i) const;
         const aspc::Atom & getFact(unsigned i) const;
-        const vector<aspc::Atom> & getFacts() const;
-        const map<RuleType, map<string, set<unsigned> > > & getRulesByType() const;
-        const set<unsigned> & getRulesByTypeAndPredicateName(const string & predicateName, RuleType type) const;
+        const std::vector<aspc::Atom> & getFacts() const;
+        const std::map<RuleType, std::map<std::string, std::set<unsigned> > > & getRulesByType() const;
+        const std::set<unsigned> & getRulesByTypeAndPredicateName(const std::string & predicateName, RuleType type) const;
         void clearFacts();
         void print() const;
-        set<string> getBodyPredicates() const;
+        std::set<std::string> getBodyPredicates() const;
         bool hasConstraint() const;
 
     private:
-        vector<aspc::Rule> rules; //only rules are compiled
-        vector<aspc::Atom> facts; //not compiled
-        set< pair<string, unsigned> > predicates;
+        std::vector<aspc::Rule> rules; //only rules are compiled
+        std::vector<aspc::Atom> facts; //not compiled
+        std::set< std::pair<std::string, unsigned> > predicates;
 
 
-        map<RuleType, map<string, set<unsigned> > > rules_by_type;
+        std::map<RuleType, std::map<std::string, std::set<unsigned> > > rules_by_type;
 
     };
 }

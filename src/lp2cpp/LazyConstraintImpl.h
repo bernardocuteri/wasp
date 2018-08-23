@@ -61,7 +61,7 @@ struct LiteralHash {
         for (unsigned i : v.getAtom().getIntTuple()) {
             seed ^= hasher(i) + (seed << 6) + (seed >> 2);
         }
-        return (hash<string>()(v.getPredicateName())) ^ seed;
+        return (std::hash<std::string>()(v.getPredicateName())) ^ seed;
     }
 };
 
@@ -72,7 +72,7 @@ public:
     virtual bool checkAnswerSet(const std::vector<int> & interpretation) override;
     virtual void onCheckFail(std::vector<int> & constraints) override;
     virtual const std::vector<unsigned int> & getVariablesToFreeze() override;
-    virtual const string & getFilepath() const;
+    virtual const std::string & getFilepath() const;
     virtual ~LazyConstraintImpl();
 
 
@@ -84,7 +84,7 @@ private:
     CompilationManager compilationManager;
     std::unordered_map<aspc::Literal, int, LiteralHash> literalsMap;
     std::vector<unsigned> watchedAtoms;
-    string filepath;
+    std::string filepath;
     bool compilationDone = false;
     
     std::string fileDirectory;

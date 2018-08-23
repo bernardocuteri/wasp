@@ -33,24 +33,23 @@
 #include "../language/ArithmeticRelation.h"
 #include <vector>
 #include <unordered_map>
-using namespace std;
 
 class AspCore2ProgramBuilder : public DLV2::InputBuilder {
 private:
     aspc::Program program;
-    vector<string> buildingTerms;
-    vector<aspc::Literal> buildingBody;
-    vector<aspc::Atom> buildingHead;
-    map<string, unsigned> arietyMap;
+    std::vector<std::string> buildingTerms;
+    std::vector<aspc::Literal> buildingBody;
+    std::vector<aspc::Atom> buildingHead;
+    std::map<std::string, unsigned> arietyMap;
     bool naf;
     aspc::ComparisonType inequalitySign;
     char arithOp;
     aspc::ArithmeticExpression expression;
-    vector<aspc::ArithmeticRelation> inequalities;
-    string predicateName;
+    std::vector<aspc::ArithmeticRelation> inequalities;
+    std::string predicateName;
     GraphWithTarjanAlgorithm graphWithTarjanAlgorithm;
-    unordered_map<string, int> predicateIDs;
-    unordered_map<int, Vertex> vertexByID;
+    std::unordered_map<std::string, int> predicateIDs;
+    std::unordered_map<int, Vertex> vertexByID;
     void buildExpression();
 public:
     AspCore2ProgramBuilder();
@@ -147,16 +146,16 @@ public:
     
     aspc::Program & getProgram();
     
-    const map<string, unsigned> & getArietyMap();
+    const  std::map<std::string, unsigned> & getArietyMap();
     
 //    const void printSCC(){
-//        vector<vector<int> > SCC = graphWithTarjanAlgorithm.SCC();
+//        std::vector<std::vector<int> > SCC = graphWithTarjanAlgorithm.SCC();
 //        for(int i = 0;i< SCC.size();i++)
 //        {
 //            cout<< "componente "<< i <<endl;
 //            for(int j = 0;j< SCC[i].size();j++)
 //            {
-//                unordered_map<int, Vertex>::iterator it = vertexByID.find(SCC[i][j]);
+//                std::unordered_map<int, Vertex>::iterator it = vertexByID.find(SCC[i][j]);
 //                Vertex current = it->second;
 //                cout<< current.id << "  " << current.name<<endl;
 //                for(int c = 0; c< current.rules.size();c++)
@@ -167,8 +166,8 @@ public:
     
     GraphWithTarjanAlgorithm& getGraphWithTarjanAlgorithm();
 
-    const unordered_map<int, Vertex>& getVertexByIDMap() const;
-    const unordered_map<string, int>& getPredicateIDsMap() const;
+    const std::unordered_map<int, Vertex>& getVertexByIDMap() const;
+    const std::unordered_map<std::string, int>& getPredicateIDsMap() const;
 
 };
 

@@ -21,6 +21,8 @@
 #include <climits>
 #include <iostream>
 
+using namespace std;
+
 const unsigned halfMaxInt = UINT_MAX / 2;
 
 ConstantsManager::ConstantsManager() : constantsCounter(halfMaxInt) {

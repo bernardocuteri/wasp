@@ -165,7 +165,7 @@ bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation)
     }
     cout << "Answer set check" << endl;
     executionManager.executeProgramOnFacts(facts);
-    cout << "bad " << executionManager.getFailedConstraints().size() << endl;
+    cout << "Violations: " << executionManager.getFailedConstraints().size() << endl;
     #ifdef PRINT_EXEC_TIMES
     cout<<"END lazy evaluation"<<endl;
     t2 = high_resolution_clock::now();

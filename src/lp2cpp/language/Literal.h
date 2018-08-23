@@ -26,39 +26,39 @@ namespace aspc {
 
     class Literal : public aspc::Formula {
     public:
-        Literal(const string & predicateName);
-        Literal(const string & predicateName, bool negated);
+        Literal(const std::string & predicateName);
+        Literal(const std::string & predicateName, bool negated);
         Literal(bool negated, const aspc::Atom & atom);
         Literal(const Literal &);
         virtual ~Literal();
 
         void negate();
         bool isNegated() const;
-        const string & getTermAt(unsigned i) const;
+        const std::string & getTermAt(unsigned i) const;
         bool isVariableTermAt(unsigned i) const;
-        const string & getPredicateName() const;
+        const std::string & getPredicateName() const;
         unsigned getAriety() const;
         const aspc::Atom & getAtom() const;
-        const vector<string>& getTerms() const;
-        void addTerm(const string &);
+        const std::vector<std::string>& getTerms() const;
+        void addTerm(const std::string &);
         bool operator==(const Literal& right) const;
         Tuple getTuple(unsigned id) const;
         void setNegated(bool);
-        unordered_set<string> getVariables() const;
+        std::unordered_set<std::string> getVariables() const;
         bool unifies(const aspc::Literal & right) const;
         bool unifies(const aspc::Atom & right) const;
-        string getCanonicalRepresentation(const unordered_set<string> & litBoundVariables) const;
+        std::string getCanonicalRepresentation(const std::unordered_set<std::string> & litBoundVariables) const;
         void transformToCanonicalRep();
         bool isGround() const;
 
-        virtual bool isBoundedRelation(const unordered_set<string> &) const override;
-        virtual bool isBoundedLiteral(const unordered_set<string> &) const override;
-        virtual bool isBoundedValueAssignment(const unordered_set<string> &) const override;
-        virtual void addVariablesToSet(unordered_set<string> &) const override;
+        virtual bool isBoundedRelation(const std::unordered_set<std::string> &) const override;
+        virtual bool isBoundedLiteral(const std::unordered_set<std::string> &) const override;
+        virtual bool isBoundedValueAssignment(const std::unordered_set<std::string> &) const override;
+        virtual void addVariablesToSet(std::unordered_set<std::string> &) const override;
         virtual bool isPositiveLiteral() const override;
         virtual void print() const override;
         virtual bool isLiteral() const override;
-        virtual unsigned firstOccurrenceOfVariableInLiteral(const string & v) const override;
+        virtual unsigned firstOccurrenceOfVariableInLiteral(const std::string & v) const override;
 
 
 

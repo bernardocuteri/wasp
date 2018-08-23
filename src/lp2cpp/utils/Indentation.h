@@ -26,14 +26,13 @@
 #ifndef INDENTATION_H
 #define	INDENTATION_H
 #include <ostream>
-using namespace std;
 
 class Indentation {
     
 public:
     Indentation(int depth);
     Indentation(const Indentation & ind);
-    friend ostream & operator<<(ostream& o, const Indentation & i);
+    friend std::ostream & operator<<(std::ostream& o, const Indentation & i);
     Indentation operator++(int);
     Indentation & operator++();
     Indentation operator--(int);

@@ -23,9 +23,6 @@
 #include <iostream>
 #include "../datastructures/Tuple.h"
 #include "../utils/ConstantsManager.h"
-using namespace std;
-
-
 
 
 
@@ -36,28 +33,28 @@ namespace aspc {
 
     public:
 
-        Atom(const string & predicateName) : predicateName(ConstantsManager::getInstance().getPredicateName(predicateName)) {
+        Atom(const std::string & predicateName) : predicateName(ConstantsManager::getInstance().getPredicateName(predicateName)) {
         }
 
-        Atom(const string & predicateName, const vector<string> & terms);
+        Atom(const std::string & predicateName, const std::vector<std::string> & terms);
         Atom(const Atom &);
         virtual ~Atom();
-        const string & getPredicateName() const;
-        const string & getTermAt(unsigned) const;
-        void addTerm(const string &);
+        const std::string & getPredicateName() const;
+        const std::string & getTermAt(unsigned) const;
+        void addTerm(const std::string &);
         unsigned getTermsSize() const;
-        const vector<string> & getTerms() const;
+        const std::vector<std::string> & getTerms() const;
         unsigned getAriety() const;
         bool isVariableTermAt(unsigned) const;
-        vector<unsigned> getIntTuple() const;
+        std::vector<unsigned> getIntTuple() const;
         Tuple getTuple(unsigned id, bool) const;
         void print() const;
-        string toString() const;
+        std::string toString() const;
         bool unifies(const Atom & right) const;
-        string getCanonicalRepresentation(const unordered_set<string> & litBoundVariables) const;
+        std::string getCanonicalRepresentation(const std::unordered_set<std::string> & litBoundVariables) const;
         void transformToCanonicalRep();
-        void getCoveredVariables(const unordered_set<string> & variables, vector<unsigned> & output) const;
-        void getBoundTermsMask(const unordered_set<string> & boundVariables, vector<bool> & output) const;
+        void getCoveredVariables(const std::unordered_set<std::string> & variables, std::vector<unsigned> & output) const;
+        void getBoundTermsMask(const std::unordered_set<std::string> & boundVariables, std::vector<bool> & output) const;
         bool operator==(const Atom& right) const {
                 
             return predicateName == (right.predicateName) && terms == right.terms;
@@ -67,8 +64,8 @@ namespace aspc {
 
         
     private:
-        const string & predicateName;
-        vector<string> terms;
+        const std::string & predicateName;
+        std::vector<std::string> terms;
     };
 
 }

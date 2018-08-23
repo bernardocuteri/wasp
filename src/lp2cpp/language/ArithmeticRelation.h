@@ -15,10 +15,8 @@
 #define ARITHMETICRELATION_H
 #include "Formula.h"
 #include "ArithmeticExpression.h"
-#include <set> 
 #include <string>
 #include <map>
-using namespace std;
 
 namespace aspc {
     
@@ -29,21 +27,21 @@ namespace aspc {
 
     class ArithmeticRelation : public Formula {
     public:
-        static map<ComparisonType, string> comparisonType2String;
+        static std::map<aspc::ComparisonType, std::string> comparisonType2String;
 
 
 
     public:
         ArithmeticRelation(const aspc::ArithmeticExpression & left, const aspc::ArithmeticExpression & right, aspc::ComparisonType comparisonType);
 
-        virtual bool isBoundedRelation(const unordered_set<string> &) const override;
-        virtual bool isBoundedLiteral(const unordered_set<string> &) const override;
-        virtual bool isBoundedValueAssignment(const unordered_set<string> &) const override;
-        virtual void addVariablesToSet(unordered_set<string> &) const override;
+        virtual bool isBoundedRelation(const std::unordered_set<std::string> &) const override;
+        virtual bool isBoundedLiteral(const std::unordered_set<std::string> &) const override;
+        virtual bool isBoundedValueAssignment(const std::unordered_set<std::string> &) const override;
+        virtual void addVariablesToSet(std::unordered_set<std::string> &) const override;
         virtual bool isPositiveLiteral() const override;
         virtual void print() const override;
         virtual bool isLiteral() const override;
-        virtual unsigned firstOccurrenceOfVariableInLiteral(const string &) const override;
+        virtual unsigned firstOccurrenceOfVariableInLiteral(const std::string &) const override;
 
         virtual ~ArithmeticRelation() {
 
@@ -61,11 +59,11 @@ namespace aspc {
             return right;
         }
 
-        string getStringRep() const;
+        std::string getStringRep() const;
         
-        string getAssignmentStringRep(const unordered_set<string>& boundVariables) const;
+        std::string getAssignmentStringRep(const std::unordered_set<std::string>& boundVariables) const;
         
-        string getAssignedVariable(const unordered_set<string>& boundVariables) const;
+        std::string getAssignedVariable(const std::unordered_set<std::string>& boundVariables) const;
 
 
 

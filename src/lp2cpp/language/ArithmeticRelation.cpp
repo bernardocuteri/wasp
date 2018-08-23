@@ -16,7 +16,7 @@
 #include <iostream>
 #include <cassert>
 
-
+using namespace std;
 
 std::map<aspc::ComparisonType, std::string> aspc::ArithmeticRelation::comparisonType2String = {
     {GT, ">"},
@@ -28,7 +28,7 @@ std::map<aspc::ComparisonType, std::string> aspc::ArithmeticRelation::comparison
 
 };
 
-bool isVariable(const string & v) {
+bool isVariable(const std::string & v) {
     return (v[0] >= 'A' && v[0] <= 'Z');
 
 }
@@ -37,19 +37,19 @@ aspc::ArithmeticRelation::ArithmeticRelation(const aspc::ArithmeticExpression& l
 
 }
 
-void aspc::ArithmeticRelation::addVariablesToSet(unordered_set<string>& set) const {
+void aspc::ArithmeticRelation::addVariablesToSet(std::unordered_set<std::string>& set) const {
     assert(isBoundedValueAssignment(set));
     set.insert(left.getTerm1());
 
 }
 
-bool aspc::ArithmeticRelation::isBoundedRelation(const unordered_set<string>& set) const {
-    for (const string & t : left.getAllTerms()) {
+bool aspc::ArithmeticRelation::isBoundedRelation(const std::unordered_set<std::string>& set) const {
+    for (const std::string & t : left.getAllTerms()) {
         if (isVariable(t) && !set.count(t)) {
             return false;
         }
     }
-    for (const string & t : right.getAllTerms()) {
+    for (const std::string & t : right.getAllTerms()) {
         if (isVariable(t) && !set.count(t)) {
             return false;
         }
@@ -57,11 +57,11 @@ bool aspc::ArithmeticRelation::isBoundedRelation(const unordered_set<string>& se
     return true;
 }
 
-bool aspc::ArithmeticRelation::isBoundedLiteral(const unordered_set<string>&) const {
+bool aspc::ArithmeticRelation::isBoundedLiteral(const std::unordered_set<std::string>&) const {
     return false;
 }
 
-bool aspc::ArithmeticRelation::isBoundedValueAssignment(const unordered_set<string>& boundVariables) const {
+bool aspc::ArithmeticRelation::isBoundedValueAssignment(const std::unordered_set<std::string>& boundVariables) const {
 
     //    if (comparisonType == aspc::EQ && left.isSingleTerm() && isVariable(left.getTerm1()) && !set.count(left.getTerm1())) {
     //        for (const string & t : right.getAllTerms()) {
@@ -76,12 +76,12 @@ bool aspc::ArithmeticRelation::isBoundedValueAssignment(const unordered_set<stri
         return false;
     }
     unsigned unassignedVariables = 0;
-    for (const string & v : left.getAllTerms()) {
+    for (const std::string & v : left.getAllTerms()) {
         if (!boundVariables.count(v) && isVariable(v)) {
             unassignedVariables++;
         }
     }
-    for (const string & v : right.getAllTerms()) {
+    for (const std::string & v : right.getAllTerms()) {
         if (!boundVariables.count(v) && isVariable(v)) {
             unassignedVariables++;
         }
@@ -89,14 +89,14 @@ bool aspc::ArithmeticRelation::isBoundedValueAssignment(const unordered_set<stri
     return unassignedVariables == 1;
 }
 
-string aspc::ArithmeticRelation::getAssignedVariable(const unordered_set<string>& boundVariables) const {
+std::string aspc::ArithmeticRelation::getAssignedVariable(const unordered_set<std::string>& boundVariables) const {
     assert(isBoundedValueAssignment(boundVariables));
-    for (const string & v : left.getAllTerms()) {
+    for (const std::string & v : left.getAllTerms()) {
         if (!boundVariables.count(v) && isVariable(v)) {
             return v;
         }
     }
-    for (const string & v : right.getAllTerms()) {
+    for (const std::string & v : right.getAllTerms()) {
         if (!boundVariables.count(v) && isVariable(v)) {
             return v;
         }

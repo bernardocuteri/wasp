@@ -33,6 +33,8 @@
 #include "utils/FilesManagement.h"
 #include <cassert>
 
+using namespace std;
+
 ExecutionManager::ExecutionManager() {
 }
 

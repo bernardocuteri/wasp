@@ -22,6 +22,7 @@
 #include <cassert>
 #include <algorithm>
 
+using namespace std;
 
 unsigned aspc::Rule::rulesCounter = 0;
 string aspc::Rule::inequalityStrings[] = {">=", "<=", ">", "<", "!=", "=="};
@@ -223,10 +224,10 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
             for (list<const Formula*>::const_reverse_iterator formula = allFormulas.rbegin(); formula != allFormulas.rend(); formula++) {
                 if ((*formula)->isBoundedRelation(boundVariables)) {
                     boundExpression = *formula;
-                } else if ((*formula)->isBoundedLiteral(boundVariables)) {
-                    boundLiteral = *formula;
                 } else if ((*formula)->isBoundedValueAssignment(boundVariables)) {
                     boundValueAssignment = *formula;
+                } else if ((*formula)->isBoundedLiteral(boundVariables)) {
+                    boundLiteral = *formula;
                 } else if ((*formula)->isPositiveLiteral()) {
                     positiveLiteral = *formula;
                 }
@@ -235,11 +236,11 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
 
             if (boundExpression) {
                 selectedFormula = boundExpression;
-            } else if (boundLiteral) {
-                selectedFormula = boundLiteral;
             } else if (boundValueAssignment) {
                 selectedFormula = boundValueAssignment;
-            } else {
+            } else if (boundLiteral) {
+                selectedFormula = boundLiteral;
+            }  else {
                 selectedFormula = positiveLiteral;
             }
             assert(selectedFormula);
@@ -289,24 +290,22 @@ vector<const aspc::Formula*> aspc::Rule::getOrderedBodyForReasons(unordered_set<
         for (list<const Formula*>::reverse_iterator formula = allFormulas.rbegin(); formula != allFormulas.rend(); formula++) {
             if ((*formula)->isBoundedRelation(boundVariables)) {
                 boundExpression = *formula;
+            } else if ((*formula)->isBoundedValueAssignment(boundVariables)) {
+                boundValueAssignment = *formula;
             } else if ((*formula)->isBoundedLiteral(boundVariables)) {
                 boundLiteral = *formula;
-            } 
-            else if ((*formula)->isBoundedValueAssignment(boundVariables)) {
-                boundValueAssignment = *formula;
-            }
-            else if ((*formula)->isPositiveLiteral()) {
+            } else if ((*formula)->isPositiveLiteral()) {
                 positiveLiteral = *formula;
             }
         }
 
         if (boundExpression) {
             selectedFormula = boundExpression;
-        } else if (boundLiteral) {
-            selectedFormula = boundLiteral;
         } else if (boundValueAssignment) {
             selectedFormula = boundValueAssignment;
-        } else {
+        } else if (boundLiteral) {
+            selectedFormula = boundLiteral;
+        }  else {
             selectedFormula = positiveLiteral;
         }
         assert(selectedFormula);

@@ -22,15 +22,14 @@
 #include <vector>
 #include <string>
 #define NIL -1
-using namespace std;
  
 struct Vertex
 {
     int id;
-    string name;
-    vector <unsigned int> rules;
+    std::string name;
+    std::vector <unsigned int> rules;
     Vertex():id(-1),name("Invalid vertex"){};
-    Vertex(int _id,string name_):id(_id),name(name_){};
+    Vertex(int _id, std::string name_):id(_id),name(name_){};
     void addRule (int ruleID){
         rules.push_back(ruleID);
     }
@@ -39,15 +38,15 @@ struct Vertex
 // A class that represents an directed graph
 class GraphWithTarjanAlgorithm
 {
-    vector< list<int>  > adj;  
+    std::vector< std::list<int>  > adj;  
  
     // A Recursive DFS based function used by SCC()
     void SCCUtil(int u, int disc[], int low[],
-                 stack<int>& st, bool stackMember[], vector< vector<int> >& scc);
+                 std::stack<int>& st, bool stackMember[], std::vector< std::vector<int> >& scc);
 public:
     GraphWithTarjanAlgorithm(){}
     void addEdge(unsigned int v, unsigned int w);   // function to add an edge to graph
-    const vector< vector <int> > SCC() ;    // prints strongly connected components
+    const std::vector< std::vector <int> > SCC() ;    // prints strongly connected components
 };
 
 

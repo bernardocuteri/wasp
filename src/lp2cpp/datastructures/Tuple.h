@@ -16,26 +16,25 @@
 #include <vector>
 #include <string>
 #include <unordered_set>
-using namespace std;
 
 struct TupleHash;
 
-class Tuple : public vector<unsigned> {
+class Tuple : public std::vector<unsigned> {
 public:
-    Tuple(size_type id, const string* predicateName, bool negated=false);
+    Tuple(size_type id, const std::string* predicateName, bool negated=false);
 
     Tuple(const Tuple& orig);
     virtual ~Tuple();
     
     Tuple(const std::initializer_list<unsigned> & l, bool negated = false) :
-        vector<unsigned>(l), id(0), predicateName(NULL), negated(negated){
+        std::vector<unsigned>(l), id(0), predicateName(NULL), negated(negated){
     }
 
-    Tuple(const std::initializer_list<unsigned> & l, size_type id, const string * predicateName, bool negated = false) :
+    Tuple(const std::initializer_list<unsigned> & l, size_type id, const std::string * predicateName, bool negated = false) :
         vector<unsigned>(l), id(id), predicateName(predicateName), negated(negated) {
     }
     
-     Tuple(const std::vector<unsigned> & l, size_type id, const string * predicateName, bool negated = false) :
+     Tuple(const std::vector<unsigned> & l, size_type id, const std::string * predicateName, bool negated = false) :
         vector<unsigned>(l), id(id), predicateName(predicateName), negated(negated) {
     }
 
@@ -43,7 +42,7 @@ public:
         return id;
     }
 
-    const string* getPredicateName() const {
+    const std::string* getPredicateName() const {
         return predicateName;
     }
 
@@ -70,7 +69,7 @@ public:
     
 private:
     size_type id;
-    const string * predicateName;
+    const std::string * predicateName;
     bool negated;
     mutable vector<const Tuple*> positiveReasons;
     mutable vector<Tuple> negativeReasons;
@@ -79,8 +78,8 @@ private:
 
 struct TupleHash {
 
-    inline size_t operator()(const Tuple & v) const {
-        size_t seed = 0;
+    inline std::size_t operator()(const Tuple & v) const {
+        std::size_t seed = 0;
         for (unsigned i : v) {
             seed ^= i + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         }

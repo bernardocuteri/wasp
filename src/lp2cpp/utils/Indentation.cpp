@@ -31,7 +31,7 @@ Indentation::Indentation(int depth) :depth(depth){
 Indentation::Indentation(const Indentation & ind) :depth(ind.depth){
 }
 
-ostream& operator<<(ostream& o, const Indentation& ind) {
+std::ostream& operator<<(std::ostream& o, const Indentation& ind) {
     for(int i=0;i<ind.depth;i++) {
         o<<"    ";
     }

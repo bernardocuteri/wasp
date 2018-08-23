@@ -21,6 +21,8 @@
 #include <string>
 #include <iostream>
 
+using namespace std;
+
 aspc::Atom::Atom(const std::string & predicateName, const std::vector<std::string> & terms) : predicateName(ConstantsManager::getInstance().getPredicateName(predicateName)), terms(terms) {
 
 }

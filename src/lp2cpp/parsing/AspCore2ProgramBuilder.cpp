@@ -29,6 +29,8 @@
 #include <bits/unordered_map.h>
 #include "../language/ArithmeticRelation.h"
 
+using namespace std;
+
 AspCore2ProgramBuilder::AspCore2ProgramBuilder() : naf(false), inequalitySign(aspc::UNASSIGNED) {
 }
 

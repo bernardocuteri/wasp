@@ -15,19 +15,19 @@
 #define FORMULA_H
 #include <unordered_set>
 #include <string>
-using namespace std;
+
 namespace aspc {
 
     class Formula {
     public:
-        virtual bool isBoundedRelation(const unordered_set<string> &) const = 0;
-        virtual bool isBoundedLiteral(const unordered_set<string> &) const = 0;
-        virtual bool isBoundedValueAssignment(const unordered_set<string> &) const = 0;
+        virtual bool isBoundedRelation(const std::unordered_set<std::string> &) const = 0;
+        virtual bool isBoundedLiteral(const std::unordered_set<std::string> &) const = 0;
+        virtual bool isBoundedValueAssignment(const std::unordered_set<std::string> &) const = 0;
         virtual bool isPositiveLiteral() const = 0;
-        virtual void addVariablesToSet(unordered_set<string> &) const = 0;
+        virtual void addVariablesToSet(std::unordered_set<std::string> &) const = 0;
         virtual void print() const = 0;
         virtual bool isLiteral() const = 0;
-        virtual unsigned firstOccurrenceOfVariableInLiteral(const string &) const = 0;
+        virtual unsigned firstOccurrenceOfVariableInLiteral(const std::string &) const = 0;
         virtual ~Formula(){};
 
 

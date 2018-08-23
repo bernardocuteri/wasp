@@ -13,6 +13,7 @@
 
 #include "GraphWithTarjanAlgorithm.h"
 
+using namespace std;
 void GraphWithTarjanAlgorithm::addEdge(unsigned int v, unsigned int w) {
     if (v >= adj.size() || w >= adj.size()) {
         if (v >= w)

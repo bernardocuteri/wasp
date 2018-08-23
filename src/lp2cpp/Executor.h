@@ -21,7 +21,6 @@
 
 #include <unordered_set>
 #include <unordered_map>
-#include <map>
 #include <list>
 #include <vector>
 #include "language/Literal.h"
@@ -33,7 +32,7 @@ class Executor
 public:
   Executor();
   virtual ~Executor();
-  virtual void executeProgramOnFacts(const vector<aspc::Literal*> & p);
+  virtual void executeProgramOnFacts(const std::vector<aspc::Literal*> & p);
   virtual void executeFromFile(const char* factsFile);
   virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {
       return failedConstraints;

@@ -32,6 +32,8 @@
 #include <climits>
 #include <unordered_map>
 
+using namespace std;
+
 const vector<const Tuple* > AuxiliaryMap::EMPTY_RESULT;
 
 AuxiliaryMap::AuxiliaryMap(const vector<unsigned> & keyIndices) :

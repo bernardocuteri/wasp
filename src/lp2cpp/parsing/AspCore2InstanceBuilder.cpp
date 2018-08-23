@@ -205,7 +205,7 @@ void AspCore2InstanceBuilder::onWeightAtLevels(int, int, int) {
 
 }
 
-const vector<aspc::Literal*> & AspCore2InstanceBuilder::getProblemInstance() {
+const  std::vector<aspc::Literal*> & AspCore2InstanceBuilder::getProblemInstance() {
     return problemInstance;
 }
 

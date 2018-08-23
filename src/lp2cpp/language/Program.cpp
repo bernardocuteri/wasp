@@ -22,6 +22,8 @@
 #include <iostream>
 #include "Program.h"
 
+using namespace std;
+
 aspc::Program::Program() {
 
 }
