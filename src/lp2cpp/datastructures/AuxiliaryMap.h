@@ -28,7 +28,7 @@
 #include <list>
 #include <vector>
 #include <unordered_map>
-#include "Tuple.h"
+#include "TupleWithoutReasons.h"
 
 struct VectorHash {
 
@@ -42,18 +42,46 @@ struct VectorHash {
 
 };
 
+template<class T>
 class AuxiliaryMap {
 public:
-    AuxiliaryMap(const std::vector<unsigned> & keyIndices);
-    void insert2(const Tuple & value);
-    const std::vector<const Tuple* >& getValues(const std::vector<unsigned>& tuple) const;
-    void clear();
+
+    AuxiliaryMap(const std::vector<unsigned> & keyIndices) :
+        keySize(keyIndices.size()), keyIndices(keyIndices) {
+
+    }
+
+    inline const std::vector< const T* >& getValues(const std::vector<unsigned>& key) const {
+
+        const auto it = tuples.find(key);
+        if (it == tuples.end()) {
+            return EMPTY_RESULT;
+        }
+        return it->second;
+    }
+
+    inline void insert2(const T & value) {
+        std::vector<unsigned> key(keySize);
+        for (unsigned i = 0; i < keySize; i++) {
+            key[i] = value[keyIndices[i]];
+        }
+        tuples[std::move(key)].push_back(&value);
+    }
+
+    void clear() {
+        tuples.clear();
+    }
 protected:
-    std::unordered_map<std::vector<unsigned>, std::vector< const Tuple* >, VectorHash > tuples;
+    std::unordered_map<std::vector<unsigned>, std::vector< const T* >, VectorHash > tuples;
     unsigned keySize;
     std::vector<unsigned> keyIndices;
-    static const std::vector< const Tuple* > EMPTY_RESULT;
+    static const std::vector< const T* > EMPTY_RESULT;
+
+
 };
+
+template<class T>
+const std::vector< const T* > AuxiliaryMap<T>::EMPTY_RESULT;
 
 #endif /* AUXILIARYMAP_H */
 

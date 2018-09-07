@@ -42,7 +42,8 @@ namespace aspc {
         const std::vector<std::string>& getTerms() const;
         void addTerm(const std::string &);
         bool operator==(const Literal& right) const;
-        Tuple getTuple(unsigned id) const;
+        TupleWithReasons getTupleWithReasons() const;
+        TupleWithoutReasons getTupleWithoutReasons() const;
         void setNegated(bool);
         std::unordered_set<std::string> getVariables() const;
         bool unifies(const aspc::Literal & right) const;

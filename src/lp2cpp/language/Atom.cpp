@@ -65,8 +65,17 @@ vector<unsigned> aspc::Atom::getIntTuple() const {
     return tuple;
 }
 
-Tuple aspc::Atom::getTuple(unsigned id, bool negated = false) const {
-    Tuple tuple(id, &predicateName, negated);
+TupleWithoutReasons aspc::Atom::getTupleWithoutReasons(bool negated = false) const {
+    TupleWithoutReasons tuple(&predicateName, negated);
+    tuple.resize(terms.size());
+    for (unsigned i = 0; i < terms.size(); i++) {
+        tuple[i] = ConstantsManager::getInstance().mapConstant(terms[i]);
+    }
+    return tuple;
+}
+
+TupleWithReasons aspc::Atom::getTupleWithReasons(bool negated = false) const {
+    TupleWithReasons tuple(&predicateName, negated);
     tuple.resize(terms.size());
     for (unsigned i = 0; i < terms.size(); i++) {
         tuple[i] = ConstantsManager::getInstance().mapConstant(terms[i]);

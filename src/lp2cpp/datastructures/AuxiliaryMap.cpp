@@ -34,31 +34,4 @@
 
 using namespace std;
 
-const vector<const Tuple* > AuxiliaryMap::EMPTY_RESULT;
 
-AuxiliaryMap::AuxiliaryMap(const vector<unsigned> & keyIndices) :
-keySize(keyIndices.size()), keyIndices(keyIndices) {
-
-}
-
-
-void AuxiliaryMap::insert2(const Tuple & value) {
-    vector<unsigned> key(keySize);
-    for(unsigned i = 0;i<keySize;i++) {
-        key[i] = value[keyIndices[i]];
-    }
-    tuples[std::move(key)].push_back(&value);    
-}
-
-const vector< const Tuple* >& AuxiliaryMap::getValues(const vector<unsigned>& key) const {
-
-    const auto it = tuples.find(key);
-    if(it == tuples.end()) {
-        return EMPTY_RESULT;
-    }
-    return it->second;
-}
-
-void AuxiliaryMap::clear() {
-    tuples.clear();
-}

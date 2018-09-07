@@ -57,7 +57,6 @@ void CompilationManager::loadLazyProgram(const std::string& filename) {
     bodyPredicates = builder->getProgram().getBodyPredicates();
 }
 
-
 void CompilationManager::initRuleBoundVariables(std::unordered_set<std::string> & ruleBoundVariables, const BoundAnnotatedLiteral & lit, const aspc::Atom & head, bool printVariablesDeclaration) {
     unsigned counter = 0;
     for (unsigned i = 0; i < lit.getBoundIndexes().size(); i++) {
@@ -401,8 +400,18 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     //typedefs
 
+    if(programHasConstraint) {
+        *out << ind << "typedef TupleWithReasons Tuple;\n";
+    } else {
+        *out << ind << "typedef TupleWithoutReasons Tuple;\n";
+    }
+    *out << ind << "typedef AuxiliaryMap<Tuple> AuxMap;\n";
+    string hash = "TupleWithoutReasonsHash";
+    if(programHasConstraint) {
+        hash = "TupleWithReasonsHash";
+    } 
     *out << ind << "typedef std::vector<const Tuple* > Tuples;\n";
-    *out << ind << "using PredicateWSet = std::unordered_set<Tuple, TupleHash>;\n\n";
+    *out << ind << "using PredicateWSet = std::unordered_set<Tuple, "<<hash<<">;\n\n";
 
     const set< pair<std::string, unsigned> >& predicates = program.getPredicates();
     for (const pair<std::string, unsigned>& predicate : predicates) {
@@ -449,14 +458,14 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     }
 
 
-    *out << ind << "std::unordered_map <std::string, std::vector <AuxiliaryMap*> > predicateToAuxiliaryMaps;\n";
-    *out << ind << "std::unordered_map <std::string, std::vector <AuxiliaryMap*> > predicateToFalseAuxiliaryMaps;\n";
+    *out << ind << "std::unordered_map <std::string, std::vector <AuxMap*> > predicateToAuxiliaryMaps;\n";
+    *out << ind << "std::unordered_map <std::string, std::vector <AuxMap*> > predicateToFalseAuxiliaryMaps;\n";
     unsigned sccsSize = sccs.size();
     if (programHasConstraint) {
         sccsSize++;
     }
     std::vector< std::unordered_map<std::string, std::vector<unsigned>>> starterToExitRulesByComponent(sccsSize);
-    std::vector < std::unordered_map<std::string, std::vector<pair<unsigned, unsigned> > >> starterToRecursiveRulesByComponent(sccsSize);
+    std::vector < std::unordered_map < std::string, std::vector<pair<unsigned, unsigned> > >> starterToRecursiveRulesByComponent(sccsSize);
     std::vector<bool> exitRules(program.getRulesSize(), false);
     const std::unordered_map<std::string, int>& predicateIDs = builder->getPredicateIDsMap();
 
@@ -475,7 +484,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     unsigned predicateID = predicateIDs.at(l->getPredicateName());
                     if (predicateLevels.at(predicateID) == headLevel) {
                         if (l->isNegated()) {
-                            throw std::runtime_error("The input program is not stritified because of " + l->getPredicateName());
+                            //throw std::runtime_error("The input program is not stritified because of " + l->getPredicateName());
                         }
                         exitRule = false;
                         starterToRecursiveRulesByComponent[headLevel][l->getPredicateName()].push_back(pair<unsigned, unsigned>(r.getRuleId(), lIndex));
@@ -546,34 +555,35 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << --ind << "}\n\n";
 
 
-    *out << ind++ << "void explainPositiveLiteral(const Tuple * tuple, std::unordered_set<std::string> & open_set, std::vector<const Tuple*> & outputReasons) {\n";
-    //*out << ind << "const std::vector<const Tuple*> & tupleReasons = predicateReasonsMap.at(*tuple->getPredicateName())->at(tuple->getId());\n";
-    *out << ind << "const std::vector<const Tuple*> & tupleReasons = tuple->getPositiveReasons();\n";
-    *out << ind++ << " if (tupleReasons.empty()) {\n";
-    *out << ind << "outputReasons.push_back(tuple);\n";
-    *out << --ind << "}\n";
-    *out << ind++ << "else {\n";
-    *out << ind++ << "for (const Tuple * reason : tupleReasons) {\n";
-    *out << ind << "explainPositiveLiteral(reason, open_set, outputReasons);\n";
-    *out << --ind << "}\n";
+    if (programHasConstraint) {
+        *out << ind++ << "void explainPositiveLiteral(const Tuple * tuple, std::unordered_set<std::string> & open_set, std::vector<const Tuple*> & outputReasons) {\n";
+        //*out << ind << "const std::vector<const Tuple*> & tupleReasons = predicateReasonsMap.at(*tuple->getPredicateName())->at(tuple->getId());\n";
+        *out << ind << "const std::vector<const Tuple*> & tupleReasons = tuple->getPositiveReasons();\n";
+        *out << ind++ << " if (tupleReasons.empty()) {\n";
+        *out << ind << "outputReasons.push_back(tuple);\n";
+        *out << --ind << "}\n";
+        *out << ind++ << "else {\n";
+        *out << ind++ << "for (const Tuple * reason : tupleReasons) {\n";
+        *out << ind << "explainPositiveLiteral(reason, open_set, outputReasons);\n";
+        *out << --ind << "}\n";
 
 
-    *out << --ind << "}\n";
-    *out << ind++ << "for (const Tuple & reason : tuple->getNegativeReasons()) {\n";
-    *out << ind << "explainNegativeLiteral(&reason, open_set, outputReasons);\n";
-    //*out << ind << "outputReasons.push_back(&reason);\n";
-    *out << --ind << "}\n";
-    *out << --ind << "}\n\n";
+        *out << --ind << "}\n";
+        *out << ind++ << "for (const Tuple & reason : tuple->getNegativeReasons()) {\n";
+        *out << ind << "explainNegativeLiteral(&reason, open_set, outputReasons);\n";
+        //*out << ind << "outputReasons.push_back(&reason);\n";
+        *out << --ind << "}\n";
+        *out << --ind << "}\n\n";
 
-    *out << ind++ << "aspc::Literal tupleToLiteral(const Tuple & tuple) {\n";
-    *out << ind << "aspc::Literal literal(*tuple.getPredicateName(), tuple.isNegated());\n";
-    *out << ind++ << "for (unsigned v : tuple) {\n";
-    *out << ind << "literal.addTerm(ConstantsManager::getInstance().unmapConstant(v));\n";
-    *out << --ind << "}\n";
-    *out << ind << "return literal;\n";
-    *out << --ind << "}\n";
+        *out << ind++ << "aspc::Literal tupleToLiteral(const Tuple & tuple) {\n";
+        *out << ind << "aspc::Literal literal(*tuple.getPredicateName(), tuple.isNegated());\n";
+        *out << ind++ << "for (unsigned v : tuple) {\n";
+        *out << ind << "literal.addTerm(ConstantsManager::getInstance().unmapConstant(v));\n";
+        *out << --ind << "}\n";
+        *out << ind << "return literal;\n";
+        *out << --ind << "}\n";
 
-
+    }
 
 
 
@@ -620,6 +630,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
     }
 
+    // *out << ind << "std::cout<<\"facts reading\"<<std::endl;\n";
 
     //feed facts
     //*out << ind << "std::cout<<\"facts\\n\";\n";
@@ -634,13 +645,17 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     }
     *out << --ind << "}\n";
     *out << ind++ << "else {\n";
-    *out << ind << "const auto& insertResult=it->second->insert(facts[i]->getTuple(it->second->size()));\n";
+    string tupleType = "WithoutReasons";
+    if(programHasConstraint) {
+        tupleType = "WithReasons";
+    }
+    *out << ind << "const auto& insertResult=it->second->insert(facts[i]->getTuple"<<tupleType<<"());\n";
 
     *out << ind++ << "if(insertResult.second){\n";
     //    *out << ind << "it->second->insert(tuple);\n";
     *out << ind << "Tuples & tuples = *predicateTuplesMap[facts[i]->getPredicateName()];\n";
     *out << ind << "tuples.push_back(&(*(insertResult.first)));\n";
-    *out << ind++ << "for(AuxiliaryMap* auxMap:predicateToAuxiliaryMaps[it->first]){\n";
+    *out << ind++ << "for(AuxMap* auxMap:predicateToAuxiliaryMaps[it->first]){\n";
     *out << ind << "auxMap -> insert2(*tuples.back());\n";
     *out << --ind << "}\n";
     *out << --ind << "}\n";
@@ -649,15 +664,18 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind++ << "else {\n";
     *out << ind << "std::unordered_map<std::string,PredicateWSet*>::iterator it = predicateFalseWSetMap.find(facts[i]->getPredicateName());\n";
     *out << ind++ << "if(it!=predicateFalseWSetMap.end()) {\n";
-    *out << ind << "const auto& insertResult=it->second->insert(facts[i]->getTuple(it->second->size()));\n";
+    *out << ind << "const auto& insertResult=it->second->insert(facts[i]->getTuple"<<tupleType<<"());\n";
     *out << ind++ << "if(insertResult.second){\n";
-    *out << ind++ << "for(AuxiliaryMap* auxMap:predicateToFalseAuxiliaryMaps[it->first]){\n";
+    *out << ind++ << "for(AuxMap* auxMap:predicateToFalseAuxiliaryMaps[it->first]){\n";
     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
     *out << --ind << "}\n";
     *out << --ind << "}\n";
     *out << --ind << "}\n";
     *out << --ind << "}\n";
     *out << --ind << "}\n";
+
+
+    //*out << ind << "std::cout<<\"facts reading completed\"<<std::endl;\n";
 
     //declare iterators
     for (const pair<std::string, unsigned>& predicate : predicates) {
@@ -673,7 +691,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             for (unsigned ruleId : rulesByPredicate.second) {
                 const aspc::Rule& r = program.getRule(ruleId);
                 *out << ind++ << "{\n";
-                compileRule(r, r.getStarters()[0]);
+                compileRule(r, r.getStarters()[0], program);
                 *out << --ind << "}\n";
 
             }
@@ -700,7 +718,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             for (const auto& ruleAndStarterIndex : rulesByStarter.second) {
                 const aspc::Rule& r = program.getRule(ruleAndStarterIndex.first);
                 *out << ind++ << "{\n";
-                compileRule(r, ruleAndStarterIndex.second);
+                compileRule(r, ruleAndStarterIndex.second, program);
                 *out << --ind << "}\n";
 
             }
@@ -712,6 +730,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     }
     if (!programHasConstraint) {
+        //*out << ind << "std::cout<<\"Propagator model:\"<<std::endl;\n";
         for (const pair<std::string, unsigned>& predicate : predicates) {
             *out << ind << "printTuples(\"" << predicate.first << "\",tuples_" << predicate.first << ");\n";
 
@@ -743,7 +762,7 @@ void CompilationManager::declareDataStructures(const aspc::Rule& r, unsigned sta
                     }
                 }
                 if (!declaredMaps.count(mapVariableName)) {
-                    *out << ind << "AuxiliaryMap p" << mapVariableName << "({";
+                    *out << ind << "AuxMap p" << mapVariableName << "({";
                     for (unsigned k = 0; k < keyIndexes.size(); k++) {
                         if (k > 0) {
                             *out << ",";
@@ -760,12 +779,19 @@ void CompilationManager::declareDataStructures(const aspc::Rule& r, unsigned sta
     }
 }
 
-void CompilationManager::compileRule(const aspc::Rule & r, unsigned start) {
+void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const aspc::Program & p) {
     //Iterate over starting workingset
     std::vector<unsigned> joinOrder = r.getOrderedBodyIndexesByStarter(start);
     const std::vector<const aspc::Formula*>& body = r.getFormulas();
     unsigned closingParenthesis = 0;
     std::unordered_set<std::string> boundVariables;
+
+    //TODO remove, test local strat
+    const aspc::Literal* l = (aspc::Literal*) body[joinOrder[0]];
+    if (l->isNegated()) {
+        return;
+    }
+
     //join loops, for each body formula
     for (unsigned i = 0; i < body.size(); i++) {
         const aspc::Formula* f = body[joinOrder[i]];
@@ -835,7 +861,11 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start) {
             if (!r.isConstraint()) {
 
                 //a rule is firing
-                *out << ind << "const auto & insertResult = w" << r.getHead().front().getPredicateName() << ".insert({{";
+                string tupleType = "TupleWithoutReasons";
+                if(p.hasConstraint()) {
+                    tupleType = "TupleWithReasons";
+                }
+                *out << ind << "const auto & insertResult = w" << r.getHead().front().getPredicateName() << ".insert("<<tupleType<<"({";
 
                 for (unsigned th = 0; th < r.getHead().front().getTermsSize(); th++) {
                     if (!r.getHead().front().isVariableTermAt(th)) {
@@ -853,18 +883,20 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start) {
                 }
 
 
-                *out << "},w" << r.getHead().front().getPredicateName() << ".size(), &_" << r.getHead().front().getPredicateName() << "});\n";
+                *out << "}, &_" << r.getHead().front().getPredicateName() << "));\n";
                 *out << ind++ << "if(insertResult.second){\n";
                 *out << ind << "tuples_" << r.getHead().front().getPredicateName() << ".push_back(&(*insertResult.first));\n";
 
-                for (unsigned i = 0; i < body.size(); i++) {
-                    if (body[joinOrder[i]]->isPositiveLiteral()) {
-                        *out << ind << "insertResult.first->addPositiveReason(tuple" << i << ");\n";
-                    } else if (body[joinOrder[i]]->isLiteral()) {
-                        aspc::Literal* l = (aspc::Literal*) body[joinOrder[i]];
-                        *out << ind << "insertResult.first->addNegativeReason(Tuple({";
-                        printLiteralTuple(l);
-                        *out << "}, 0, &_" << l->getPredicateName() << ", true));\n";
+                if (p.hasConstraint()) {
+                    for (unsigned i = 0; i < body.size(); i++) {
+                        if (body[joinOrder[i]]->isPositiveLiteral()) {
+                            *out << ind << "insertResult.first->addPositiveReason(tuple" << i << ");\n";
+                        } else if (body[joinOrder[i]]->isLiteral()) {
+                            aspc::Literal* l = (aspc::Literal*) body[joinOrder[i]];
+                            *out << ind << "insertResult.first->addNegativeReason(Tuple({";
+                            printLiteralTuple(l);
+                            *out << "}, 0, &_" << l->getPredicateName() << ", true));\n";
+                        }
                     }
                 }
 
@@ -943,7 +975,7 @@ void CompilationManager::printLiteralTuple(const aspc::Literal* l, const std::ve
 
 void CompilationManager::printLiteralTuple(const aspc::Literal* l) {
     for (unsigned t = 0; t < l->getAriety(); t++) {
-        if (t>0) {
+        if (t > 0) {
             *out << ", ";
         }
         if (!l->isVariableTermAt(t) && !isUnsignedInteger(l->getTermAt(t))) {
@@ -1017,7 +1049,7 @@ void CompilationManager::declareDataStructuresForReasonsOfNegative(const aspc::P
                                     mapVariableName += std::to_string(index) + "_";
                                 }
                                 if (!declaredMaps.count(mapVariableName)) {
-                                    *out << ind << "AuxiliaryMap p" << mapVariableName << "({";
+                                    *out << ind << "AuxMap p" << mapVariableName << "({";
                                     for (unsigned k = 0; k < coveredVariableIndexes.size(); k++) {
                                         if (k > 0) {
                                             *out << ",";
@@ -1032,7 +1064,7 @@ void CompilationManager::declareDataStructuresForReasonsOfNegative(const aspc::P
                                 }
                                 mapVariableName = "false_p" + mapVariableName;
                                 if (!declaredMaps.count(mapVariableName) && modelGeneratorPredicates.count(bodyLit -> getPredicateName())) {
-                                    *out << ind << "AuxiliaryMap " << mapVariableName << "({";
+                                    *out << ind << "AuxMap " << mapVariableName << "({";
                                     for (unsigned k = 0; k < coveredVariableIndexes.size(); k++) {
                                         if (k > 0) {
                                             *out << ",";

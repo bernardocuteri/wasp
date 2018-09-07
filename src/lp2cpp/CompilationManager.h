@@ -41,7 +41,7 @@ public:
     
 private:
     
-    void compileRule(const aspc::Rule& r,unsigned start) ;
+    void compileRule(const aspc::Rule& r,unsigned start, const aspc::Program& p) ;
     void declareDataStructures(const aspc::Rule& r, unsigned start);
     bool matchConstants(const aspc::Rule & rule, const aspc::Atom & atom, Indentation & ind);
     void generateHeadTupleAndMatchConstants(const aspc::Rule & rule, Indentation & ind, const std::set<std::string> & bodyPredicates);

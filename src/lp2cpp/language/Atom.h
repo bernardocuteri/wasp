@@ -21,7 +21,8 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "../datastructures/Tuple.h"
+#include "../datastructures/TupleWithoutReasons.h"
+#include "../datastructures/TupleWithReasons.h"
 #include "../utils/ConstantsManager.h"
 
 
@@ -47,7 +48,8 @@ namespace aspc {
         unsigned getAriety() const;
         bool isVariableTermAt(unsigned) const;
         std::vector<unsigned> getIntTuple() const;
-        Tuple getTuple(unsigned id, bool) const;
+        TupleWithReasons getTupleWithReasons(bool) const;
+        TupleWithoutReasons getTupleWithoutReasons(bool) const;
         void print() const;
         std::string toString() const;
         bool unifies(const Atom & right) const;

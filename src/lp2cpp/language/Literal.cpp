@@ -135,8 +135,12 @@ bool aspc::Literal::operator==(const aspc::Literal& right) const {
 
 }
 
-Tuple aspc::Literal::getTuple(unsigned id) const {
-    return this->atom.getTuple(id, negated);
+TupleWithReasons aspc::Literal::getTupleWithReasons() const {
+    return this->atom.getTupleWithReasons(negated);
+}
+TupleWithoutReasons aspc::Literal::getTupleWithoutReasons() const {
+    return this->atom.getTupleWithoutReasons(negated);
+    
 }
 
 void aspc::Literal::setNegated(bool negated) {
