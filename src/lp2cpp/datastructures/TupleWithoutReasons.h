@@ -17,16 +17,20 @@
 #include <string>
 #include <unordered_set>
 
-struct TupleWithoutReasonsHash;
+struct TuplesHash;
 
 class TupleWithoutReasons : public std::vector<unsigned> {
 public:
+    TupleWithoutReasons(): predicateName(NULL) {
+        
+    }
 
     TupleWithoutReasons(const std::string* predicateName, bool negated = false) : predicateName(predicateName), negated(negated) {
     }
 
     TupleWithoutReasons(const TupleWithoutReasons& orig) : std::vector<unsigned>(orig), predicateName(orig.predicateName), negated(orig.negated) {
     }
+    
     
     virtual ~TupleWithoutReasons() {
         
@@ -37,6 +41,10 @@ public:
     }
 
     TupleWithoutReasons(const std::initializer_list<unsigned> & l, const std::string * predicateName, bool negated = false) :
+    vector<unsigned>(l), predicateName(predicateName), negated(negated) {
+    }
+    
+    TupleWithoutReasons(const std::vector<unsigned> & l, const std::string * predicateName, bool negated = false) :
     vector<unsigned>(l), predicateName(predicateName), negated(negated) {
     }
 
@@ -73,7 +81,7 @@ private:
 
 };
 
-struct TupleWithoutReasonsHash {
+struct TuplesHash {
 
     inline std::size_t operator()(const TupleWithoutReasons & v) const {
         std::size_t seed = 0;

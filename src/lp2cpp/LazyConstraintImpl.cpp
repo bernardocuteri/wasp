@@ -39,7 +39,6 @@ using namespace std::chrono;
 
 void LazyConstraintImpl::performCompilation() {
 
-
     string executablePathAndName = wasp::Options::arg0;
     string executablePath = executablePathAndName;
     for (int i = executablePath.size() - 1; i >= 0; i--) {
@@ -68,11 +67,11 @@ void LazyConstraintImpl::setFilename(const std::string & fileDirectory, const st
     this -> filename = filename;
     this -> filepath = fileDirectory + "/" + filename;
     FilesManagement fileManagement;
-    if(!fileManagement.exists(filepath)) {
-        throw std::runtime_error("Failed to compile lazy program: file " + filepath +" does not exist.");
+    if (!fileManagement.exists(filepath)) {
+        throw std::runtime_error("Failed to compile lazy program: file " + filepath + " does not exist.");
     }
     compilationManager.loadLazyProgram(filepath);
-    
+
 
 
 }
@@ -134,17 +133,17 @@ high_resolution_clock::time_point t2 = high_resolution_clock::now();
 #endif
 
 bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation) {
-    #ifdef PRINT_EXEC_TIMES
+#ifdef PRINT_EXEC_TIMES
     t1 = high_resolution_clock::now();
-    auto solve_duration = duration_cast<microseconds>( t1 - t2 ).count();
+    auto solve_duration = duration_cast<microseconds>(t1 - t2).count();
     solv_time += solve_duration;
-    cout<<"START lazy evaluation"<<endl;
-    #endif
+    cout << "START lazy evaluation" << endl;
+#endif
 
     if (!compilationDone) {
-        cout<<"Writing executor file"<<endl;
+        cout << "Writing executor file" << endl;
         performCompilation();
-        cout<<"Compilation done"<<endl;
+        cout << "Compilation done" << endl;
         for (const auto & entry : literals) {
             if (compilationManager.getBodyPredicates().count(entry.second->getPredicateName())) {
                 watchedAtoms.push_back(entry.first);
@@ -163,11 +162,15 @@ bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation)
         }
         facts.push_back(lit);
     }
+#ifdef PRINT_EXEC_TIMES
     cout << "Answer set check" << endl;
+#endif    
     executionManager.executeProgramOnFacts(facts);
+#ifdef PRINT_EXEC_TIMES
     cout << "Violations: " << executionManager.getFailedConstraints().size() << endl;
-    #ifdef PRINT_EXEC_TIMES
-    cout<<"END lazy evaluation"<<endl;
+#endif   
+#ifdef PRINT_EXEC_TIMES
+    cout << "END lazy evaluation" << endl;
     t2 = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(t2 - t1).count();
 
@@ -175,9 +178,9 @@ bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation)
 
     cout << "tot_propr " << prop_time / 1000 << endl;
     cout << "tot_solv " << solv_time / 1000 << endl;
-    #endif
+#endif
     return executionManager.getFailedConstraints().empty();
-    
+
 
 }
 

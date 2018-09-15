@@ -79,9 +79,12 @@ private:
 
     std::unordered_map<std::string, std::set<std::string> > predicateToFalseAuxiliaryMaps;
     
-    std::unordered_set<std::string> modelGeneratorPredicates = {"reachable_from"};
+    std::unordered_set<std::string> modelGeneratorPredicates;
     
     std::unordered_set<std::string> modelGeneratorPredicatesInNegativeReasons;
+    
+    std::unordered_map<std::string, unsigned> predicateArieties;
+    
 };
 
 #endif	/* COMPILATIONMANAGER_H */

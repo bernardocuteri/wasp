@@ -54,7 +54,6 @@ namespace aspc {
         std::vector<aspc::Atom> facts; //not compiled
         std::set< std::pair<std::string, unsigned> > predicates;
 
-
         std::map<RuleType, std::map<std::string, std::set<unsigned> > > rules_by_type;
 
     };

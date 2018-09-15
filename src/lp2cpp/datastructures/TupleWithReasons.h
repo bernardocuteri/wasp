@@ -16,38 +16,39 @@
 #include <vector>
 #include <string>
 #include <unordered_set>
+#include "TupleWithoutReasons.h"
 
-struct TupleWithReasonsHash;
 
-class TupleWithReasons : public std::vector<unsigned> {
+class TupleWithReasons : public TupleWithoutReasons {
 public:
-
-    TupleWithReasons(const std::string* predicateName, bool negated = false) : predicateName(predicateName), negated(negated) {
-    }
-
-    TupleWithReasons(const TupleWithReasons& orig) : std::vector<unsigned>(orig), predicateName(orig.predicateName), negated(orig.negated) {
-    }
     
-    virtual ~TupleWithReasons() {
+    TupleWithReasons() {
         
     }
 
-    TupleWithReasons(const std::initializer_list<unsigned> & l, bool negated = false) :
-    std::vector<unsigned>(l), predicateName(NULL), negated(negated) {
+    TupleWithReasons(const std::string* predicateName, bool negated = false) : TupleWithoutReasons(predicateName, negated) {
+    }
+
+    TupleWithReasons(const TupleWithReasons& orig) : TupleWithoutReasons(orig), positiveReasons(orig.positiveReasons),
+    negativeReasons(orig.negativeReasons) {
+    }
+  
+    
+    virtual ~TupleWithReasons() {
+
+    }
+
+    TupleWithReasons(const std::initializer_list<unsigned> & l, bool negated = false) : TupleWithoutReasons(l, negated) {
     }
 
     TupleWithReasons(const std::initializer_list<unsigned> & l, const std::string * predicateName, bool negated = false) :
-    vector<unsigned>(l),predicateName(predicateName), negated(negated) {
+    TupleWithoutReasons(l, predicateName, negated) {
+    }
+    
+    TupleWithReasons(const std::vector<unsigned> & l, const std::string * predicateName, bool negated = false) :
+    TupleWithoutReasons(l, predicateName, negated) {
     }
 
-
-    const std::string* getPredicateName() const {
-        return predicateName;
-    }
-
-    bool isNegated() const {
-        return negated;
-    }
 
     void addPositiveReason(const TupleWithReasons* r) const {
         positiveReasons.push_back(r);
@@ -66,22 +67,8 @@ public:
     }
 
 private:
-    const std::string * predicateName;
-    bool negated;
     mutable vector<const TupleWithReasons*> positiveReasons;
     mutable vector<TupleWithReasons> negativeReasons;
-
-};
-
-struct TupleWithReasonsHash {
-
-    inline std::size_t operator()(const TupleWithReasons & v) const {
-        std::size_t seed = 0;
-        for (unsigned i : v) {
-            seed ^= i + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        }
-        return seed;
-    }
 
 };
 
