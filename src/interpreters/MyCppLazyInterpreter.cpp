@@ -36,8 +36,8 @@
 #include "../propagators/ExternalPropagator.h"
 
 
-const set<string> supportedMethos = {method_plugins_checkAnswerSet, method_plugins_getReasonsForCheckFailure,
-    method_plugins_addedVarName, method_plugins_getVariablesToFreeze, method_plugins_onStartingSolver};
+const set<string> supportedMethods = {method_plugins_checkAnswerSet, method_plugins_getReasonsForCheckFailure,
+    method_plugins_addedVarName, method_plugins_getVariablesToFreeze, method_plugins_onStartingSolver, method_plugins_onFact};
 
 MyCppLazyInterpreter::MyCppLazyInterpreter(char* filenameToCompile, const string & executablePath) : filenameToCompile(filenameToCompile) {
     lazyConstraint.setFilename(executablePath, filenameToCompile);
@@ -64,6 +64,13 @@ void MyCppLazyInterpreter::callListMethod(const string&, const vector<int>&, vec
     assert(false);
 }
 
+void MyCppLazyInterpreter::callVoidMethod(const string& method_name, int param1) {
+    if (method_name == method_plugins_onFact) {
+        lazyConstraint.onFact(param1);
+    } 
+}
+
+
 void MyCppLazyInterpreter::callVoidMethod(const string& method_name, int param1, const string& param2) {
     if (method_name == method_plugins_addedVarName) {
         lazyConstraint.addedVarName(param1, param2);
@@ -72,7 +79,7 @@ void MyCppLazyInterpreter::callVoidMethod(const string& method_name, int param1,
 }
 
 bool MyCppLazyInterpreter::checkMethod(const string& method_name) const {
-    return supportedMethos.count(method_name) ? true : false;
+    return supportedMethods.count(method_name) ? true : false;
 
 }
 

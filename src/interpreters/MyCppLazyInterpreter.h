@@ -41,6 +41,7 @@ public:
         void callListMethod( const string& method_name, const vector< int >& parameters, vector< int >& output );
         void callListMethod( const string& method_name, const vector< int >& parameters, vector< uint64_t >& output );
         void callVoidMethod( const string& method_name, int param1, const string& param2 );
+        void callVoidMethod( const string& method_name, int param1);
         bool checkMethod( const string& method_name ) const;
         
     private:

@@ -55,6 +55,7 @@ void CompilationManager::loadLazyProgram(const std::string& filename) {
     fileNames.push_back(filename.c_str());
     director.parse(fileNames);
     bodyPredicates = builder->getProgram().getBodyPredicates();
+    headPredicates = builder->getProgram().getHeadPredicates();
 }
 
 void CompilationManager::initRuleBoundVariables(std::unordered_set<std::string> & ruleBoundVariables, const BoundAnnotatedLiteral & lit, const aspc::Atom & head, bool printVariablesDeclaration) {
@@ -417,6 +418,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         //*out << ind << "const std::string & "<< predicate.first << " = ConstantsManager::getInstance().getPredicateName("<< predicate.first <<");\n";
         *out << ind << "const std::string _" << predicate.first << " = \"" << predicate.first << "\";\n";
         *out << ind << "PredicateWSet w" << predicate.first << "(" << predicate.second << ");\n";
+        *out << ind << "Tuples tuples_" << predicate.first << ";\n";
     }
 
 
@@ -602,28 +604,36 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "predicateToFalseAuxiliaryMaps.clear();\n";
 
     for (const pair<std::string, unsigned>& predicate : predicates) {
-        *out << ind << "w" << predicate.first << ".clear();\n";
-        *out << ind << "Tuples tuples_" << predicate.first << ";\n";
+        if(idbs.count(predicate.first) || headPredicates.count(predicate.first)) {
+            *out << ind << "w" << predicate.first << ".clear();\n";
+            *out << ind << "tuples_" << predicate.first << ".clear();\n";
+        }
         *out << ind << "predicateWSetMap[_" << predicate.first << "]=&w" << predicate.first << ";\n";
         *out << ind << "predicateTuplesMap[_" << predicate.first << "]=&tuples_" << predicate.first << ";\n";
     }
 
     for (const std::string & predicate : modelGeneratorPredicatesInNegativeReasons) {
         //*out << ind << "const std::string & "<< predicate.first << " = ConstantsManager::getInstance().getPredicateName("<< predicate.first <<");\n";
-        *out << ind << "neg_w" << predicate << ".clear();\n";
+        if(idbs.count(predicate) || headPredicates.count(predicate)) {
+            *out << ind << "neg_w" << predicate << ".clear();\n";
+        }
         *out << ind << "predicateFalseWSetMap[_" << predicate << "] = &neg_w" << predicate << ";\n";
     }
 
     for (const auto & entry : predicateToAuxiliaryMaps) {
         for (const auto & auxSet : entry.second) {
-            *out << ind << "p" << auxSet << ".clear();\n";
+            if(idbs.count(entry.first) || headPredicates.count(entry.first)) {
+                *out << ind << "p" << auxSet << ".clear();\n";
+            }
             *out << ind << "predicateToAuxiliaryMaps[_" << entry.first << "].push_back(&p" << auxSet << ");\n";
         }
     }
 
     for (const auto & entry : predicateToFalseAuxiliaryMaps) {
         for (const auto & auxSet : entry.second) {
-            *out << ind << auxSet << ".clear();\n";
+            if(idbs.count(entry.first) || headPredicates.count(entry.first)) {
+                *out << ind << auxSet << ".clear();\n";
+            }
             *out << ind << "predicateToFalseAuxiliaryMaps[_" << entry.first << "].push_back(&" << auxSet << ");\n";
         }
     }
@@ -1152,3 +1162,5 @@ bool CompilationManager::handleEqualCardsAndConstants(const aspc::Rule& r, unsig
 const std::set<std::string>& CompilationManager::getBodyPredicates() {
     return bodyPredicates;
 }
+
+

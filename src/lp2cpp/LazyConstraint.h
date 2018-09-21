@@ -37,6 +37,7 @@ public:
     virtual bool checkAnswerSet(const std::vector<int> & interpretation) = 0;
     virtual void onCheckFail(std::vector<int> & constraints) = 0;
     virtual void addedVarName(int var, const std::string & atomString) = 0;
+    virtual void onFact(int var) = 0;
     virtual const std::vector<unsigned int> & getVariablesToFreeze() = 0;
 };
 

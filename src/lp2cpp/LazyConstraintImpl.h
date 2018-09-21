@@ -69,6 +69,7 @@ class LazyConstraintImpl: public LazyConstraint {
 public: 
     virtual void setFilename(const std::string & executablePath, const std::string & filename) override;
     virtual void addedVarName(int var, const std::string & atomString) override;
+    virtual void onFact(int var) override;
     virtual bool checkAnswerSet(const std::vector<int> & interpretation) override;
     virtual void onCheckFail(std::vector<int> & constraints) override;
     virtual const std::vector<unsigned int> & getVariablesToFreeze() override;
@@ -84,6 +85,8 @@ private:
     CompilationManager compilationManager;
     std::unordered_map<aspc::Literal, int, LiteralHash> literalsMap;
     std::vector<unsigned> watchedAtoms;
+    std::vector<unsigned> idbWatchedAtoms;
+    std::unordered_set<int> facts;
     std::string filepath;
     bool compilationDone = false;
     

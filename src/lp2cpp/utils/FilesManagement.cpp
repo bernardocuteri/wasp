@@ -13,6 +13,7 @@
 
 #include "FilesManagement.h"
 #include <iostream>
+#include <stdexcept>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/file.h>

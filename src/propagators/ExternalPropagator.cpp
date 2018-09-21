@@ -39,6 +39,7 @@ ExternalPropagator::ExternalPropagator()
     interpreter = NULL;
     fn = NULL;
     check_addedVarName = false;
+    check_onFact = false;
     check_onAtomElimination = false;
     check_simplifyAtLevelZero = false;
     check_onAnswerSet = false;
@@ -74,6 +75,7 @@ ExternalPropagator::ExternalPropagator(
     else
         WaspErrorMessage::errorGeneric( "Unsupported interpreter" );
     check_addedVarName = interpreter->checkMethod( method_plugins_addedVarName );
+    check_onFact = interpreter->checkMethod( method_plugins_onFact );
     check_onAtomElimination = interpreter->checkMethod( method_plugins_onVariableElimination );
     check_simplifyAtLevelZero = interpreter->checkMethod( method_plugins_simplifyAtLevelZero );
     check_onAnswerSet = interpreter->checkMethod( method_plugins_onAnswerSet );
@@ -378,6 +380,14 @@ ExternalPropagator::addedVarName(
     if( check_addedVarName )
         interpreter->callVoidMethod( method_plugins_addedVarName, var, name );
 }
+
+void 
+ExternalPropagator::onFact(Var var) {
+    if( check_onFact ) {
+        interpreter->callVoidMethod( method_plugins_onFact, var);
+    }
+}
+
 
 void
 ExternalPropagator::onAtomElimination(

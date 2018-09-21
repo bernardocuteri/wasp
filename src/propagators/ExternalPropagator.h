@@ -29,6 +29,7 @@ class Interpreter;
 using namespace std;
 
 #define method_plugins_addedVarName "addedVarName"
+#define method_plugins_onFact "onFact"
 #define method_plugins_onVariableElimination "onVariableElimination" 
 #define method_plugins_getLiterals "getLiterals"
 #define method_plugins_getVariablesToFreeze "getVariablesToFreeze"
@@ -63,6 +64,7 @@ class ExternalPropagator : public Propagator
         virtual void simplifyAtLevelZero( Solver& solver );
         
         virtual void addedVarName( Var var, const string& name );
+        virtual void onFact( Var var);
         virtual void onAtomElimination( Var var );
         virtual void endParsing( Solver& solver ) { attachWatches( solver ); }        
         virtual void onAnswerSet( const Solver& solver );
@@ -97,6 +99,7 @@ class ExternalPropagator : public Propagator
         Vector< Clause* > clausesToDelete;
         char* fn;
         bool check_addedVarName;
+        bool check_onFact;
         bool check_onAtomElimination;
         bool check_simplifyAtLevelZero;
         bool check_onAnswerSet;

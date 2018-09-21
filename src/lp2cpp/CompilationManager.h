@@ -37,6 +37,14 @@ public:
         modelGeneratorPredicates.insert(p);
     }
     void loadLazyProgram(const std::string & filename);
+    void setIdbs(std::unordered_set<std::string> && idbs) {
+        this->idbs = std::move(idbs);
+    }
+    const std::unordered_set<std::string> & getIdbs() const {
+        return idbs;
+    }
+
+
 
     
 private:
@@ -69,6 +77,8 @@ private:
     
     std::set<std::string> bodyPredicates;
     
+    std::set<std::string> headPredicates;
+    
     Indentation ind;
     
     std::set<std::string> declaredMaps;
@@ -84,6 +94,8 @@ private:
     std::unordered_set<std::string> modelGeneratorPredicatesInNegativeReasons;
     
     std::unordered_map<std::string, unsigned> predicateArieties;
+    
+    std::unordered_set<std::string> idbs;
     
 };
 

@@ -124,6 +124,11 @@ void LazyConstraintImpl::addedVarName(int var, const std::string & literalString
 
 }
 
+void LazyConstraintImpl::onFact(int var) {
+    facts.insert(var);
+}
+
+
 #ifdef PRINT_EXEC_TIMES
 long prop_time = 0;
 long solv_time = 0;
@@ -140,32 +145,68 @@ bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation)
     cout << "START lazy evaluation" << endl;
 #endif
 
+
+    std::vector<aspc::Literal*> inputInterpretation;
     if (!compilationDone) {
+        unordered_set<string> idbs;
+        for (int i : interpretation) {
+            if (!facts.count(i)) {
+                if (i > 0 && literals.count(i)) {
+                    idbs.insert(literals[i]->getPredicateName());
+                } else if (literals.count(-i)) {
+                    idbs.insert(literals[-i]->getPredicateName());
+                }
+            }
+        }
+        //move, don't use idbs later on
+        compilationManager.setIdbs(std::move(idbs));
+
         cout << "Writing executor file" << endl;
         performCompilation();
         cout << "Compilation done" << endl;
+
+
+        for (int i : facts) {
+            aspc::Literal* lit;
+            if (i > 0 && literals.count(i)) {
+                lit = literals[i];
+                lit->setNegated(false);
+
+            } else if (literals.count(-i)) {
+                lit = literals[-i];
+                lit->setNegated(false);
+            }
+            if (compilationManager.getBodyPredicates().count(lit->getPredicateName())) {
+                inputInterpretation.push_back(lit);
+            }
+        }
+
         for (const auto & entry : literals) {
             if (compilationManager.getBodyPredicates().count(entry.second->getPredicateName())) {
                 watchedAtoms.push_back(entry.first);
+                if (compilationManager.getIdbs().count(entry.second->getPredicateName())) {
+                    idbWatchedAtoms.push_back(entry.first);
+                }
             }
         }
+
     }
 
     //add only needed atoms
-    std::vector<aspc::Literal*> facts;
-    for (unsigned atomId : watchedAtoms) {
+
+    for (unsigned atomId : idbWatchedAtoms) {
         aspc::Literal* lit = literals[atomId];
         if (interpretation[atomId] > 0) {
             lit->setNegated(false);
         } else {
             lit->setNegated(true);
         }
-        facts.push_back(lit);
+        inputInterpretation.push_back(lit);
     }
 #ifdef PRINT_EXEC_TIMES
     cout << "Answer set check" << endl;
 #endif    
-    executionManager.executeProgramOnFacts(facts);
+    executionManager.executeProgramOnFacts(inputInterpretation);
 #ifdef PRINT_EXEC_TIMES
     cout << "Violations: " << executionManager.getFailedConstraints().size() << endl;
 #endif   

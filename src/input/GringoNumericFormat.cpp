@@ -99,6 +99,10 @@ GringoNumericFormat::parse(
 
     simplify();    
     
+   
+    
+    
+    
     bodiesDictionary.clear();
 
     if( solver.conflictDetected() )
@@ -990,6 +994,8 @@ GringoNumericFormat::addFact(
     trace_msg( parser, 3, "Adding fact " << head );
     atomData[ head ].setSupported();
     solver.addClause( Literal( head, POSITIVE ) );
+     //GOOD POINT TO GET FACTS?
+    solver.onFact(head);
     facts.push_back( head );
 }
 

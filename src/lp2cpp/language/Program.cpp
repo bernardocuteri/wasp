@@ -110,6 +110,17 @@ set<string> aspc::Program::getBodyPredicates() const {
     return res;
 }
 
+set<string> aspc::Program::getHeadPredicates() const {
+
+    set<string> res;
+    for(const Rule & r:rules) {
+       for(const Atom & a: r.getHead()) {
+           res.insert(a.getPredicateName());
+       }
+    }
+    return res;
+}
+
 bool aspc::Program::hasConstraint() const {
     for(const Rule & r: rules) {
         if(r.isConstraint()) {

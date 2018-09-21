@@ -521,6 +521,7 @@ class Solver
         
         unsigned int estimateBinaryPropagation( Literal lit );
         inline void notifyAggregate(WeightConstraint* weightConstraintRule );
+        inline void onFact(unsigned);
         
     private:
         inline unsigned int solve_( vector< Literal >& assumptions );
@@ -2935,6 +2936,12 @@ Solver::notifyAggregate(
     
     for( unsigned int i = 0; i < programListeners.size(); i++ )
         programListeners[ i ]->addedAggregate(weightConstraintRule->getId(), weightConstraintRule->literals, weightConstraintRule->weights, weightConstraintRule->getBound());
+}
+
+void 
+Solver::onFact(unsigned fact) {
+    for( unsigned int i = 0; i < externalPropagators.size(); i++ )
+        externalPropagators[ i ]->onFact(fact);
 }
 
 #endif

@@ -47,6 +47,7 @@ namespace aspc {
         void clearFacts();
         void print() const;
         std::set<std::string> getBodyPredicates() const;
+        std::set<std::string> getHeadPredicates() const;
         bool hasConstraint() const;
 
     private:
