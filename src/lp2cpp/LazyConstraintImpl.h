@@ -49,6 +49,7 @@
 #include "language/Atom.h"
 #include "ExecutionManager.h"
 #include "CompilationManager.h"
+#include "datastructures/DenseMap.h"
 #include <unordered_map>
 
 
@@ -80,7 +81,7 @@ public:
 
 private:
     void performCompilation();
-    std::map<int, aspc::Literal*> literals;
+    DenseMap<aspc::Literal*> literals;
     ExecutionManager executionManager;
     CompilationManager compilationManager;
     std::unordered_map<aspc::Literal, int, LiteralHash> literalsMap;

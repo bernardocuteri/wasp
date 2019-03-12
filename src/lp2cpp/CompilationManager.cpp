@@ -913,17 +913,19 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                 for (unsigned i = 0; i < body.size(); i++) {
                     if (body[joinOrder[i]]->isLiteral()) {
                         aspc::Literal* l = (aspc::Literal*) body[joinOrder[i]];
-                        *out << ind << "std::unordered_set<std::string> open_set" << i << ";\n";
-                        if (l->isPositiveLiteral()) {
-                            *out << ind << "explainPositiveLiteral(tuple" << i << ", open_set" << i << ", reasons);\n";
-                        } else {
-                            *out << ind << "Tuple tuple" << i << " = Tuple({";
-                            printLiteralTuple(l);
-                            *out << "}, &_" << l->getPredicateName() << ", true);\n";
-                            *out << ind << "explainNegativeLiteral(&tuple" << i << ", open_set" << i << ", reasons);\n";
-                            //*out << ind << "failedConstraints.back().push_back(tupleToLiteral(Tuple({";
-                            //writeNegativeTuple(r, joinOrder, start, i);
-                            //*out << "}, 0, &ConstantsManager::getInstance().getPredicateName(\"" << l->getPredicateName() << "\"), true)));\n";
+                        if(idbs.count(l->getPredicateName()) || headPredicates.count(l->getPredicateName())) {
+                            *out << ind << "std::unordered_set<std::string> open_set" << i << ";\n";
+                            if (l->isPositiveLiteral()) {
+                                *out << ind << "explainPositiveLiteral(tuple" << i << ", open_set" << i << ", reasons);\n";
+                            } else {
+                                *out << ind << "Tuple tuple" << i << " = Tuple({";
+                                printLiteralTuple(l);
+                                *out << "}, &_" << l->getPredicateName() << ", true);\n";
+                                *out << ind << "explainNegativeLiteral(&tuple" << i << ", open_set" << i << ", reasons);\n";
+                                //*out << ind << "failedConstraints.back().push_back(tupleToLiteral(Tuple({";
+                                //writeNegativeTuple(r, joinOrder, start, i);
+                                //*out << "}, 0, &ConstantsManager::getInstance().getPredicateName(\"" << l->getPredicateName() << "\"), true)));\n";
+                            }
                         }
                     }
                 }

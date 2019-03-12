@@ -29,7 +29,6 @@ public:
 
     PredicateSet(unsigned ariety) : ariety(ariety), lookup_bases(ariety, 0) {
         unsigned total_size = PREDICATE_SETS_TOTAL_MEMORY / (sizeof NULL);
-        lookup_size = (unsigned) std::pow(total_size, 1.0 / ariety);
         if (ariety == 0) {
             lookup_size = total_size = 1;
         } else if (ariety == 1) {

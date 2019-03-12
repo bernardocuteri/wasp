@@ -147,6 +147,7 @@ bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation)
 
 
     std::vector<aspc::Literal*> inputInterpretation;
+    inputInterpretation.reserve(idbWatchedAtoms.size());
     if (!compilationDone) {
         unordered_set<string> idbs;
         for (int i : interpretation) {
