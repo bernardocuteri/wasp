@@ -31,7 +31,7 @@ cxxflags.estats0x = -Wall -Wextra -std=c++0x -DNDEBUG -DSTATS_ON -DESTATS_ON -O3
 linkflags.estats0x = -lm -ldl
 ####
 
-SCRIPT = no
+SCRIPT = cpp
 scriptsc.perl = -I/usr/local/include -I$(shell perl -MConfig -e 'print $$Config{archlib}')/CORE/
 scriptsld.perl = -L$(shell perl -MConfig -e 'print $$Config{archlib}')/CORE/ -L/usr/local/lib/ -lperl
 cxxscripts.perl = -DENABLE_PERL

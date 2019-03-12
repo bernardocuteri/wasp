@@ -5,13 +5,17 @@ all: executor
 
 executor: Executor.so
 
-Executor.so: $(SRC_FOLDER)Executor.cpp Tuple.o AuxiliaryMap.o Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o AspCore2InstanceBuilder.o 
-	g++ $(COMMON_FLAGS) -shared $(SRC_FOLDER)Executor.cpp Tuple.o AuxiliaryMap.o Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o  AspCore2InstanceBuilder.o -o Executor.so 
+Executor.so: $(SRC_FOLDER)Executor.cpp TupleWithReasons.o TupleWithoutReasons.o AuxiliaryMap.o PredicateSet.o Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o AspCore2InstanceBuilder.o 
+	g++ $(COMMON_FLAGS) -shared $(SRC_FOLDER)Executor.cpp TupleWithReasons.o TupleWithoutReasons.o AuxiliaryMap.o PredicateSet.o Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o  AspCore2InstanceBuilder.o -o Executor.so 
 
-Tuple.o: $(SRC_FOLDER)datastructures/Tuple.cpp $(SRC_FOLDER)datastructures/Tuple.h
-	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)datastructures/Tuple.cpp
+TupleWithoutReasons.o: $(SRC_FOLDER)datastructures/TupleWithoutReasons.cpp $(SRC_FOLDER)datastructures/TupleWithoutReasons.h
+	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)datastructures/TupleWithoutReasons.cpp
+TupleWithReasons.o: $(SRC_FOLDER)datastructures/TupleWithReasons.cpp $(SRC_FOLDER)datastructures/TupleWithReasons.h
+	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)datastructures/TupleWithReasons.cpp
 AuxiliaryMap.o: $(SRC_FOLDER)datastructures/AuxiliaryMap.cpp $(SRC_FOLDER)datastructures/AuxiliaryMap.h
 	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)datastructures/AuxiliaryMap.cpp
+PredicateSet.o: $(SRC_FOLDER)datastructures/PredicateSet.cpp $(SRC_FOLDER)datastructures/PredicateSet.h
+	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)datastructures/PredicateSet.cpp
 Literal.o: $(SRC_FOLDER)language/Literal.cpp $(SRC_FOLDER)language/Literal.h
 	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)language/Literal.cpp
 ConstantsManager.o: $(SRC_FOLDER)utils/ConstantsManager.cpp $(SRC_FOLDER)utils/ConstantsManager.h
@@ -26,5 +30,5 @@ InputDirector.o: $(SRC_FOLDER)DLV2libs/input/InputDirector.cpp $(SRC_FOLDER)DLV2
 	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)DLV2libs/input/InputDirector.cpp
 
 clean:
-	rm *.o;
-	rm *.so
+	rm -f *.o;
+	rm -f *.so
