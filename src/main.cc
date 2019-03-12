@@ -33,8 +33,9 @@
 #include "lp2cpp/LazyConstraint.h"
 #include "lp2cpp/LazyConstraintImpl.h"
 #include "lp2cpp/utils/GraphWithTarjanAlgorithm.h"
-#include "lp2cpp/datastructures/Tuple.h"
+#include "lp2cpp/datastructures/TupleWithoutReasons.h"
 #include "lp2cpp/language/Literal.h"
+#include "lp2cpp/utils/FilesManagement.h"
 using namespace std;
 
 int EXIT_CODE = 0;
@@ -52,7 +53,7 @@ void my_handler(int) {
 }
 
 int main(int argc, char** argv) {
-    
+
     //    srand(unsigned(time(NULL)));
     wasp::Options::parse(argc, argv);
     waspFacadePointer = new WaspFacade();
@@ -62,7 +63,7 @@ int main(int argc, char** argv) {
     signal(SIGINT, my_handler);
     signal(SIGTERM, my_handler);
     signal(SIGXCPU, my_handler);
-    
+
     if (wasp::Options::lp2cppDatalog) {
         // execute with option lp2cpp-datalog
         // usage ./exec --lp2cpp-datalog encoding instance 
@@ -74,20 +75,37 @@ int main(int argc, char** argv) {
                 break;
             }
         }
-        std::ofstream outfile(executablePath + "/src/lp2cpp/Executor.cpp");
+#ifdef LP2CPP_DEBUG
+        ExecutionManager em;
+        em.compileDynamicLibrary(executablePath, false);
+        em.launchExecutorOnFile(argv[3]);
+        return 0;
+#endif
+        FilesManagement fileManagement;
+        std::string executorPath = executablePath + "/src/lp2cpp/Executor.cpp";
+        int fd = fileManagement.tryGetLock(executorPath);
+        string hash = fileManagement.computeMD5(executorPath);
+        std::ofstream outfile(executorPath);
         CompilationManager manager;
         manager.setOutStream(&outfile);
-        manager.lp2cpp(argv[2]); //"/encodings/constants");
+        if (!fileManagement.exists(argv[2])) {
+            string filename = argv[2];
+            throw std::runtime_error("Failed to compile logic program: file " + filename + " does not exist.");
+        }
+        manager.loadLazyProgram(argv[2]);
+        manager.lp2cpp(); //"/encodings/constants");
         outfile.close();
+        string newHash = fileManagement.computeMD5(executorPath);
         ExecutionManager execManager;
-        execManager.compileDynamicLibrary(executablePath, true);
+        execManager.compileDynamicLibrary(executablePath, newHash != hash);
+        fileManagement.releaseLock(fd, executorPath);
         //execManager.launchExecutorOnFile((executablePath+"/instances/constants").c_str());
         execManager.launchExecutorOnFile(argv[3]);
         return 0;
     }
 
     //test reading from hardcoded file
-    bool readFromFile = false;
+    bool readFromFile = true;
     std::filebuf fb;
     if (readFromFile) {
         if (fb.open("test.in", std::ios::in)) {
