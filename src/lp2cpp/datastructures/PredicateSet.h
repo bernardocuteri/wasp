@@ -18,6 +18,7 @@
 #include <vector>
 #include <list>
 #include <cmath>
+#include <unordered_map>
 
 const unsigned PREDICATE_SETS_TOTAL_MEMORY = (sizeof NULL) * 1 * 1024 * 1024; //8MB in size
 
@@ -50,6 +51,7 @@ public:
             std::fill(lookup_bases.begin(), lookup_bases.end(), 0);
         }
         std::unordered_set<T, H>::clear();
+        tuples.clear();
     }
 
     std::pair<const T *, bool> insert(T && value) {
@@ -59,12 +61,20 @@ public:
             if (lookup[pos] == NULL) {
                 lookupReferences.push_back(std::move(value));
                 lookup[pos] = &lookupReferences.back();
+                lookup[pos]->setId(lookupReferences.size()-1);
+                tuples.push_back(lookup[pos]);
+                lookupIterators.push_back(lookupReferences.end());
+                lookupIterators.back()--;
+                
                 return std::make_pair(&lookupReferences.back(), true);
             }
             return std::make_pair(lookup[pos], false);
 
         }
         const auto & insertResult = std::unordered_set<T, H>::insert(std::move(value));
+        if (insertResult.second) {
+            tuples.push_back(&(*insertResult.first));
+        }
         return std::make_pair(&(*insertResult.first), insertResult.second);
     }
 
@@ -82,13 +92,17 @@ public:
     //    std::pair<const T &, bool> insert(T && value) {
     //        return insert(std::move(value));
     //    }
+    
+    const std::vector<const T*> & getTuples() const {
+        return tuples;
+    }
 
 private:
 
     inline bool canLookup(const T & value) {
         for (unsigned i = 0; i < ariety; i++) {
             if (value[i] - lookup_bases[i] >= lookup_size) {
-                if(lookupReferences.empty() && lookup_size>0) {
+                if (lookupReferences.empty() && lookup_size > 0) {
                     lookup_bases[i] = value[i];
                 } else {
                     return false;
@@ -101,16 +115,22 @@ private:
     inline unsigned valueToPos(const T & value) const {
         unsigned pos = 0;
         for (unsigned i = 0; i < ariety; i++) {
-            pos += (value[i]-lookup_bases[i]) * std::pow(lookup_size, i);
+            pos += (value[i] - lookup_bases[i]) * std::pow(lookup_size, i);
         }
         return pos;
     }
 
     std::vector<T*> lookup;
+    //for preventing references invalidations
     std::list<T> lookupReferences;
+    
+    std::vector<typename std::list<T>::iterator> lookupIterators;
+    
     unsigned ariety;
     unsigned lookup_size;
-    std::vector<unsigned> lookup_bases; 
+    std::vector<unsigned> lookup_bases;
+    //fast iterations
+    std::vector<const T* > tuples;
 
 };
 

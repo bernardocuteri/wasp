@@ -411,6 +411,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind << "typedef std::vector<const Tuple* > Tuples;\n";
     *out << ind << "using PredicateWSet = PredicateSet<Tuple, TuplesHash>;\n\n";
+    
+    *out << ind << "std::unordered_map<std::string, PredicateWSet*> predicateWSetMap;\n";
+    *out << ind << "std::unordered_map<std::string, PredicateWSet*> predicateFalseWSetMap;\n";
 
     const set< pair<std::string, unsigned> >& predicates = program.getPredicates();
     for (const pair<std::string, unsigned>& predicate : predicates) {
@@ -418,7 +421,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         //*out << ind << "const std::string & "<< predicate.first << " = ConstantsManager::getInstance().getPredicateName("<< predicate.first <<");\n";
         *out << ind << "const std::string _" << predicate.first << " = \"" << predicate.first << "\";\n";
         *out << ind << "PredicateWSet w" << predicate.first << "(" << predicate.second << ");\n";
-        *out << ind << "Tuples tuples_" << predicate.first << ";\n";
     }
 
 
@@ -596,9 +598,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind << "failedConstraints.clear();\n";
 
-    *out << ind << "std::unordered_map<std::string, PredicateWSet*> predicateWSetMap;\n";
-    *out << ind << "std::unordered_map<std::string, PredicateWSet*> predicateFalseWSetMap;\n";
-    *out << ind << "std::unordered_map<std::string, Tuples* > predicateTuplesMap;\n";
+    
 
     *out << ind << "predicateToAuxiliaryMaps.clear();\n";
     *out << ind << "predicateToFalseAuxiliaryMaps.clear();\n";
@@ -606,10 +606,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     for (const pair<std::string, unsigned>& predicate : predicates) {
         if(idbs.count(predicate.first) || headPredicates.count(predicate.first)) {
             *out << ind << "w" << predicate.first << ".clear();\n";
-            *out << ind << "tuples_" << predicate.first << ".clear();\n";
         }
         *out << ind << "predicateWSetMap[_" << predicate.first << "]=&w" << predicate.first << ";\n";
-        *out << ind << "predicateTuplesMap[_" << predicate.first << "]=&tuples_" << predicate.first << ";\n";
     }
 
     for (const std::string & predicate : modelGeneratorPredicatesInNegativeReasons) {
@@ -661,10 +659,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind++ << "if(insertResult.second){\n";
     //    *out << ind << "it->second->insert(tuple);\n";
-    *out << ind << "Tuples & tuples = *predicateTuplesMap[facts[i]->getPredicateName()];\n";
-    *out << ind << "tuples.push_back(insertResult.first);\n";
     *out << ind++ << "for(AuxMap* auxMap:predicateToAuxiliaryMaps[it->first]){\n";
-    *out << ind << "auxMap -> insert2(*tuples.back());\n";
+    *out << ind << "auxMap -> insert2(*insertResult.first);\n";
     *out << --ind << "}\n";
     *out << --ind << "}\n";
     *out << --ind << "}\n";
@@ -694,8 +690,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         const std::unordered_map<std::string, std::vector<unsigned>>&startersExitRules = starterToExitRulesByComponent[i];
         for (const auto& rulesByPredicate : startersExitRules) {
             *out << ind << "index_" << rulesByPredicate.first << "=0;\n";
-            *out << ind++ << "while(index_" << rulesByPredicate.first << "!=tuples_" << rulesByPredicate.first << ".size()){\n";
-            *out << ind << "const Tuple * tuple0 = tuples_" << rulesByPredicate.first << "[index_" << rulesByPredicate.first << "];\n";
+            *out << ind++ << "while(index_" << rulesByPredicate.first << "!=w" << rulesByPredicate.first << ".getTuples().size()){\n";
+            *out << ind << "const Tuple * tuple0 = w" << rulesByPredicate.first << ".getTuples()[index_" << rulesByPredicate.first << "];\n";
             for (unsigned ruleId : rulesByPredicate.second) {
                 const aspc::Rule& r = program.getRule(ruleId);
                 *out << ind++ << "{\n";
@@ -715,14 +711,14 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 const Vertex& v = vertexByID.at(vertexId);
                 if (index > 0)
                     *out << " || ";
-                *out << "index_" << v.name << "!=tuples_" << v.name << ".size()";
+                *out << "index_" << v.name << "!=w" << v.name << ".getTuples().size()";
                 index++;
             }
             *out << "){\n";
         }
         for (const auto& rulesByStarter : recursiveRulesByStarter) {
-            *out << ind++ << "while(index_" << rulesByStarter.first << "!=tuples_" << rulesByStarter.first << ".size()){\n";
-            *out << ind << "const Tuple * tuple0 = tuples_" << rulesByStarter.first << "[index_" << rulesByStarter.first << "];\n";
+            *out << ind++ << "while(index_" << rulesByStarter.first << "!=w" << rulesByStarter.first << ".getTuples().size()){\n";
+            *out << ind << "const Tuple * tuple0 = w" << rulesByStarter.first << ".getTuples()[index_" << rulesByStarter.first << "];\n";
             for (const auto& ruleAndStarterIndex : rulesByStarter.second) {
                 const aspc::Rule& r = program.getRule(ruleAndStarterIndex.first);
                 *out << ind++ << "{\n";
@@ -740,7 +736,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     if (!programHasConstraint) {
         //*out << ind << "std::cout<<\"Propagator model:\"<<std::endl;\n";
         for (const pair<std::string, unsigned>& predicate : predicates) {
-            *out << ind << "printTuples(\"" << predicate.first << "\",tuples_" << predicate.first << ");\n";
+            *out << ind << "printTuples(\"" << predicate.first << "\",w" << predicate.first << ".getTuples());\n";
 
         }
     }
@@ -883,7 +879,6 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
 
                 *out << "}, &_" << r.getHead().front().getPredicateName() << "));\n";
                 *out << ind++ << "if(insertResult.second){\n";
-                *out << ind << "tuples_" << r.getHead().front().getPredicateName() << ".push_back(insertResult.first);\n";
 
                 if (p.hasConstraint()) {
                     for (unsigned i = 0; i < body.size(); i++) {
@@ -899,7 +894,7 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                 }
 
                 for (const std::string& auxMapName : predicateToAuxiliaryMaps[r.getHead().front().getPredicateName()]) {
-                    *out << ind << "p" << auxMapName << ".insert2(*tuples_" << r.getHead().front().getPredicateName() << ".back());\n";
+                    *out << ind << "p" << auxMapName << ".insert2(*w" << r.getHead().front().getPredicateName() << ".getTuples().back());\n";
                 }
 
                 *out << --ind << "}\n";

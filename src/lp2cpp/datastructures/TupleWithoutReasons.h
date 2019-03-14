@@ -73,9 +73,19 @@ public:
     //        return negativeReasons;
     //    }
 
+    unsigned getId() const {
+        return id;
+    }
+
+    void setId(unsigned id) {
+        this->id = id;
+    }
+
+    
 private:
     const std::string * predicateName;
     bool negated;
+    unsigned id;
     //    mutable vector<const Tuple*> positiveReasons;
     //    mutable vector<Tuple> negativeReasons;
 
