@@ -68,6 +68,7 @@ struct LiteralHash {
 
 class LazyConstraintImpl: public LazyConstraint {
 public: 
+    LazyConstraintImpl();
     virtual void setFilename(const std::string & executablePath, const std::string & filename) override;
     virtual void addedVarName(int var, const std::string & atomString) override;
     virtual void onFact(int var) override;

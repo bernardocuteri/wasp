@@ -92,8 +92,7 @@ public:
     }
     
 
-    //assuming its a copy    
-
+    //assuming its a copy   
     void erase(const T & value) {
         const T* realValue;
         if (canLookup(value)) {

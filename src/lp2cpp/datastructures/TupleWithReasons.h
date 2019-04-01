@@ -65,8 +65,26 @@ public:
     const vector<TupleWithReasons> & getNegativeReasons() const {
         return negativeReasons;
     }
+    
+    void setCollisionListIndex(std::vector<const TupleWithReasons *>* collisionList, unsigned index) const {
+        collisionsLists[collisionList] = index;
+        
+    }
+    
+    void removeFromCollisionsLists() const {
+        for(auto & collisionListAndIndex: collisionsLists) {
+            std::vector<const TupleWithReasons *> & collisionList = *(collisionListAndIndex.first);
+            unsigned index = collisionListAndIndex.second;
+            collisionList[index] = collisionList[collisionList.size()-1];
+            collisionList[index]->setCollisionListIndex(&collisionList, index);
+            collisionList.pop_back();
+            
+        }
+    }
+    
 
 private:
+    mutable std::unordered_map<std::vector<const TupleWithReasons *>*, unsigned> collisionsLists;
     mutable vector<const TupleWithReasons*> positiveReasons;
     mutable vector<TupleWithReasons> negativeReasons;
 

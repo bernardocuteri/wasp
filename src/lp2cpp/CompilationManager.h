@@ -26,9 +26,12 @@
 #include <set>
 #include "datastructures/BoundAnnotatedLiteral.h"
 
+const int LAZY_MODE = 0; 
+const int EAGER_MODE = 1;
+
 class CompilationManager {
 public:
-    CompilationManager();
+    CompilationManager(int mode);
     void lp2cpp();
     void generateStratifiedCompilableProgram(aspc::Program & program, AspCore2ProgramBuilder* builder);
     void setOutStream(std::ostream* outputTarget);
@@ -36,7 +39,7 @@ public:
     void insertModelGeneratorPredicate(const std::string & p) {
         modelGeneratorPredicates.insert(p);
     }
-    void loadLazyProgram(const std::string & filename);
+    void loadProgram(const std::string & filename);
     void setIdbs(std::unordered_set<std::string> && idbs) {
         this->idbs = std::move(idbs);
     }
@@ -96,6 +99,8 @@ private:
     std::unordered_map<std::string, unsigned> predicateArieties;
     
     std::unordered_set<std::string> idbs;
+    
+    int mode;
     
 };
 

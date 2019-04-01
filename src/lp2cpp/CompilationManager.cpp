@@ -35,7 +35,8 @@ using namespace std;
 
 const std::string tab = "    ";
 
-CompilationManager::CompilationManager() : out(&std::cout), ind(0) {
+CompilationManager::CompilationManager(int mode) : out(&std::cout), ind(0) {
+    this->mode = mode;
 }
 
 void CompilationManager::setOutStream(std::ostream* outputTarget) {
@@ -47,7 +48,7 @@ void CompilationManager::lp2cpp() {
     delete builder;
 }
 
-void CompilationManager::loadLazyProgram(const std::string& filename) {
+void CompilationManager::loadProgram(const std::string& filename) {
     DLV2::InputDirector director;
     builder = new AspCore2ProgramBuilder();
     director.configureBuilder(builder);
@@ -411,7 +412,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind << "typedef std::vector<const Tuple* > Tuples;\n";
     *out << ind << "using PredicateWSet = PredicateSet<Tuple, TuplesHash>;\n\n";
-    
+
     *out << ind << "std::unordered_map<std::string, PredicateWSet*> predicateWSetMap;\n";
     *out << ind << "std::unordered_map<std::string, PredicateWSet*> predicateFalseWSetMap;\n";
 
@@ -516,7 +517,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     for (const std::string & predicate : modelGeneratorPredicatesInNegativeReasons) {
         //*out << ind << "const std::string & "<< predicate.first << " = ConstantsManager::getInstance().getPredicateName("<< predicate.first <<");\n";
-        *out << ind << "PredicateWSet neg_w" << predicate << "("<<predicateArieties[predicate]<<");\n";
+        *out << ind << "PredicateWSet neg_w" << predicate << "(" << predicateArieties[predicate] << ");\n";
     }
 
 
@@ -587,6 +588,45 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     }
 
+    *out << ind++ << "inline void Executor::onLiteralTrue(const aspc::Literal* l) {\n";
+    *out << ind++ << "if(!l->isNegated()) {\n";
+    //*out << ind << "std::cout<<i<<\"\\n\";\n";
+    *out << ind << "std::unordered_map<std::string,PredicateWSet*>::iterator it = predicateWSetMap.find(l->getPredicateName());\n";
+    *out << ind++ << "if(it==predicateWSetMap.end()) {\n";
+    if (!programHasConstraint) {
+        *out << ind << "l->print();\n";
+        *out << ind << "std::cout<<\".\\n\";\n";
+    }
+    *out << --ind << "}\n";
+    *out << ind++ << "else {\n";
+    string tupleType = "WithoutReasons";
+    if (programHasConstraint) {
+        tupleType = "WithReasons";
+    }
+    *out << ind << "const auto& insertResult=it->second->insert(l->getTuple" << tupleType << "());\n";
+
+    *out << ind++ << "if(insertResult.second){\n";
+    //    *out << ind << "it->second->insert(tuple);\n";
+    *out << ind++ << "for(AuxMap* auxMap:predicateToAuxiliaryMaps[it->first]){\n";
+    *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+    *out << --ind << "}\n";
+    *out << --ind << "}\n";
+    *out << --ind << "}\n";
+    *out << --ind << "}\n";
+    *out << ind++ << "else {\n";
+    *out << ind << "std::unordered_map<std::string,PredicateWSet*>::iterator it = predicateFalseWSetMap.find(l->getPredicateName());\n";
+    *out << ind++ << "if(it!=predicateFalseWSetMap.end()) {\n";
+    *out << ind << "const auto& insertResult=it->second->insert(l->getTuple" << tupleType << "());\n";
+    *out << ind++ << "if(insertResult.second){\n";
+    *out << ind++ << "for(AuxMap* auxMap:predicateToFalseAuxiliaryMaps[it->first]){\n";
+    *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+    *out << --ind << "}\n";
+    *out << --ind << "}\n";
+    *out << --ind << "}\n";
+    *out << --ind << "}\n";
+    *out << --ind << "}\n";
+
+
 
 
     *out << ind++ << "void Executor::executeProgramOnFacts(const std::vector<aspc::Literal*> & facts) {\n";
@@ -598,13 +638,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind << "failedConstraints.clear();\n";
 
-    
+
 
     *out << ind << "predicateToAuxiliaryMaps.clear();\n";
     *out << ind << "predicateToFalseAuxiliaryMaps.clear();\n";
 
     for (const pair<std::string, unsigned>& predicate : predicates) {
-        if(idbs.count(predicate.first) || headPredicates.count(predicate.first)) {
+        if (idbs.count(predicate.first) || headPredicates.count(predicate.first)) {
             *out << ind << "w" << predicate.first << ".clear();\n";
         }
         *out << ind << "predicateWSetMap[_" << predicate.first << "]=&w" << predicate.first << ";\n";
@@ -612,7 +652,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     for (const std::string & predicate : modelGeneratorPredicatesInNegativeReasons) {
         //*out << ind << "const std::string & "<< predicate.first << " = ConstantsManager::getInstance().getPredicateName("<< predicate.first <<");\n";
-        if(idbs.count(predicate) || headPredicates.count(predicate)) {
+        if (idbs.count(predicate) || headPredicates.count(predicate)) {
             *out << ind << "neg_w" << predicate << ".clear();\n";
         }
         *out << ind << "predicateFalseWSetMap[_" << predicate << "] = &neg_w" << predicate << ";\n";
@@ -620,7 +660,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     for (const auto & entry : predicateToAuxiliaryMaps) {
         for (const auto & auxSet : entry.second) {
-            if(idbs.count(entry.first) || headPredicates.count(entry.first)) {
+            if (idbs.count(entry.first) || headPredicates.count(entry.first)) {
                 *out << ind << "p" << auxSet << ".clear();\n";
             }
             *out << ind << "predicateToAuxiliaryMaps[_" << entry.first << "].push_back(&p" << auxSet << ");\n";
@@ -629,7 +669,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     for (const auto & entry : predicateToFalseAuxiliaryMaps) {
         for (const auto & auxSet : entry.second) {
-            if(idbs.count(entry.first) || headPredicates.count(entry.first)) {
+            if (idbs.count(entry.first) || headPredicates.count(entry.first)) {
                 *out << ind << auxSet << ".clear();\n";
             }
             *out << ind << "predicateToFalseAuxiliaryMaps[_" << entry.first << "].push_back(&" << auxSet << ");\n";
@@ -641,43 +681,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     //feed facts
     //*out << ind << "std::cout<<\"facts\\n\";\n";
     *out << ind++ << "for(unsigned i=0;i<facts.size();i++) {\n";
-    *out << ind++ << "if(!facts[i]->isNegated()) {\n";
-    //*out << ind << "std::cout<<i<<\"\\n\";\n";
-    *out << ind << "std::unordered_map<std::string,PredicateWSet*>::iterator it = predicateWSetMap.find(facts[i]->getPredicateName());\n";
-    *out << ind++ << "if(it==predicateWSetMap.end()) {\n";
-    if (!programHasConstraint) {
-        *out << ind << "facts[i]->print();\n";
-        *out << ind << "std::cout<<\".\\n\";\n";
-    }
+    *out << ind << "onLiteralTrue(facts[i]);\n";
     *out << --ind << "}\n";
-    *out << ind++ << "else {\n";
-    string tupleType = "WithoutReasons";
-    if (programHasConstraint) {
-        tupleType = "WithReasons";
-    }
-    *out << ind << "const auto& insertResult=it->second->insert(facts[i]->getTuple" << tupleType << "());\n";
-
-    *out << ind++ << "if(insertResult.second){\n";
-    //    *out << ind << "it->second->insert(tuple);\n";
-    *out << ind++ << "for(AuxMap* auxMap:predicateToAuxiliaryMaps[it->first]){\n";
-    *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-    *out << --ind << "}\n";
-    *out << --ind << "}\n";
-    *out << --ind << "}\n";
-    *out << --ind << "}\n";
-    *out << ind++ << "else {\n";
-    *out << ind << "std::unordered_map<std::string,PredicateWSet*>::iterator it = predicateFalseWSetMap.find(facts[i]->getPredicateName());\n";
-    *out << ind++ << "if(it!=predicateFalseWSetMap.end()) {\n";
-    *out << ind << "const auto& insertResult=it->second->insert(facts[i]->getTuple" << tupleType << "());\n";
-    *out << ind++ << "if(insertResult.second){\n";
-    *out << ind++ << "for(AuxMap* auxMap:predicateToFalseAuxiliaryMaps[it->first]){\n";
-    *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-    *out << --ind << "}\n";
-    *out << --ind << "}\n";
-    *out << --ind << "}\n";
-    *out << --ind << "}\n";
-    *out << --ind << "}\n";
-
 
     //*out << ind << "std::cout<<\"facts reading completed\"<<std::endl;\n";
 
@@ -908,7 +913,7 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                 for (unsigned i = 0; i < body.size(); i++) {
                     if (body[joinOrder[i]]->isLiteral()) {
                         aspc::Literal* l = (aspc::Literal*) body[joinOrder[i]];
-                        if(idbs.count(l->getPredicateName()) || headPredicates.count(l->getPredicateName())) {
+                        if (idbs.count(l->getPredicateName()) || headPredicates.count(l->getPredicateName())) {
                             *out << ind << "std::unordered_set<std::string> open_set" << i << ";\n";
                             if (l->isPositiveLiteral()) {
                                 *out << ind << "explainPositiveLiteral(tuple" << i << ", open_set" << i << ", reasons);\n";
@@ -929,9 +934,9 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                 *out << --ind << "}\n";
 
                 //TESTING FEATURE, LIMIT NUMBER OF FAILED CONSTRAINTS
-//                *out << ind++ << "if(failedConstraints.size() >= 1000) {\n";
-//                *out << ind << "return;\n";
-//                *out << --ind << "}\n";
+                //                *out << ind++ << "if(failedConstraints.size() >= 1000) {\n";
+                //                *out << ind << "return;\n";
+                //                *out << --ind << "}\n";
 
             }
 

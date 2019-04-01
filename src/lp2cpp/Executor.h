@@ -33,6 +33,7 @@ public:
   Executor();
   virtual ~Executor();
   virtual void executeProgramOnFacts(const std::vector<aspc::Literal*> & p);
+  virtual void onLiteralTrue(const aspc::Literal* l);
   virtual void executeFromFile(const char* factsFile);
   virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {
       return failedConstraints;

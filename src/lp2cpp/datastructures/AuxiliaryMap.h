@@ -91,12 +91,12 @@ public:
 
             }
             lookup[pos]->push_back(&value);
+            value.setCollisionListIndex(lookup[pos], (unsigned) (lookup[pos]->size()-1));
             return;
-
-
         }
-
-        tuples[std::move(key)].push_back(&value);
+        auto & collisionList = tuples[std::move(key)];
+        value.setCollisionListIndex(&collisionList, collisionList.size());
+        collisionList.push_back(&value);
     }
 
     void clear() {

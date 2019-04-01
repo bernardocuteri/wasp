@@ -37,8 +37,12 @@
 using namespace std::chrono;
 #endif
 
-void LazyConstraintImpl::performCompilation() {
+LazyConstraintImpl::LazyConstraintImpl(): compilationManager(LAZY_MODE) {
 
+}
+
+
+void LazyConstraintImpl::performCompilation() {
     string executablePathAndName = wasp::Options::arg0;
     string executablePath = executablePathAndName;
     for (int i = executablePath.size() - 1; i >= 0; i--) {
@@ -70,7 +74,7 @@ void LazyConstraintImpl::setFilename(const std::string & fileDirectory, const st
     if (!fileManagement.exists(filepath)) {
         throw std::runtime_error("Failed to compile lazy program: file " + filepath + " does not exist.");
     }
-    compilationManager.loadLazyProgram(filepath);
+    compilationManager.loadProgram(filepath);
 
 
 

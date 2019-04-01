@@ -16,6 +16,7 @@
 #include <vector>
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
 
 struct TuplesHash;
 
@@ -80,12 +81,29 @@ public:
     void setId(unsigned id) const {
         this->id = id;
     }
+    
+    void setCollisionListIndex(std::vector<const TupleWithoutReasons *>* collisionList, unsigned index) const {
+        collisionsLists[collisionList] = index;
+        
+    }
+    
+    void removeFromCollisionsLists() const {
+        for(auto & collisionListAndIndex: collisionsLists) {
+            std::vector<const TupleWithoutReasons *> & collisionList = *(collisionListAndIndex.first);
+            unsigned index = collisionListAndIndex.second;
+            collisionList[index] = collisionList[collisionList.size()-1];
+            collisionList[index]->setCollisionListIndex(&collisionList, index);
+            collisionList.pop_back();
+            
+        }
+    }
 
     
 private:
     const std::string * predicateName;
     bool negated;
     mutable unsigned id;
+    mutable std::unordered_map<std::vector<const TupleWithoutReasons *>*, unsigned> collisionsLists;
     //    mutable vector<const Tuple*> positiveReasons;
     //    mutable vector<Tuple> negativeReasons;
 
