@@ -53,19 +53,6 @@
 #include <unordered_map>
 
 
-
-struct LiteralHash {
-
-    size_t operator()(const aspc::Literal & v) const {
-        std::hash<unsigned> hasher;
-        size_t seed = 0;
-        for (unsigned i : v.getAtom().getIntTuple()) {
-            seed ^= hasher(i) + (seed << 6) + (seed >> 2);
-        }
-        return (std::hash<std::string>()(v.getPredicateName())) ^ seed;
-    }
-};
-
 class LazyConstraintImpl: public LazyConstraint {
 public: 
     LazyConstraintImpl();

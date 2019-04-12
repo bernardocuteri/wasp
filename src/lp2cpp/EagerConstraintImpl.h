@@ -22,29 +22,19 @@
 #include "datastructures/DenseMap.h"
 #include <unordered_map>
 
-struct LiteralHash {
-
-    size_t operator()(const aspc::Literal & v) const {
-        std::hash<unsigned> hasher;
-        size_t seed = 0;
-        for (unsigned i : v.getAtom().getIntTuple()) {
-            seed ^= hasher(i) + (seed << 6) + (seed >> 2);
-        }
-        return (std::hash<std::string>()(v.getPredicateName())) ^ seed;
-    }
-};
 
 class EagerConstraintImpl : public EagerConstraint {
 public:
     EagerConstraintImpl();
     virtual ~EagerConstraintImpl();
     virtual void setFilename(const std::string & executablePath, const std::string & filename);
-    virtual bool onLiteralTrue(int var);
+    virtual void onLiteralTrue(int var, std::vector<int> & propagatedLiterals);
     virtual void onLiteralsUndefined(const std::vector<int> & lits);
-    virtual void getReason(const std::vector<int> & reason);
+    virtual void getReasonForLiteral(int lit, std::vector<int> & reason);
     virtual void addedVarName(int var, const std::string & atomString);
     virtual void onFact(int var);
     virtual const std::vector<unsigned int> & getVariablesToFreeze();
+    virtual const std::string & getFilepath() const;
 private:
     
     void performCompilation();

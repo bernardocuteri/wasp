@@ -38,7 +38,7 @@ public:
             lookup_size = (unsigned) std::pow(total_size, 1.0 / ariety);
         }
         lookup = std::vector<T*>(total_size, NULL);
-        lookupIterators = std::vector<typename std::list<T>::iterator>(total_size);
+        lookupIterators = std::vector<typename std::list<T>::iterator > (total_size);
     }
 
     virtual ~PredicateSet() {
@@ -90,24 +90,38 @@ public:
         }
         return &*findResult;
     }
-    
+
 
     //assuming its a copy   
+
     void erase(const T & value) {
         const T* realValue;
         if (canLookup(value)) {
             unsigned pos = valueToPos(value);
             realValue = lookup[pos];
+            if (lookup[pos] == NULL) {
+                return;
+            }
             lookup[pos] = NULL;
+            realValue->removeFromCollisionsLists();
+            tuples[tuples.size() - 1]->setId(realValue->getId());
+            tuples[realValue->getId()] = tuples[tuples.size() - 1];
+            tuples.pop_back();
             lookupReferences.erase(lookupIterators[pos]);
         } else {
             const auto & findResult = std::unordered_set<T, H>::find(value);
+            if (findResult == std::unordered_set<T, H>::end()) {
+                return;
+            }
             realValue = &*(findResult);
+            realValue->removeFromCollisionsLists();
+            tuples[tuples.size() - 1]->setId(realValue->getId());
+            tuples[realValue->getId()] = tuples[tuples.size() - 1];
+            tuples.pop_back();
             std::unordered_set<T, H>::erase(findResult);
         }
-        tuples[tuples.size()-1]->setId(realValue->getId());
-        tuples[realValue->getId()] = tuples[tuples.size()-1];
-        tuples.pop_back();
+
+
     }
 
     //    std::pair<const T &, bool> insert(T && value) {

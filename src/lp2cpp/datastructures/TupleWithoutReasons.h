@@ -17,7 +17,7 @@
 #include <string>
 #include <unordered_set>
 #include <unordered_map>
-
+#include <iostream>
 struct TuplesHash;
 
 class TupleWithoutReasons : public std::vector<unsigned> {
@@ -84,7 +84,6 @@ public:
     
     void setCollisionListIndex(std::vector<const TupleWithoutReasons *>* collisionList, unsigned index) const {
         collisionsLists[collisionList] = index;
-        
     }
     
     void removeFromCollisionsLists() const {

@@ -24,13 +24,15 @@
  */
 
 #ifndef EXECUTIONMANAGER_H
-#define	EXECUTIONMANAGER_H
+#define EXECUTIONMANAGER_H
 
 #include "language/Program.h"
 #include <map>
 #include "datastructures/AuxiliaryMap.h"
 #include <iostream>
 #include "Executor.h"
+
+
 
 class ExecutionManager {
 public:
@@ -43,11 +45,15 @@ public:
     void executeProgramOnFacts(const std::vector<aspc::Literal*> & problemIstance);
     const Executor & getExecutor();
     void shuffleFailedConstraints();
+    void onLiteralTrue(const aspc::Literal* l);
+    void onLiteralUndef(const aspc::Literal* l);
+    const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & getPropagatedLiteralsAndReasons() const;
+    void initCompiled();
 private:
     Executor* executor;
     void (*destroy)(Executor*);
-        
+
 };
 
-#endif	/* EXECUTIONMANAGER_H */
+#endif /* EXECUTIONMANAGER_H */
 

@@ -333,7 +333,7 @@ Options::parse(
                 //options for running lp2cpp
                 { "lp2cpp-datalog", no_argument, NULL, OPTIONID_lp2cpp_datalog },
                 
-                #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL) || defined(ENABLE_CPP)
+                #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL) || defined(ENABLE_CPP_LAZY) || defined(ENABLE_CPP_EAGER) 
                 /* HEURISTIC */
                 { "interpreter", required_argument, NULL, OPTIONID_heuristic_interpreter },
                 { "heuristic-scriptname", required_argument, NULL, OPTIONID_heuristic_scriptname },
@@ -531,11 +531,16 @@ Options::parse(
                         interpreter = PYTHON_INTERPRETER;
                     else
                     #endif     
-                    #ifdef ENABLE_CPP
-                    if( !strcmp( optarg, "cpp" ) )
-                        interpreter = CPP_INTERPRETER;
+                    #ifdef ENABLE_CPP_LAZY
+                    if( !strcmp( optarg, "cpp_lazy" ) )
+                        interpreter = CPP_LAZY_INTERPRETER;
                     else
                     #endif  
+                    #ifdef ENABLE_CPP_EAGER
+                    if( !strcmp( optarg, "cpp_eager" ) )
+                        interpreter = CPP_EAGER_INTERPRETER;
+                    else
+                    #endif 
                         WaspErrorMessage::errorGeneric( "Unkwown interpreter." );
                 }
                 break;

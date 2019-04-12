@@ -26,8 +26,8 @@
 #include "../propagators/ExternalPropagator.h"
 
 
-const set<string> supportedMethods = {method_plugins_onLitTrue, method_plugins_getReason,
-    method_plugins_onLiteralsUndefined, method_plugins_getVariablesToFreeze, method_plugins_onStartingSolver, method_plugins_onFact};
+const set<string> supportedMethods = {method_plugins_onLitTrue, method_plugins_getReasonForLiteral, method_plugins_addedVarName, 
+    method_plugins_onLiteralsUndefined, method_plugins_getVariablesToFreeze, method_plugins_onStartingSolver, method_plugins_onFact, method_plugins_getLiterals};
 
 MyCppEagerInterpreter::~MyCppEagerInterpreter() {
 }
@@ -38,17 +38,22 @@ MyCppEagerInterpreter::MyCppEagerInterpreter(char* filenameToCompile, const stri
 }
 
 void MyCppEagerInterpreter::callListMethod(const string& method_name, const vector<int>& parameters, vector<int>& output) {
-//    if (method_name == method_plugins_checkAnswerSet) {
-//        if (!eagerConstraint.checkAnswerSet(parameters)) {
-//            output.push_back(0);
-//        }
-//    } else if (method_name == method_plugins_getReasonsForCheckFailure) {
-//        eagerConstraint.onCheckFail(output);
-//    } else if (method_name == method_plugins_getVariablesToFreeze) {
-//        output.insert(output.end(), lazyConstraint.getVariablesToFreeze().begin(), lazyConstraint.getVariablesToFreeze().end());
-//    } else if(method_name == method_plugins_onStartingSolver) {
-//        cout<<"Starting solver using CPP lazy propagator on "<<lazyConstraint.getFilepath()<<endl;
-//    }
+    
+    if (method_name == method_plugins_onLitTrue) {
+        eagerConstraint.onLiteralTrue(parameters[0], output);           
+    } else if (method_name == method_plugins_getReasonForLiteral) {
+        eagerConstraint.getReasonForLiteral(parameters[0], output);
+    } else if (method_name == method_plugins_getVariablesToFreeze) {
+        output.insert(output.end(), eagerConstraint.getVariablesToFreeze().begin(), eagerConstraint.getVariablesToFreeze().end());
+    } else if (method_name == method_plugins_getLiterals) {
+        output.insert(output.end(), eagerConstraint.getVariablesToFreeze().begin(), eagerConstraint.getVariablesToFreeze().end());
+    } else if (method_name == method_plugins_onLiteralsUndefined) {
+        eagerConstraint.onLiteralsUndefined(parameters);
+    } else if(method_name == method_plugins_onStartingSolver) {
+        cout<<"Starting solver using CPP eager propagator on "<<eagerConstraint.getFilepath()<<endl;
+    }
+    
+    
 
 }
 

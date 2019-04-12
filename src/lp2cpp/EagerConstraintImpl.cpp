@@ -19,7 +19,12 @@
 #include "../util/WaspOptions.h"
 #include "utils/FilesManagement.h"
 
-EagerConstraintImpl::EagerConstraintImpl(): compilationManager(EAGER_MODE){
+#ifdef PRINT_EXEC_TIMES
+#include <chrono>
+using namespace std::chrono;
+#endif
+
+EagerConstraintImpl::EagerConstraintImpl() : compilationManager(EAGER_MODE) {
 }
 
 EagerConstraintImpl::~EagerConstraintImpl() {
@@ -42,17 +47,19 @@ void EagerConstraintImpl::performCompilation() {
     string executorPath = executablePath + "/src/lp2cpp/Executor.cpp";
     int fd = fileManagement.tryGetLock(executorPath);
     string hash = fileManagement.computeMD5(executorPath);
+#ifndef LP2CPP_DEBUG
     std::ofstream outfile(executorPath);
     compilationManager.setOutStream(&outfile);
     compilationManager.lp2cpp();
     outfile.close();
+#endif
     string newHash = fileManagement.computeMD5(executorPath);
     executionManager.compileDynamicLibrary(executablePath, newHash != hash);
     fileManagement.releaseLock(fd, executorPath);
     compilationDone = true;
 }
 
-void EagerConstraintImpl::setFilename(const std::string & executablePath, const std::string & filename) {
+void EagerConstraintImpl::setFilename(const std::string & fileDirectory, const std::string & filename) {
     this-> fileDirectory = fileDirectory;
     this -> filename = filename;
     this -> filepath = fileDirectory + "/" + filename;
@@ -64,19 +71,89 @@ void EagerConstraintImpl::setFilename(const std::string & executablePath, const 
 
 };
 
-bool EagerConstraintImpl::onLiteralTrue(int var) {
+#ifdef PRINT_EXEC_TIMES
+long prop_time_e = 0;
+long solv_time_e = 0;
+
+high_resolution_clock::time_point t1_e;
+high_resolution_clock::time_point t2_e = high_resolution_clock::now();
+#endif
+
+void EagerConstraintImpl::onLiteralTrue(int var, std::vector<int> & propagatedLiterals) {
+#ifdef PRINT_EXEC_TIMES
+    t1_e = high_resolution_clock::now();
+    auto solve_duration_e = duration_cast<microseconds>(t1_e - t2_e).count();
+    solv_time_e += solve_duration_e;
+    cout << "START eager evaluation" << endl;
+#endif
+    aspc::Literal* lit = NULL;
+    std::cout << "lit true " << var << std::endl;
+    if (var > 0 && literals.count(var)) {
+        lit = literals[var];
+        lit->setNegated(false);
+
+    } else if (literals.count(-var)) {
+        lit = literals[-var];
+        lit->setNegated(true);
+    }
+    std::cout << "lit true ";
+    lit->print();
+    std::cout << std::endl;
+    std::vector<aspc::Literal*> inputInterpretation;
+    inputInterpretation.push_back(lit);
+
+#ifdef PRINT_EXEC_TIMES
+    cout << "On literal true" << endl;
+#endif    
+    executionManager.executeProgramOnFacts(inputInterpretation);
+#ifdef PRINT_EXEC_TIMES
+    cout << "Propagated: " << executionManager.getPropagatedLiteralsAndReasons().size() << endl;
+#endif   
+#ifdef PRINT_EXEC_TIMES
+    cout << "END eager evaluation" << endl;
+    t2_e = high_resolution_clock::now();
+    auto duration_e = duration_cast<microseconds>(t2_e - t1_e).count();
+
+    prop_time_e += duration_e;
+
+    cout << "tot_propr " << prop_time_e / 1000 << endl;
+    cout << "tot_solv " << solv_time_e / 1000 << endl;
+#endif
+
+
+    const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
+
+    for (auto& it : propagatedLiteralsAndReasons) {
+        propagatedLiterals.push_back(-literalsMap[it.first]);
+    }
+
 
 };
 
-void EagerConstraintImpl::onLiteralsUndefined(const std::vector<int> & lits) {
-
+void EagerConstraintImpl::onLiteralsUndefined(const std::vector<int> & params) {
+    //params[0] is the decision level
+    for (unsigned i = 1; i < params.size(); i++) {
+        int lit = params[i];
+        if (lit > 0) {
+            executionManager.onLiteralUndef(literals[lit]);
+        } else {
+            executionManager.onLiteralUndef(literals[-lit]);
+        }
+    }
 };
 
-void EagerConstraintImpl::getReason(const std::vector<int> & reason) {
-
+void EagerConstraintImpl::getReasonForLiteral(int lit, std::vector<int> & reason) {
+    if (lit < 0) {
+        lit = -lit;
+    }
+    const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
+    for (const auto& it : propagatedLiteralsAndReasons.at(*(literals[lit]))) {
+        reason.push_back(-literalsMap[it]);
+    }
 };
 
 //TODO remove duplication
+
 aspc::Literal* parseLiteral2(const std::string & literalString) {
     string predicateName;
     unsigned i = 0;
@@ -112,14 +189,23 @@ aspc::Literal* parseLiteral2(const std::string & literalString) {
 }
 
 void EagerConstraintImpl::addedVarName(int var, const std::string & literalString) {
+
+    if (!compilationDone) {
+        performCompilation();
+        executionManager.initCompiled();
+    }
+
     aspc::Literal * atom = parseLiteral2(literalString);
-    //atom.print();
-    //cout<<endl;
     this->literals[var] = atom;
     literalsMap[*atom] = var;
     compilationManager.insertModelGeneratorPredicate(atom->getPredicateName());
     if (compilationManager.getBodyPredicates().count(atom->getPredicateName())) {
-        watchedAtoms.push_back(var);
+        if (facts.count(var)) {
+            executionManager.onLiteralTrue(literals[var]);
+        } else {
+            watchedAtoms.push_back(var);
+            executionManager.onLiteralUndef(literals[var]);
+        }
     }
 };
 
@@ -129,5 +215,9 @@ void EagerConstraintImpl::onFact(int var) {
 };
 
 const std::vector<unsigned int> & EagerConstraintImpl::getVariablesToFreeze() {
-
+    return watchedAtoms;
 };
+
+const string& EagerConstraintImpl::getFilepath() const {
+    return filepath;
+}

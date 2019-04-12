@@ -27,27 +27,52 @@
 #include "datastructures/AuxiliaryMap.h"
 #include <iostream>
 #include <algorithm>
-class Executor
-{
+
+struct LiteralHash {
+
+    size_t operator()(const aspc::Literal & v) const {
+        std::hash<unsigned> hasher;
+        size_t seed = 0;
+        for (unsigned i : v.getAtom().getIntTuple()) {
+            seed ^= hasher(i) + (seed << 6) + (seed >> 2);
+        }
+        return (std::hash<std::string>()(v.getPredicateName())) ^ seed;
+    }
+};
+
+class Executor {
 public:
-  Executor();
-  virtual ~Executor();
-  virtual void executeProgramOnFacts(const std::vector<aspc::Literal*> & p);
-  virtual void onLiteralTrue(const aspc::Literal* l);
-  virtual void executeFromFile(const char* factsFile);
-  virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {
-      return failedConstraints;
-  }
-  virtual const std::vector<std::string> & getBodyLiterals() {
-      return bodyLiterals;
-  }
-  virtual void shuffleFailedConstraints() {
-      std::random_shuffle(failedConstraints.begin(), failedConstraints.end());
-  }
-  
+    Executor();
+    virtual ~Executor();
+    virtual void executeProgramOnFacts(const std::vector<aspc::Literal*> & p);
+    virtual void onLiteralTrue(const aspc::Literal* l);
+    virtual void onLiteralUndef(const aspc::Literal* l);
+    virtual void executeFromFile(const char* factsFile);
+    virtual void init();
+    virtual void clear();
+    virtual void clearPropagations();
+
+    virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {
+        return failedConstraints;
+    }
+
+    virtual const std::vector<std::string> & getBodyLiterals() {
+        return bodyLiterals;
+    }
+
+    virtual void shuffleFailedConstraints() {
+        std::random_shuffle(failedConstraints.begin(), failedConstraints.end());
+    }
+
+    virtual const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & getPropagatedLiteralsAndReasons() const {
+        return propagatedLiteralsAndReasons;
+    }
+
+
 private:
-  std::vector<std::vector<aspc::Literal> > failedConstraints;
-  std::vector<std::string> bodyLiterals;
+    std::vector<std::vector<aspc::Literal> > failedConstraints;
+    std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> propagatedLiteralsAndReasons;
+    std::vector<std::string> bodyLiterals;
 
 };
 

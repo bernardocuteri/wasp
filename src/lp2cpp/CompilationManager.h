@@ -89,6 +89,8 @@ private:
     AspCore2ProgramBuilder* builder;
     
     std::unordered_map<std::string, std::set<std::string> > predicateToAuxiliaryMaps;
+    
+    std::unordered_map<std::string, std::set<std::string> > predicateToUndefAuxiliaryMaps;
 
     std::unordered_map<std::string, std::set<std::string> > predicateToFalseAuxiliaryMaps;
     

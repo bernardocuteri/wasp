@@ -17,6 +17,7 @@
 #include <string>
 #include <unordered_set>
 #include "TupleWithoutReasons.h"
+#include <iostream>
 
 
 class TupleWithReasons : public TupleWithoutReasons {
@@ -68,7 +69,6 @@ public:
     
     void setCollisionListIndex(std::vector<const TupleWithReasons *>* collisionList, unsigned index) const {
         collisionsLists[collisionList] = index;
-        
     }
     
     void removeFromCollisionsLists() const {

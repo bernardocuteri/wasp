@@ -179,7 +179,7 @@ bool LazyConstraintImpl::checkAnswerSet(const std::vector<int> & interpretation)
 
             } else if (literals.count(-i)) {
                 lit = literals[-i];
-                lit->setNegated(false);
+                lit->setNegated(true);
             }
             if (compilationManager.getBodyPredicates().count(lit->getPredicateName())) {
                 inputInterpretation.push_back(lit);

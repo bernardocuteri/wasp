@@ -40,7 +40,7 @@ ExecutionManager::ExecutionManager() {
 
 ExecutionManager::~ExecutionManager() {
 #ifndef LP2CPP_DEBUG
-    if(executor)
+    if (executor)
         destroy(executor);
 #else 
     delete executor;
@@ -74,11 +74,12 @@ void ExecutionManager::parseFactsAndExecute(const char *filename) {
 }
 
 #ifndef LP2CPP_DEBUG
+
 void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool fileHasChanged) {
 
     string executorFile = executablePath + "/Executor.so";
     FilesManagement fileManagement;
-    if(fileHasChanged || !fileManagement.exists(executorFile)) {
+    if (fileHasChanged || !fileManagement.exists(executorFile)) {
         string command = "cd " + executablePath + " && make -f DynamicLibraryMake -s";
         //cout<<command<<endl;
         int commandReturn = system(command.c_str());
@@ -86,7 +87,7 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool
             throw std::runtime_error("Failed to execute command " + command);
         }
     }
-    
+
     void* handle = dlopen(executorFile.c_str(), RTLD_LAZY);
     if (!handle) {
         fprintf(stderr, "%s\n", dlerror());
@@ -103,6 +104,7 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool
     executor = (Executor*) create();
 }
 #else 
+
 void ExecutionManager::compileDynamicLibrary(const string &, bool) {
     executor = new Executor();
 }
@@ -123,5 +125,21 @@ const Executor & ExecutionManager::getExecutor() {
 
 void ExecutionManager::shuffleFailedConstraints() {
     executor-> shuffleFailedConstraints();
-    
+
+}
+
+void ExecutionManager::onLiteralTrue(const aspc::Literal* l) {
+    executor->onLiteralTrue(l);
+}
+
+void ExecutionManager::onLiteralUndef(const aspc::Literal* l) {
+    executor->onLiteralUndef(l);
+}
+
+const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & ExecutionManager::getPropagatedLiteralsAndReasons() const {
+    return executor->getPropagatedLiteralsAndReasons();
+}
+
+void ExecutionManager::initCompiled() {
+    executor->init();
 }
