@@ -1,4 +1,4 @@
-COMMON_FLAGS=-std=c++11 -O3 -fPIC -DNDEBUG 
+COMMON_FLAGS=-std=c++14 -O3 -fPIC -DNDEBUG 
 SRC_FOLDER=src/lp2cpp/
 
 all: executor

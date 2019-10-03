@@ -72,7 +72,7 @@ private:
     DenseMap<aspc::Literal*> literals;
     ExecutionManager executionManager;
     CompilationManager compilationManager;
-    std::unordered_map<aspc::Literal, int, LiteralHash> literalsMap;
+    std::unordered_map<aspc::Literal, int, aspc::LiteralHash> literalsMap;
     std::vector<unsigned> watchedAtoms;
     std::vector<unsigned> idbWatchedAtoms;
     std::unordered_set<int> facts;

@@ -36,6 +36,7 @@
 #include "lp2cpp/datastructures/TupleWithoutReasons.h"
 #include "lp2cpp/language/Literal.h"
 #include "lp2cpp/utils/FilesManagement.h"
+#include "lp2cpp/datastructures/PredicateSet.h"
 using namespace std;
 
 int EXIT_CODE = 0;
@@ -52,8 +53,18 @@ void my_handler(int) {
     exit(EXIT_CODE);
 }
 
+void testDS() {
+    PredicateSet<TupleWithoutReasons, TuplesHash> testW(2);
+    string test = "test";
+    testW.insert(TupleWithoutReasons({1,2}, &test));
+    cout<<testW.getTuples().size()<<endl;
+    testW.erase(TupleWithoutReasons({1,2}, &test));
+    cout<<testW.getTuples().size()<<endl;
+}
+
 int main(int argc, char** argv) {
 
+    // testDS();
     //    srand(unsigned(time(NULL)));
     wasp::Options::parse(argc, argv);
     waspFacadePointer = new WaspFacade();
@@ -86,13 +97,13 @@ int main(int argc, char** argv) {
         int fd = fileManagement.tryGetLock(executorPath);
         string hash = fileManagement.computeMD5(executorPath);
         std::ofstream outfile(executorPath);
-        CompilationManager manager;
+        CompilationManager manager(LAZY_MODE);
         manager.setOutStream(&outfile);
         if (!fileManagement.exists(argv[2])) {
             string filename = argv[2];
             throw std::runtime_error("Failed to compile logic program: file " + filename + " does not exist.");
         }
-        manager.loadLazyProgram(argv[2]);
+        manager.loadProgram(argv[2]);
         manager.lp2cpp(); //"/encodings/constants");
         outfile.close();
         string newHash = fileManagement.computeMD5(executorPath);
@@ -105,7 +116,10 @@ int main(int argc, char** argv) {
     }
 
     //test reading from hardcoded file
-    bool readFromFile = true;
+    bool readFromFile = false;
+#ifdef EAGER_DEBUG 
+    readFromFile = true;
+#endif
     std::filebuf fb;
     if (readFromFile) {
         if (fb.open("test.in", std::ios::in)) {
@@ -135,5 +149,6 @@ int main(int argc, char** argv) {
     if (readFromFile) {
         fb.close();
     }
+    std::cout<<"EXIT_CODE "<<EXIT_CODE<<std::endl;
     return EXIT_CODE;
 }

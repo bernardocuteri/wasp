@@ -123,6 +123,7 @@ ExternalPropagator::onLiteralFalse(
     Literal literal,
     PropagatorData )
 {
+    //std::cout<<"on literal false: "<< literal.getSign()<<" "<<literal.getId()<<endl;
     assert( solver.isFalse( literal ) );
     assert( !solver.conflictDetected() );
     vector< int > output;

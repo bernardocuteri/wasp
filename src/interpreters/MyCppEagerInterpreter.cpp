@@ -27,7 +27,7 @@
 
 
 const set<string> supportedMethods = {method_plugins_onLitTrue, method_plugins_getReasonForLiteral, method_plugins_addedVarName, 
-    method_plugins_onLiteralsUndefined, method_plugins_getVariablesToFreeze, method_plugins_onStartingSolver, method_plugins_onFact, method_plugins_getLiterals};
+    method_plugins_onLiteralsUndefined, method_plugins_getVariablesToFreeze, method_plugins_onStartingSolver, method_plugins_onFact, method_plugins_getLiterals, method_plugins_simplifyAtLevelZero};
 
 MyCppEagerInterpreter::~MyCppEagerInterpreter() {
 }
@@ -40,7 +40,7 @@ MyCppEagerInterpreter::MyCppEagerInterpreter(char* filenameToCompile, const stri
 void MyCppEagerInterpreter::callListMethod(const string& method_name, const vector<int>& parameters, vector<int>& output) {
     
     if (method_name == method_plugins_onLitTrue) {
-        eagerConstraint.onLiteralTrue(parameters[0], output);           
+        eagerConstraint.onLiteralTrue(parameters[0], parameters[1], output);           
     } else if (method_name == method_plugins_getReasonForLiteral) {
         eagerConstraint.getReasonForLiteral(parameters[0], output);
     } else if (method_name == method_plugins_getVariablesToFreeze) {
@@ -51,6 +51,8 @@ void MyCppEagerInterpreter::callListMethod(const string& method_name, const vect
         eagerConstraint.onLiteralsUndefined(parameters);
     } else if(method_name == method_plugins_onStartingSolver) {
         cout<<"Starting solver using CPP eager propagator on "<<eagerConstraint.getFilepath()<<endl;
+    } else if(method_name == method_plugins_simplifyAtLevelZero) {
+        eagerConstraint.simplifyAtLevelZero(output);
     }
     
     

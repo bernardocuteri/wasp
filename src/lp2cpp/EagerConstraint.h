@@ -22,7 +22,7 @@ public:
     virtual ~EagerConstraint() {
     };
     virtual void setFilename(const std::string & executablePath, const std::string & filename) = 0;
-    virtual void onLiteralTrue(int var, std::vector<int> & propagatedLiterals) = 0;
+    virtual void onLiteralTrue(int var, int decisionLevel, std::vector<int> & propagatedLiterals) = 0;
     virtual void onLiteralsUndefined(const std::vector<int> & lits) = 0;
     virtual void getReasonForLiteral(int lit, std::vector<int> & reason) = 0;
     virtual void addedVarName(int var, const std::string & atomString) = 0;

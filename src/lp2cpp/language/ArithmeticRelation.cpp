@@ -38,7 +38,7 @@ aspc::ArithmeticRelation::ArithmeticRelation(const aspc::ArithmeticExpression& l
 }
 
 void aspc::ArithmeticRelation::addVariablesToSet(std::unordered_set<std::string>& set) const {
-    assert(isBoundedValueAssignment(set));
+    //assert(isBoundedValueAssignment(set));
     set.insert(left.getTerm1());
 
 }

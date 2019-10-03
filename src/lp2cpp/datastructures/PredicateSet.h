@@ -104,8 +104,9 @@ public:
             }
             lookup[pos] = NULL;
             realValue->removeFromCollisionsLists();
-            tuples[tuples.size() - 1]->setId(realValue->getId());
+            //tuples[tuples.size() - 1]->setId(realValue->getId());
             tuples[realValue->getId()] = tuples[tuples.size() - 1];
+            tuples[realValue->getId()]->setId(realValue->getId());
             tuples.pop_back();
             lookupReferences.erase(lookupIterators[pos]);
         } else {
@@ -115,8 +116,9 @@ public:
             }
             realValue = &*(findResult);
             realValue->removeFromCollisionsLists();
-            tuples[tuples.size() - 1]->setId(realValue->getId());
+            //tuples[tuples.size() - 1]->setId(realValue->getId());
             tuples[realValue->getId()] = tuples[tuples.size() - 1];
+            tuples[realValue->getId()]->setId(realValue->getId());
             tuples.pop_back();
             std::unordered_set<T, H>::erase(findResult);
         }

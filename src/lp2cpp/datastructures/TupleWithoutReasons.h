@@ -22,19 +22,19 @@ struct TuplesHash;
 
 class TupleWithoutReasons : public std::vector<unsigned> {
 public:
-    TupleWithoutReasons(): predicateName(NULL) {
-        
+
+    TupleWithoutReasons() : predicateName(NULL) {
+
     }
 
     TupleWithoutReasons(const std::string* predicateName, bool negated = false) : predicateName(predicateName), negated(negated) {
     }
 
-    TupleWithoutReasons(const TupleWithoutReasons& orig) : std::vector<unsigned>(orig), predicateName(orig.predicateName), negated(orig.negated) {
+    TupleWithoutReasons(const TupleWithoutReasons& orig) : std::vector<unsigned>(orig), predicateName(orig.predicateName), negated(orig.negated), id(orig.id) {
     }
-    
-    
+
     virtual ~TupleWithoutReasons() {
-        
+
     }
 
     TupleWithoutReasons(const std::initializer_list<unsigned> & l, bool negated = false) :
@@ -44,7 +44,7 @@ public:
     TupleWithoutReasons(const std::initializer_list<unsigned> & l, const std::string * predicateName, bool negated = false) :
     vector<unsigned>(l), predicateName(predicateName), negated(negated) {
     }
-    
+
     TupleWithoutReasons(const std::vector<unsigned> & l, const std::string * predicateName, bool negated = false) :
     vector<unsigned>(l), predicateName(predicateName), negated(negated) {
     }
@@ -55,6 +55,10 @@ public:
 
     bool isNegated() const {
         return negated;
+    }
+
+    void setNegated(bool negated) {
+        this->negated = negated;
     }
 
     //    void addPositiveReason(const Tuple* r) const {
@@ -81,23 +85,62 @@ public:
     void setId(unsigned id) const {
         this->id = id;
     }
-    
+
     void setCollisionListIndex(std::vector<const TupleWithoutReasons *>* collisionList, unsigned index) const {
         collisionsLists[collisionList] = index;
     }
-    
+
     void removeFromCollisionsLists() const {
-        for(auto & collisionListAndIndex: collisionsLists) {
+        for (auto & collisionListAndIndex : collisionsLists) {
             std::vector<const TupleWithoutReasons *> & collisionList = *(collisionListAndIndex.first);
             unsigned index = collisionListAndIndex.second;
-            collisionList[index] = collisionList[collisionList.size()-1];
+            collisionList[index] = collisionList[collisionList.size() - 1];
             collisionList[index]->setCollisionListIndex(&collisionList, index);
             collisionList.pop_back();
-            
+
         }
     }
 
-    
+    bool operator==(const TupleWithoutReasons& right) const {
+        if (predicateName != right.predicateName || size() != right.size()) {
+            return false;
+        }
+        for (unsigned i = 0; i < size(); i++) {
+            if (operator[](i) != right[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    TupleWithoutReasons& operator=(const TupleWithoutReasons& right) {
+        if (this == &right)
+            return *this;
+        predicateName = right.predicateName;
+        collisionsLists = right.collisionsLists;
+        id = right.id;
+        negated = right.negated;
+        std::vector<unsigned>::operator=(right);
+        return *this;
+    }
+
+    void print() const {
+        if (negated) {
+            std::cout << "-";
+        }
+        std::cout << *predicateName << "(";
+        for (unsigned i = 0; i < size(); i++) {
+            if (i > 0) {
+                std::cout << ",";
+            }
+            std::cout << operator[](i);
+        }
+        std::cout << ")";
+    }
+
+
+
+
 private:
     const std::string * predicateName;
     bool negated;

@@ -28,9 +28,9 @@ EagerConstraintImpl::EagerConstraintImpl() : compilationManager(EAGER_MODE) {
 }
 
 EagerConstraintImpl::~EagerConstraintImpl() {
-    for (auto & a : literals) {
-        delete a.second;
-    }
+    //for (auto & a : literals) {
+    //delete a.second;
+    //}
 }
 
 void EagerConstraintImpl::performCompilation() {
@@ -79,15 +79,19 @@ high_resolution_clock::time_point t1_e;
 high_resolution_clock::time_point t2_e = high_resolution_clock::now();
 #endif
 
-void EagerConstraintImpl::onLiteralTrue(int var, std::vector<int> & propagatedLiterals) {
+void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<int> & propagatedLiterals) {
 #ifdef PRINT_EXEC_TIMES
     t1_e = high_resolution_clock::now();
     auto solve_duration_e = duration_cast<microseconds>(t1_e - t2_e).count();
     solv_time_e += solve_duration_e;
     cout << "START eager evaluation" << endl;
 #endif
+#ifdef EAGER_DEBUG
+    std::cout << "on literal true" << std::endl;
+#endif
+    /*
     aspc::Literal* lit = NULL;
-    std::cout << "lit true " << var << std::endl;
+    //std::cout << "lit true " << var << std::endl;
     if (var > 0 && literals.count(var)) {
         lit = literals[var];
         lit->setNegated(false);
@@ -95,12 +99,14 @@ void EagerConstraintImpl::onLiteralTrue(int var, std::vector<int> & propagatedLi
     } else if (literals.count(-var)) {
         lit = literals[-var];
         lit->setNegated(true);
-    }
-    std::cout << "lit true ";
-    lit->print();
-    std::cout << std::endl;
-    std::vector<aspc::Literal*> inputInterpretation;
-    inputInterpretation.push_back(lit);
+    }*/
+    //std::cout << "lit true ";
+    //lit->print();
+    //std::cout << std::endl;
+    //std::vector<aspc::Literal*> inputInterpretation;
+    std::vector<int> inputInterpretation;
+    inputInterpretation.push_back(decisionLevel);
+    inputInterpretation.push_back(var);
 
 #ifdef PRINT_EXEC_TIMES
     cout << "On literal true" << endl;
@@ -120,41 +126,71 @@ void EagerConstraintImpl::onLiteralTrue(int var, std::vector<int> & propagatedLi
     cout << "tot_solv " << solv_time_e / 1000 << endl;
 #endif
 
-
-    const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
-
+    const std::unordered_map<int, std::vector<int> > & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
     for (auto& it : propagatedLiteralsAndReasons) {
-        propagatedLiterals.push_back(-literalsMap[it.first]);
+        propagatedLiterals.push_back(-it.first);
+        //std::cout << "prop " << it.first << std::endl;
     }
+    //const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
+
+    //    for (auto& it : propagatedLiteralsAndReasons) {
+    //        it.first.print();
+    //        std::cout << "->";
+    //        for (const aspc::Literal & reason : it.second) {
+    //            reason.print();
+    //            std::cout << " ";
+    //        }
+    //        std::cout << std::endl;
+    //    }
+    //    for (auto& it : propagatedLiteralsAndReasons) {
+    //        propagatedLiterals.push_back(-literalsMap[it.first]);
+    //    }
 
 
 };
 
 void EagerConstraintImpl::onLiteralsUndefined(const std::vector<int> & params) {
+
+#ifdef EAGER_DEBUG
+    std::cout << "on literals undef at decision level" << params[0] << std::endl;
+#endif
     //params[0] is the decision level
     for (unsigned i = 1; i < params.size(); i++) {
-        int lit = params[i];
-        if (lit > 0) {
-            executionManager.onLiteralUndef(literals[lit]);
-        } else {
-            executionManager.onLiteralUndef(literals[-lit]);
-        }
+        //        int lit = params[i];
+        executionManager.onLiteralUndef(params[i]);
+        //        if (lit > 0) {
+        //            executionManager.onLiteralUndef(literals[lit]);
+        //        } else {
+        //            executionManager.onLiteralUndef(literals[-lit]);
+        //        }
     }
-};
+}
 
 void EagerConstraintImpl::getReasonForLiteral(int lit, std::vector<int> & reason) {
-    if (lit < 0) {
-        lit = -lit;
+
+    //std::cout << lit << "->";
+    for (const auto& it : executionManager.getPropagatedLiteralsAndReasons().at(-lit)) {
+        reason.push_back(-it);
+        //std::cout << -it << " ";
     }
-    const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
-    for (const auto& it : propagatedLiteralsAndReasons.at(*(literals[lit]))) {
-        reason.push_back(-literalsMap[it]);
-    }
-};
+    //std::cout << std::endl;
+
+}
+//std::cout << "asking reason for " << lit << std::endl;
+//    if (lit < 0) {
+//        lit = -lit;
+//    }
+//    const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
+//    for (const auto& it : propagatedLiteralsAndReasons.at(*(literals[lit]))) {
+//        reason.push_back(-literalsMap[it]);
+//    }
+
+
+
 
 //TODO remove duplication
 
-aspc::Literal* parseLiteral2(const std::string & literalString) {
+aspc::Literal parseLiteral2(const std::string & literalString) {
     string predicateName;
     unsigned i = 0;
     for (i = 0; i < literalString.size(); i++) {
@@ -166,7 +202,7 @@ aspc::Literal* parseLiteral2(const std::string & literalString) {
             predicateName = literalString.substr(0);
         }
     }
-    aspc::Literal* literal = new aspc::Literal(predicateName);
+    aspc::Literal literal(predicateName);
     for (; i < literalString.size(); i++) {
         char c = literalString[i];
         if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_') {
@@ -176,45 +212,75 @@ aspc::Literal* parseLiteral2(const std::string & literalString) {
                 if (c == '(') {
                     openBrackets++;
                 } else if (c == ')') {
+
                     openBrackets--;
                 }
                 i++;
                 c = literalString[i];
             }
-            literal->addTerm(literalString.substr(start, i - start));
+            literal.addTerm(literalString.substr(start, i - start));
         }
     }
     return literal;
-
 }
 
 void EagerConstraintImpl::addedVarName(int var, const std::string & literalString) {
+
+#ifdef EAGER_DEBUG
+    std::cout << "addedVarName " << var << " -> " << literalString << std::endl;
+#endif
 
     if (!compilationDone) {
         performCompilation();
         executionManager.initCompiled();
     }
+    //std::cout<<literalString<<std::endl;
+    aspc::Literal atom = parseLiteral2(literalString);
+    //this->literals[var] = atom;
+    //literalsMap[*atom] = var;
+    if (compilationManager.getBodyPredicates().count(atom.getPredicateName())) {
+        executionManager.addedVarName(var, literalString);
+    }
 
-    aspc::Literal * atom = parseLiteral2(literalString);
-    this->literals[var] = atom;
-    literalsMap[*atom] = var;
-    compilationManager.insertModelGeneratorPredicate(atom->getPredicateName());
-    if (compilationManager.getBodyPredicates().count(atom->getPredicateName())) {
-        if (facts.count(var)) {
-            executionManager.onLiteralTrue(literals[var]);
+    compilationManager.insertModelGeneratorPredicate(atom.getPredicateName());
+    if (compilationManager.getBodyPredicates().count(atom.getPredicateName())) {
+        if (facts.count(var)) {            
+            executionManager.onLiteralTrue(var);
         } else {
             watchedAtoms.push_back(var);
-            executionManager.onLiteralUndef(literals[var]);
+            watchedAtoms.push_back(-var);            
+            executionManager.onLiteralUndef(var);
         }
+        watchedAtomsSet.insert(var);
+        watchedAtomsSet.insert(-var);
     }
+
 };
 
+void EagerConstraintImpl::simplifyAtLevelZero(std::vector<int>& output) {
+    std::vector<int> inputInterpretation;
+    inputInterpretation.push_back(-1);
+    for(int fact:facts) {
+        if(watchedAtomsSet.find(fact)!=watchedAtomsSet.end()) {            
+            inputInterpretation.push_back(fact);
+        }
+    }
+    executionManager.executeProgramOnFacts(inputInterpretation);
+    executionManager.simplifyAtLevelZero(output);
+    //executionManager.clearPropagations();
+}
+
+
 void EagerConstraintImpl::onFact(int var) {
+#ifdef EAGER_DEBUG
+    std::cout << "onFact " << var << std::endl;
+#endif
     facts.insert(var);
 
 };
 
 const std::vector<unsigned int> & EagerConstraintImpl::getVariablesToFreeze() {
+
     return watchedAtoms;
 };
 

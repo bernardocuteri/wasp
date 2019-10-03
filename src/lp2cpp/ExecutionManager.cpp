@@ -94,24 +94,31 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool
         exit(EXIT_FAILURE);
     }
 
-    Executor * (*create)();
+    aspc::Executor * (*create)();
 
 
-    create = (Executor * (*)())dlsym(handle, "create_object");
+    create = (aspc::Executor * (*)())dlsym(handle, "create_object");
 
-    destroy = (void (*)(Executor*))dlsym(handle, "destroy_object");
+    destroy = (void (*)(aspc::Executor*))dlsym(handle, "destroy_object");
 
-    executor = (Executor*) create();
+    executor = (aspc::Executor*) create();
 }
 #else 
 
 void ExecutionManager::compileDynamicLibrary(const string &, bool) {
-    executor = new Executor();
+    executor = new aspc::Executor();
 }
 #endif
 
-void ExecutionManager::executeProgramOnFacts(const std::vector<aspc::Literal*> & program) {
-    executor->executeProgramOnFacts(program);
+void ExecutionManager::executeProgramOnFacts(const std::vector<aspc::Literal*> & facts) {
+    executor->executeProgramOnFacts(facts);
+
+}
+
+void ExecutionManager::executeProgramOnFacts(const std::vector<int> & facts) {
+    if(executor) {
+        executor->executeProgramOnFacts(facts);
+    }
 
 }
 
@@ -119,7 +126,7 @@ const std::vector<std::vector<aspc::Literal> > & ExecutionManager::getFailedCons
     return executor->getFailedConstraints();
 }
 
-const Executor & ExecutionManager::getExecutor() {
+const aspc::Executor & ExecutionManager::getExecutor() {
     return *executor;
 }
 
@@ -127,6 +134,15 @@ void ExecutionManager::shuffleFailedConstraints() {
     executor-> shuffleFailedConstraints();
 
 }
+
+void ExecutionManager::onLiteralTrue(int var) {
+    executor->onLiteralTrue(var);
+}
+
+void ExecutionManager::onLiteralUndef(int var) {
+    executor->onLiteralUndef(var);
+}
+
 
 void ExecutionManager::onLiteralTrue(const aspc::Literal* l) {
     executor->onLiteralTrue(l);
@@ -136,10 +152,36 @@ void ExecutionManager::onLiteralUndef(const aspc::Literal* l) {
     executor->onLiteralUndef(l);
 }
 
-const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & ExecutionManager::getPropagatedLiteralsAndReasons() const {
+const std::unordered_map<int, std::vector<int> > & ExecutionManager::getPropagatedLiteralsAndReasons() const {
     return executor->getPropagatedLiteralsAndReasons();
 }
 
 void ExecutionManager::initCompiled() {
     executor->init();
+}
+
+void ExecutionManager::addedVarName(int var, const std::string& literalString) {
+    executor->addedVarName(var, literalString);
+}
+
+
+void ExecutionManager::simplifyAtLevelZero(std::vector<int>& output) {
+#ifdef EAGER_DEBUG
+    std::cout<<"simplifyAtLevelZero"<<endl;
+#endif
+    if(!executor) {
+        //no constraints and no variables
+        return;
+    }
+    for(auto & e: executor->getPropagatedLiteralsAndReasons()) {
+#ifdef EAGER_DEBUG
+        std::cout<<"derived at level 0 "<<-e.first<<endl;
+#endif
+        output.push_back(-e.first);
+    }
+    
+}
+
+void ExecutionManager::clearPropagations() {
+    executor->clearPropagations();
 }

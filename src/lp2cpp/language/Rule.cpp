@@ -190,6 +190,10 @@ void aspc::Rule::bodyReordering() {
             break;
         }
     }
+    //needed for eager
+    if (isConstraint()) {
+        starters.push_back(formulas.size());
+    }
     bodyReordering(starters);
 }
 
@@ -202,15 +206,18 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
     for (unsigned starter : starters) {
 
         unordered_set<string> boundVariables;
-        formulas[starter]->addVariablesToSet(boundVariables);
 
-        orderedBodyByStarters[starter].push_back(formulas[starter]);
-        orderedBodyIndexesByStarters[starter].push_back(starter);
+        if (starter < formulas.size()) {
+            formulas[starter]->addVariablesToSet(boundVariables);
+            orderedBodyByStarters[starter].push_back(formulas[starter]);
+            orderedBodyIndexesByStarters[starter].push_back(starter);
+        }
+
 
         list<const Formula*> allFormulas;
         //TODO improve
         for (const Formula* f : formulas) {
-            if (f != formulas[starter]) {
+            if (starter == formulas.size() || f != formulas[starter]) {
                 allFormulas.push_back(f);
             }
         }
@@ -232,7 +239,7 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
                     positiveLiteral = *formula;
                 }
             }
-            
+
 
             if (boundExpression) {
                 selectedFormula = boundExpression;
@@ -240,7 +247,7 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
                 selectedFormula = boundValueAssignment;
             } else if (boundLiteral) {
                 selectedFormula = boundLiteral;
-            }  else {
+            } else {
                 selectedFormula = positiveLiteral;
             }
             assert(selectedFormula);
@@ -305,7 +312,7 @@ vector<const aspc::Formula*> aspc::Rule::getOrderedBodyForReasons(unordered_set<
             selectedFormula = boundValueAssignment;
         } else if (boundLiteral) {
             selectedFormula = boundLiteral;
-        }  else {
+        } else {
             selectedFormula = positiveLiteral;
         }
         assert(selectedFormula);

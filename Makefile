@@ -31,12 +31,13 @@ cxxflags.estats0x = -Wall -Wextra -std=c++0x -DNDEBUG -DSTATS_ON -DESTATS_ON -O3
 linkflags.estats0x = -lm -ldl
 ####
 
-SCRIPT = cpp
+SCRIPT = cpp_eager
 scriptsc.perl = -I/usr/local/include -I$(shell perl -MConfig -e 'print $$Config{archlib}')/CORE/
 scriptsld.perl = -L$(shell perl -MConfig -e 'print $$Config{archlib}')/CORE/ -L/usr/local/lib/ -lperl
 cxxscripts.perl = -DENABLE_PERL
 
-cxxscripts.cpp = -DENABLE_CPP
+cxxscripts.cpp_lazy = -DENABLE_CPP_LAZY
+cxxscripts.cpp_eager = -DENABLE_CPP_EAGER
 
 scriptsc.python = $(shell python2.7-config --cflags | sed "s/-Wshorten-64-to-32//g" | sed "s/-Wstrict-prototypes//g" | sed "s/-arch i386//g" | sed "s/-DNDEBUG//g" | sed "s/-Os//g" )
 scriptsld.python = $(shell python2.7-config --ldflags | sed "s/-Wshorten-64-to-32//g" | sed "s/-Wstrict-prototypes//g")
@@ -48,7 +49,7 @@ cxxscripts.python3 = -DENABLE_PYTHON -DPYTHON_THREE
 
 scriptsc.all = -I/usr/local/include -I$(shell perl -MConfig -e 'print $$Config{archlib}')/CORE/ $(shell python2.7-config --cflags | sed "s/-Wshorten-64-to-32//g" | sed "s/-Wstrict-prototypes//g" | sed "s/-arch i386//g" | sed "s/-DNDEBUG//g" | sed "s/-Os//g" )
 scriptsld.all = -L$(shell perl -MConfig -e 'print $$Config{archlib}')/CORE/ -L/usr/local/lib/ -lperl $(shell python2.7-config --ldflags | sed "s/-Wshorten-64-to-32//g" | sed "s/-Wstrict-prototypes//g")
-cxxscripts.all = -DENABLE_PERL -DENABLE_PYTHON -DENABLE_CPP
+cxxscripts.all = -DENABLE_PERL -DENABLE_PYTHON -DENABLE_CPP_LAZY -DENABLE_CPP_EAGER
 
 scriptsc.no =
 scriptld.no =

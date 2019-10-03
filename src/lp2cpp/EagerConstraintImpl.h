@@ -28,21 +28,21 @@ public:
     EagerConstraintImpl();
     virtual ~EagerConstraintImpl();
     virtual void setFilename(const std::string & executablePath, const std::string & filename);
-    virtual void onLiteralTrue(int var, std::vector<int> & propagatedLiterals);
+    virtual void onLiteralTrue(int var, int decisionLevel, std::vector<int> & propagatedLiterals);
     virtual void onLiteralsUndefined(const std::vector<int> & lits);
     virtual void getReasonForLiteral(int lit, std::vector<int> & reason);
     virtual void addedVarName(int var, const std::string & atomString);
     virtual void onFact(int var);
+    virtual void simplifyAtLevelZero(std::vector<int> & output);
     virtual const std::vector<unsigned int> & getVariablesToFreeze();
     virtual const std::string & getFilepath() const;
 private:
     
     void performCompilation();
-    DenseMap<aspc::Literal*> literals;
     ExecutionManager executionManager;
     CompilationManager compilationManager;
-    std::unordered_map<aspc::Literal, int, LiteralHash> literalsMap;
     std::vector<unsigned> watchedAtoms;
+    std::unordered_set<unsigned> watchedAtomsSet;
     std::vector<unsigned> idbWatchedAtoms;
     std::unordered_set<int> facts;
     std::string filepath;
