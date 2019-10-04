@@ -175,7 +175,7 @@ string aspc::ArithmeticRelation::getAssignmentStringRep(const unordered_set<stri
 
     //don't use right and left anymore
     if (evalLeft.isSingleTerm()) {
-        return left.getStringRep() + " = " + right.getStringRep();
+        return evalLeft.getStringRep() + " = " + evalRight.getStringRep();
     }
 
 
@@ -195,6 +195,7 @@ string aspc::ArithmeticRelation::getAssignmentStringRep(const unordered_set<stri
             else {
                 return res + evalRight.getTerm1() + invertOperation(evalRight.getOperation()) + evalRight.getTerm2() + " + " + evalLeft.getTerm1();
             }
+            //TODO implement assignment on / and *
         } else {
             throw std::runtime_error("unsupported assignment "+getStringRep());
         }

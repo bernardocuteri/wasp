@@ -30,9 +30,6 @@ std::unordered_map<const std::string*, PredicateWSet*> predicateUSetMap;
 const std::string _p_1 = "p_1";
 PredicateWSet wp_1(2);
 PredicateWSet up_1(2);
-const std::string _p_2 = "p_2";
-PredicateWSet wp_2(1);
-PredicateWSet up_2(1);
 
 const std::vector<const Tuple* > EMPTY_TUPLES;
 std::unordered_map<std::string, const std::string * > stringToUniqueStringPointer;
@@ -83,26 +80,13 @@ void explainNegativeLiteral(const Tuple * lit, std::unordered_set<std::string> &
 
 std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToAuxiliaryMaps;
 std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToUndefAuxiliaryMaps;
-AuxMap pp_2_({});
-AuxMap up_2_({});
-AuxMap pp_1_0_({0});
-AuxMap up_1_0_({0});
+AuxMap pp_1_({});
+AuxMap up_1_({});
 //printing aux maps needed for reasons of negative literals;
 //printing functions prototypes for reasons of negative literals;
-void explain_not_p_2_0_(const std::vector<unsigned> &, std::unordered_set<std::string> &, std::vector<const Tuple *> &);
 void explainPositiveLiteral(const Tuple *, std::unordered_set<std::string> &, std::vector<const Tuple*> &);
 //printing functions for reasons of negative literals;
-void explain_not_p_2_0_(const std::vector<unsigned> & lit, std::unordered_set<std::string> & open_set, std::vector<const Tuple *> & output){
-    std::string canonicalRep = _p_2;
-    canonicalRep += std::to_string(lit[0]);
-    if(open_set.find(canonicalRep)!=open_set.end()){
-        return;
-    }
-    open_set.insert(canonicalRep);
-    open_set.erase(canonicalRep);
-}
 void createFunctionsMap() {
-    explainNegativeFunctionsMap[&_p_2] = explain_not_p_2_0_;
 }
 void printTuples(const std::string & predicateName, const Tuples & tuples) {
     for (const std::vector<unsigned> * tuple : tuples) {
@@ -156,6 +140,10 @@ inline void Executor::onLiteralUndef(const aspc::Literal* l) {
 inline void Executor::onLiteralTrue(int var) {
     unsigned uVar = var > 0 ? var : -var;
     const Tuple & tuple = atomsTable[uVar];
+    std::cout<<"on literal true ";
+    std::cout<<var<<"\n";
+    tuple.print();
+    std::cout<<"\n";
     std::unordered_map<const std::string*,PredicateWSet*>::iterator uSetIt = predicateUSetMap.find(tuple.getPredicateName());
     if(uSetIt!=predicateUSetMap.end()) {
         uSetIt->second->erase(tuple);
@@ -176,6 +164,10 @@ inline void Executor::onLiteralTrue(int var) {
 inline void Executor::onLiteralUndef(int var) {
     unsigned uVar = var > 0 ? var : -var;
     const Tuple & tuple = atomsTable[uVar];
+    std::cout<<"on literal undef ";
+    std::cout<<var<<"\n";
+    tuple.print();
+    std::cout<<"\n";
     if (var > 0) {
         std::unordered_map<const std::string*, PredicateWSet*>::iterator wSetIt = predicateWSetMap.find(tuple.getPredicateName());
         if (wSetIt != predicateWSetMap.end()) {
@@ -210,17 +202,13 @@ void Executor::init() {
     predicateWSetMap[&_p_1]=&wp_1;
     predicateUSetMap[&_p_1]=&up_1;
     stringToUniqueStringPointer["p_1"] = &_p_1;
-    predicateWSetMap[&_p_2]=&wp_2;
-    predicateUSetMap[&_p_2]=&up_2;
-    stringToUniqueStringPointer["p_2"] = &_p_2;
-    predicateToAuxiliaryMaps[&_p_1].push_back(&pp_1_0_);
-    predicateToAuxiliaryMaps[&_p_2].push_back(&pp_2_);
-    predicateToUndefAuxiliaryMaps[&_p_1].push_back(&up_1_0_);
-    predicateToUndefAuxiliaryMaps[&_p_2].push_back(&up_2_);
+    predicateToAuxiliaryMaps[&_p_1].push_back(&pp_1_);
+    predicateToUndefAuxiliaryMaps[&_p_1].push_back(&up_1_);
 }
 void Executor::executeProgramOnFacts(const std::vector<aspc::Literal*> & facts) {}
 void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
     int decisionLevel = facts[0];
+    std::cout<<"Execute program on facts: decision level "<<decisionLevel<<std::endl;
     clearPropagations();
     for(unsigned i=1;i<facts.size();i++) {
         onLiteralTrue(facts[i]);
@@ -230,10 +218,10 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
             const Tuple * tupleU = NULL;
             bool tupleUNegated = false;
             const std::vector<const Tuple* >* tuples;
-            tuples = &pp_2_.getValues({});
+            tuples = &pp_1_.getValues({});
             const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
             if(tupleU == NULL){
-                tuplesU = &up_2_.getValues({});
+                tuplesU = &up_1_.getValues({});
             }
             for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
                 const Tuple * tuple0 = NULL;
@@ -248,69 +236,39 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                     tupleU = tuple0;
                     tupleUNegated = false;
                 }
-                unsigned X_0 = (*tuple0)[0];
-                const Tuple negativeTuple = Tuple({X_0}, &_p_2, true);
-                const Tuple * tuple1 = &negativeTuple;
-                bool lTrue = (wp_2.find(negativeTuple)!=NULL);
-                const Tuple * undefTuple = up_2.find(negativeTuple);
-                if((!lTrue && undefTuple == NULL) || (undefTuple && tupleU == NULL)){
-                    if(undefTuple){
-                        tuple1 = tupleU = undefTuple;
-                        tupleUNegated = true;
-                    }
-                    const std::vector<const Tuple* >* tuples;
-                    tuples = &pp_1_0_.getValues({2});
-                    const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
-                    if(tupleU == NULL){
-                        tuplesU = &up_1_0_.getValues({2});
-                    }
-                    for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
-                        const Tuple * tuple2 = NULL;
-                        if(i<tuples->size()){
-                            tuple2 = tuples->at(i);
-                            if(tuplesU != &EMPTY_TUPLES) {
-                                tupleU = NULL;
-                            }
+                unsigned X_1 = (*tuple0)[0];
+                unsigned X_2 = (*tuple0)[1];
+                if(X_1 <= 4) {
+                    if(X_2 <= X_1 - X_2) {
+                        int sign = tupleUNegated ? -1 : 1;
+                        if(!tupleU) {
+                            std::cout<<"conflict detected in propagator"<<std::endl;
+                            propagatedLiteralsAndReasons.insert({-1, std::vector<int>()});
                         }
                         else {
-                            tuple2 = tuplesU->at(i-tuples->size());
-                            tupleU = tuple2;
-                            tupleUNegated = false;
-                        }
-                        unsigned X_1 = (*tuple2)[1];
-                        if( (*tuple2)[0] == 2){
-                            int sign = tupleUNegated ? -1 : 1;
-                            if(!tupleU) {
-                                std::cout<<"conflict detected in propagator"<<std::endl;
-                                propagatedLiteralsAndReasons.insert({-1, std::vector<int>()});
-                            }
-                            else {
-                                const auto & it = tupleToVar.find(*tupleU);
-                                if(it != tupleToVar.end()) {
-                                    auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
-                                    std::vector<const Tuple *> reasons;
-                                    if(tuple0 != tupleU){
-                                        std::unordered_set<std::string> open_set0;
-                                        explainPositiveLiteral(tuple0, open_set0, reasons);
-                                    }
-                                    if(tuple1 != tupleU){
-                                        std::unordered_set<std::string> open_set1;
-                                        reasons.push_back(tuple1);
-                                    }
-                                    if(tuple2 != tupleU){
-                                        std::unordered_set<std::string> open_set2;
-                                        explainPositiveLiteral(tuple2, open_set2, reasons);
-                                    }
-                                    reas.reserve(reasons.size());
-                                    for(const Tuple * reason: reasons) {
-                                        const auto & it = tupleToVar.find(*reason);
-                                        if(it != tupleToVar.end()) {
-                                            reas.push_back(it->second * (reason->isNegated()? -1:1));
-                                        }
+                            const auto & it = tupleToVar.find(*tupleU);
+                            std::cout<<"propagating ";
+                            std::cout<<(sign* ((int) (it->second)))<<" ";
+                            tupleU->print();
+                            std::cout<<"\n";
+                            if(it != tupleToVar.end()) {
+                                auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
+                                std::vector<const Tuple *> reasons;
+                                if(tuple0 != tupleU){
+                                    std::unordered_set<std::string> open_set0;
+                                    tuple0->print();
+                                    std::cout<<"\n";
+                                    explainPositiveLiteral(tuple0, open_set0, reasons);
+                                }
+                                reas.reserve(reasons.size());
+                                for(const Tuple * reason: reasons) {
+                                    const auto & it = tupleToVar.find(*reason);
+                                    if(it != tupleToVar.end()) {
+                                        reas.push_back(it->second * (reason->isNegated()? -1:1));
                                     }
                                 }
                             }
-                        }//close par
+                        }
                     }//close par
                 }//close par
             }//close par
@@ -326,211 +284,39 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                 {
                     const Tuple * tupleU = NULL;
                     bool tupleUNegated = false;
-                    unsigned X_1 = (*tuple0)[1];
-                    if( (*tuple0)[0] == 2){
-                        const std::vector<const Tuple* >* tuples;
-                        tuples = &pp_2_.getValues({});
-                        const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
-                        if(tupleU == NULL){
-                            tuplesU = &up_2_.getValues({});
-                        }
-                        for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
-                            const Tuple * tuple1 = NULL;
-                            if(i<tuples->size()){
-                                tuple1 = tuples->at(i);
-                                if(tuplesU != &EMPTY_TUPLES) {
-                                    tupleU = NULL;
-                                }
+                    unsigned X_1 = (*tuple0)[0];
+                    unsigned X_2 = (*tuple0)[1];
+                    if(X_1 <= 4) {
+                        if(X_2 <= X_1 - X_2) {
+                            int sign = tupleUNegated ? -1 : 1;
+                            if(!tupleU) {
+                                std::cout<<"conflict detected in propagator"<<std::endl;
+                                propagatedLiteralsAndReasons.insert({-1, std::vector<int>()});
                             }
                             else {
-                                tuple1 = tuplesU->at(i-tuples->size());
-                                tupleU = tuple1;
-                                tupleUNegated = false;
-                            }
-                            unsigned X_0 = (*tuple1)[0];
-                            const Tuple negativeTuple = Tuple({X_0}, &_p_2, true);
-                            const Tuple * tuple2 = &negativeTuple;
-                            bool lTrue = (wp_2.find(negativeTuple)!=NULL);
-                            const Tuple * undefTuple = up_2.find(negativeTuple);
-                            if((!lTrue && undefTuple == NULL) || (undefTuple && tupleU == NULL)){
-                                if(undefTuple){
-                                    tuple2 = tupleU = undefTuple;
-                                    tupleUNegated = true;
-                                }
-                                int sign = tupleUNegated ? -1 : 1;
-                                if(!tupleU) {
-                                    std::cout<<"conflict detected in propagator"<<std::endl;
-                                    propagatedLiteralsAndReasons.insert({-1, std::vector<int>()});
-                                }
-                                else {
-                                    const auto & it = tupleToVar.find(*tupleU);
-                                    if(it != tupleToVar.end()) {
-                                        auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
-                                        std::vector<const Tuple *> reasons;
-                                        if(tuple0 != tupleU){
-                                            std::unordered_set<std::string> open_set0;
-                                            explainPositiveLiteral(tuple0, open_set0, reasons);
-                                        }
-                                        if(tuple1 != tupleU){
-                                            std::unordered_set<std::string> open_set1;
-                                            explainPositiveLiteral(tuple1, open_set1, reasons);
-                                        }
-                                        if(tuple2 != tupleU){
-                                            std::unordered_set<std::string> open_set2;
-                                            reasons.push_back(tuple2);
-                                        }
-                                        reas.reserve(reasons.size());
-                                        for(const Tuple * reason: reasons) {
-                                            const auto & it = tupleToVar.find(*reason);
-                                            if(it != tupleToVar.end()) {
-                                                reas.push_back(it->second * (reason->isNegated()? -1:1));
-                                            }
+                                const auto & it = tupleToVar.find(*tupleU);
+                                std::cout<<"propagating ";
+                                std::cout<<(sign* ((int) (it->second)))<<" ";
+                                tupleU->print();
+                                std::cout<<"\n";
+                                if(it != tupleToVar.end()) {
+                                    auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
+                                    std::vector<const Tuple *> reasons;
+                                    if(tuple0 != tupleU){
+                                        std::unordered_set<std::string> open_set0;
+                                        tuple0->print();
+                                        std::cout<<"\n";
+                                        explainPositiveLiteral(tuple0, open_set0, reasons);
+                                    }
+                                    reas.reserve(reasons.size());
+                                    for(const Tuple * reason: reasons) {
+                                        const auto & it = tupleToVar.find(*reason);
+                                        if(it != tupleToVar.end()) {
+                                            reas.push_back(it->second * (reason->isNegated()? -1:1));
                                         }
                                     }
                                 }
-                            }//close par
-                        }//close par
-                    }//close par
-                }//close loop nested join
-            }//close loop nested join
-        }//close predicate joins
-        if(starter.getPredicateName() == &_p_2) { 
-            const Tuple * tuple0 = &starter;
-            if(facts[i] < 0){
-                {
-                    const Tuple * tupleU = NULL;
-                    bool tupleUNegated = false;
-                    unsigned X_0 = (*tuple0)[0];
-                    const Tuple * tuple1 = (wp_2.find({X_0}));
-                    if(!tuple1 && !tupleU ){
-                        tuple1 = tupleU = (up_2.find({X_0}));
-                        tupleUNegated = false;
-                    }
-                    if(tuple1){
-                        const std::vector<const Tuple* >* tuples;
-                        tuples = &pp_1_0_.getValues({2});
-                        const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
-                        if(tupleU == NULL){
-                            tuplesU = &up_1_0_.getValues({2});
-                        }
-                        for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
-                            const Tuple * tuple2 = NULL;
-                            if(i<tuples->size()){
-                                tuple2 = tuples->at(i);
-                                if(tuplesU != &EMPTY_TUPLES) {
-                                    tupleU = NULL;
-                                }
                             }
-                            else {
-                                tuple2 = tuplesU->at(i-tuples->size());
-                                tupleU = tuple2;
-                                tupleUNegated = false;
-                            }
-                            unsigned X_1 = (*tuple2)[1];
-                            if( (*tuple2)[0] == 2){
-                                int sign = tupleUNegated ? -1 : 1;
-                                if(!tupleU) {
-                                    std::cout<<"conflict detected in propagator"<<std::endl;
-                                    propagatedLiteralsAndReasons.insert({-1, std::vector<int>()});
-                                }
-                                else {
-                                    const auto & it = tupleToVar.find(*tupleU);
-                                    if(it != tupleToVar.end()) {
-                                        auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
-                                        std::vector<const Tuple *> reasons;
-                                        if(tuple0 != tupleU){
-                                            std::unordered_set<std::string> open_set0;
-                                            reasons.push_back(tuple0);
-                                        }
-                                        if(tuple1 != tupleU){
-                                            std::unordered_set<std::string> open_set1;
-                                            explainPositiveLiteral(tuple1, open_set1, reasons);
-                                        }
-                                        if(tuple2 != tupleU){
-                                            std::unordered_set<std::string> open_set2;
-                                            explainPositiveLiteral(tuple2, open_set2, reasons);
-                                        }
-                                        reas.reserve(reasons.size());
-                                        for(const Tuple * reason: reasons) {
-                                            const auto & it = tupleToVar.find(*reason);
-                                            if(it != tupleToVar.end()) {
-                                                reas.push_back(it->second * (reason->isNegated()? -1:1));
-                                            }
-                                        }
-                                    }
-                                }
-                            }//close par
-                        }//close par
-                    }//close par
-                }//close loop nested join
-            }//close loop nested join
-            if(facts[i] > 0){
-                {
-                    const Tuple * tupleU = NULL;
-                    bool tupleUNegated = false;
-                    unsigned X_0 = (*tuple0)[0];
-                    const Tuple negativeTuple = Tuple({X_0}, &_p_2, true);
-                    const Tuple * tuple1 = &negativeTuple;
-                    bool lTrue = (wp_2.find(negativeTuple)!=NULL);
-                    const Tuple * undefTuple = up_2.find(negativeTuple);
-                    if((!lTrue && undefTuple == NULL) || (undefTuple && tupleU == NULL)){
-                        if(undefTuple){
-                            tuple1 = tupleU = undefTuple;
-                            tupleUNegated = true;
-                        }
-                        const std::vector<const Tuple* >* tuples;
-                        tuples = &pp_1_0_.getValues({2});
-                        const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
-                        if(tupleU == NULL){
-                            tuplesU = &up_1_0_.getValues({2});
-                        }
-                        for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
-                            const Tuple * tuple2 = NULL;
-                            if(i<tuples->size()){
-                                tuple2 = tuples->at(i);
-                                if(tuplesU != &EMPTY_TUPLES) {
-                                    tupleU = NULL;
-                                }
-                            }
-                            else {
-                                tuple2 = tuplesU->at(i-tuples->size());
-                                tupleU = tuple2;
-                                tupleUNegated = false;
-                            }
-                            unsigned X_1 = (*tuple2)[1];
-                            if( (*tuple2)[0] == 2){
-                                int sign = tupleUNegated ? -1 : 1;
-                                if(!tupleU) {
-                                    std::cout<<"conflict detected in propagator"<<std::endl;
-                                    propagatedLiteralsAndReasons.insert({-1, std::vector<int>()});
-                                }
-                                else {
-                                    const auto & it = tupleToVar.find(*tupleU);
-                                    if(it != tupleToVar.end()) {
-                                        auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
-                                        std::vector<const Tuple *> reasons;
-                                        if(tuple0 != tupleU){
-                                            std::unordered_set<std::string> open_set0;
-                                            explainPositiveLiteral(tuple0, open_set0, reasons);
-                                        }
-                                        if(tuple1 != tupleU){
-                                            std::unordered_set<std::string> open_set1;
-                                            reasons.push_back(tuple1);
-                                        }
-                                        if(tuple2 != tupleU){
-                                            std::unordered_set<std::string> open_set2;
-                                            explainPositiveLiteral(tuple2, open_set2, reasons);
-                                        }
-                                        reas.reserve(reasons.size());
-                                        for(const Tuple * reason: reasons) {
-                                            const auto & it = tupleToVar.find(*reason);
-                                            if(it != tupleToVar.end()) {
-                                                reas.push_back(it->second * (reason->isNegated()? -1:1));
-                                            }
-                                        }
-                                    }
-                                }
-                            }//close par
                         }//close par
                     }//close par
                 }//close loop nested join
