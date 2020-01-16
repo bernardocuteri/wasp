@@ -64,7 +64,7 @@ void CompilationManager::initRuleBoundVariables(std::unordered_set<std::string> 
     for (unsigned i = 0; i < lit.getBoundIndexes().size(); i++) {
         if (lit.getBoundIndexes().at(i) && head.isVariableTermAt(i)) {
             if (printVariablesDeclaration && !ruleBoundVariables.count(head.getTermAt(i))) {
-                *out << ind << "unsigned " << head.getTermAt(i) << " = " << "lit[" << counter << "];\n";
+                *out << ind << "int " << head.getTermAt(i) << " = " << "lit[" << counter << "];\n";
             }
             ruleBoundVariables.insert(head.getTermAt(i));
             counter++;
@@ -87,7 +87,7 @@ void CompilationManager::writeNegativeReasonsFunctions(const aspc::Program & pro
         list<BoundAnnotatedLiteral> & toProcessLiterals, list<BoundAnnotatedLiteral> & processedLiterals, std::unordered_map <std::string, std::string> & functionsMap) {
 
     if (lit.isNegated()) {
-        *out << ind++ << "void explain_" << lit.getStringRep() << "(const std::vector<unsigned> & lit, std::unordered_set<std::string> & open_set, std::vector<const Tuple *> & output){\n";
+        *out << ind++ << "void explain_" << lit.getStringRep() << "(const std::vector<int> & lit, std::unordered_set<std::string> & open_set, std::vector<const Tuple *> & output){\n";
         if (lit.isGround()) {
 
             functionsMap[lit.getPredicateName()] = "explain_" + lit.getStringRep();
@@ -179,7 +179,7 @@ void CompilationManager::writeNegativeReasonsFunctions(const aspc::Program & pro
                                     *out << "})){\n";
                                     for (unsigned index = 0; index < coveredMask.size(); index++) {
                                         if (!coveredMask[index]) {
-                                            *out << ind << "unsigned " << bodyLit->getTermAt(index) << " = " << "(*tuple" << i << ")[" << index << "];\n";
+                                            *out << ind << "int " << bodyLit->getTermAt(index) << " = " << "(*tuple" << i << ")[" << index << "];\n";
                                         }
                                     }
                                 }
@@ -226,7 +226,7 @@ void CompilationManager::writeNegativeReasonsFunctions(const aspc::Program & pro
                     if (lit.isNegated()) {
                         const aspc::ArithmeticRelation * relation = (const aspc::ArithmeticRelation *) f;
                         if (f->isBoundedValueAssignment(ruleBoundVariables)) {
-                            *out << ind << "unsigned " << relation->getAssignmentStringRep(ruleBoundVariables) << ";\n";
+                            *out << ind << "int " << relation->getAssignmentStringRep(ruleBoundVariables) << ";\n";
                             ruleBoundVariables.insert(relation->getAssignedVariable(ruleBoundVariables));
                         } else {
                             *out << ind++ << "if(" << relation->getStringRep() << ") {\n";
@@ -255,7 +255,7 @@ void CompilationManager::writeNegativeReasonsFunctionsPrototypes(const aspc::Pro
 
 
     if (lit.isNegated()) {
-        *out << ind << "void explain_" << lit.getStringRep() << "(const std::vector<unsigned> &, std::unordered_set<std::string> &, std::vector<const Tuple *> &);\n";
+        *out << ind << "void explain_" << lit.getStringRep() << "(const std::vector<int> &, std::unordered_set<std::string> &, std::vector<const Tuple *> &);\n";
         if (modelGeneratorPredicates.count(lit.getPredicateName())) {
             return;
         }
@@ -441,7 +441,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "const std::vector<const Tuple* > EMPTY_TUPLES;\n";
     *out << ind << "std::unordered_map<std::string, const std::string * > stringToUniqueStringPointer;\n";
 
-    *out << ind << "typedef void (*ExplainNegative)(const std::vector<unsigned> & lit, std::unordered_set<std::string> & open_set, std::vector<const Tuple *> & output);\n\n";
+    *out << ind << "typedef void (*ExplainNegative)(const std::vector<int> & lit, std::unordered_set<std::string> & open_set, std::vector<const Tuple *> & output);\n\n";
 
     *out << ind << "std::vector<Tuple> atomsTable;\n\n";
 
@@ -461,7 +461,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "predicateName = literalString.substr(0);\n";
     *out << --ind << "}\n";
     *out << --ind << "}\n";
-    *out << ind << "std::vector<unsigned> terms;\n";
+    *out << ind << "std::vector<int> terms;\n";
     *out << ind++ << "for (; i < literalString.size(); i++) {\n";
     *out << ind << "char c = literalString[i];\n";
     *out << ind++ << "if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_') {\n";
@@ -620,7 +620,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     //print tuples 
     *out << ind++ << "void printTuples(const std::string & predicateName, const Tuples & tuples) {\n";
-    *out << ind++ << "for (const std::vector<unsigned> * tuple : tuples) {\n";
+    *out << ind++ << "for (const std::vector<int> * tuple : tuples) {\n";
     *out << ind << "std::cout <<predicateName<< \"(\";\n";
     *out << ind++ << "for (unsigned i = 0; i < tuple->size(); i++) {\n";
     *out << ind++ << "if (i > 0) {\n";
@@ -666,7 +666,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
         *out << ind++ << "aspc::Literal tupleToLiteral(const Tuple & tuple) {\n";
         *out << ind << "aspc::Literal literal(*tuple.getPredicateName(), tuple.isNegated());\n";
-        *out << ind++ << "for (unsigned v : tuple) {\n";
+        *out << ind++ << "for (int v : tuple) {\n";
         *out << ind << "literal.addTerm(ConstantsManager::getInstance().unmapConstant(v));\n";
         *out << --ind << "}\n";
         *out << ind << "return literal;\n";
@@ -1189,12 +1189,17 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                             *out << ind << "const Tuple * undefRepeatingTuple = (u" << l->getPredicateName() << ".find({";
                             printLiteralTuple(l);
                             *out << "}));\n";
-                            *out << ind++ << "if(tupleU == undefRepeatingTuple){\n;"; 
+                            *out << ind++ << "if(tupleU == undefRepeatingTuple){\n"; 
                             *out << ind << "tuple" << i << " = undefRepeatingTuple;\n";
                             *out << --ind << "}\n";
                             *out << --ind << "}\n";
                             *out << ind++ << "if(!tuple"<<i<<"){\n;"; 
                             *out << ind << "tuple" << i << " = (w" << l->getPredicateName() << ".find({";
+                            printLiteralTuple(l);
+                            *out << "}));\n";
+                            *out << --ind << "}\n";
+                            *out << ind++ << "if(!tuple"<<i<<" && !tupleU){\n;"; 
+                            *out << ind << "tuple" << i << " = tupleU = (u" << l->getPredicateName() << ".find({";
                             printLiteralTuple(l);
                             *out << "}));\n";
                             *out << --ind << "}\n";
@@ -1211,7 +1216,7 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                             *out << ind << "const Tuple * undefRepeatingTuple = (u" << l->getPredicateName() << ".find({";
                             printLiteralTuple(l);
                             *out << "}));\n";
-                            *out << ind++ << "if(tupleU == undefRepeatingTuple){\n;"; 
+                            *out << ind++ << "if(tupleU == undefRepeatingTuple){\n"; 
                             *out << ind << "tuple" << i << " = undefRepeatingTuple;\n";
                             *out << --ind << "}\n";
                             *out << --ind << "}\n";
@@ -1290,7 +1295,28 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                             *out << ind++ << "else {\n";
                             //handle constants and equal cards?
                             *out << ind++ << "if(tupleU && !tupleUNegated && tupleU->getPredicateName() == &_"<<l->getPredicateName()<<") {\n";
+                            //check that bound variables have proper value
+                            vector<unsigned> boundIndexes;
+                            for(unsigned v = 0; v < l->getAriety(); v++) {
+                                if(boundVariables.count(l->getTermAt(v))) {
+                                    boundIndexes.push_back(v);
+                                }
+                            }
+                            if(boundIndexes.size()) {
+                                *out << ind++ << "if(";
+                                 for(unsigned bi = 0; bi < boundIndexes.size(); bi++) {
+                                     if(bi > 0) {
+                                         *out << " && ";
+                                     }
+                                     *out << "tupleU->at(" << boundIndexes[bi] << ") == " << l->getTermAt(boundIndexes[bi]);
+                                 }
+                                 *out << "){\n";
+                            }
+                            
                             *out << ind << "tupleUInVector.push_back(tupleU);\n";
+                            if(boundIndexes.size()) {
+                                 *out << --ind << "}\n";
+                            }
                             *out << --ind << "}\n";
                             *out << --ind << "}\n";
                         }
@@ -1338,7 +1364,9 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                     closingParenthesis++;
                 } else {
                     //bounded value assignment
-                    *out << ind << "unsigned " << f->getAssignmentStringRep(boundVariables) << ";\n";
+                    *out << ind << "int " << f->getAssignmentStringRep(boundVariables) << ";\n";
+                    boundVariables.insert(f->getAssignedVariable(boundVariables));
+                    
                 }
 
             }
@@ -1349,7 +1377,7 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
             std::unordered_set<std::string> declaredVariables;
             for (unsigned t = 0; t < l->getAriety(); t++) {
                 if (l->isVariableTermAt(t) && !boundVariables.count(l->getTermAt(t)) && !declaredVariables.count(l->getTermAt(t))) {
-                    *out << ind << "unsigned " << l->getTermAt(t) << " = (*tuple" << i << ")[" << t << "];\n";
+                    *out << ind << "int " << l->getTermAt(t) << " = (*tuple" << i << ")[" << t << "];\n";
                     declaredVariables.insert(l->getTermAt(t));
                 }
             }
@@ -1375,7 +1403,7 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
 
                 for (unsigned th = 0; th < r.getHead().front().getTermsSize(); th++) {
                     if (!r.getHead().front().isVariableTermAt(th)) {
-                        if (isUnsignedInteger(r.getHead().front().getTermAt(th))) {
+                        if (isInteger(r.getHead().front().getTermAt(th))) {
                             *out << r.getHead().front().getTermAt(th);
                         } else {
                             *out << "ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(r.getHead().front().getTermAt(th)) << "\")";
@@ -1458,7 +1486,10 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                     *out << ind << "const auto & it = tupleToVar.find(*tupleU);\n";
 #ifdef EAGER_DEBUG
                     *out << ind << "std::cout<<\"propagating \";\n";
-                    *out << ind << "std::cout<<(sign* ((int) (it->second)))<<\" \";\n";
+                    *out << ind << "std::cout<<(-1 * sign* ((int) (it->second)))<<\" \";\n";
+                    *out << ind++ << "if(sign > 0) {\n";
+                    *out << ind << "std::cout<<\"not \";\n";
+                    *out << --ind << "}\n";
                     *out << ind << "tupleU->print();\n";
                     *out << ind << "std::cout<<\"\\n\";\n";
 #endif
@@ -1543,7 +1574,7 @@ void CompilationManager::printLiteralTuple(const aspc::Literal* l, const std::ve
             if (!first) {
                 *out << ", ";
             }
-            if (!l->isVariableTermAt(term) && !isUnsignedInteger(l->getTermAt(term))) {
+            if (!l->isVariableTermAt(term) && !isInteger(l->getTermAt(term))) {
                 *out << "ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(l->getTermAt(term)) << "\")";
             } else {
                 *out << l->getTermAt(term);
@@ -1559,7 +1590,7 @@ void CompilationManager::printLiteralTuple(const aspc::Literal* l) {
         if (t > 0) {
             *out << ", ";
         }
-        if (!l->isVariableTermAt(t) && !isUnsignedInteger(l->getTermAt(t))) {
+        if (!l->isVariableTermAt(t) && !isInteger(l->getTermAt(t))) {
             *out << "ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(l->getTermAt(t)) << "\")";
         } else {
             *out << l->getTermAt(t);
@@ -1576,7 +1607,7 @@ void CompilationManager::printLiteralTuple(const aspc::Literal* l, const std::un
             if (!first) {
                 *out << ", ";
             }
-            if (!l->isVariableTermAt(t) && !isUnsignedInteger(l->getTermAt(t))) {
+            if (!l->isVariableTermAt(t) && !isInteger(l->getTermAt(t))) {
                 *out << "ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(l->getTermAt(t)) << "\")";
             } else {
                 *out << l->getTermAt(t);
@@ -1720,7 +1751,7 @@ bool CompilationManager::handleEqualCardsAndConstants(const aspc::Rule& r, unsig
                 *out << " && ";
 
             *out << "(*tuple" << i << ")[" << t1 << "] == ";
-            if (isUnsignedInteger(l->getTermAt(t1))) {
+            if (isInteger(l->getTermAt(t1))) {
                 *out << l->getTermAt(t1);
             } else {
                 *out << "ConstantsManager::getInstance().mapConstant(\"" << escapeDoubleQuotes(l->getTermAt(t1)) << "\")";

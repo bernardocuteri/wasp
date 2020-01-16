@@ -138,7 +138,7 @@ private:
 
     inline bool canLookup(const T & value) {
         for (unsigned i = 0; i < ariety; i++) {
-            if (value[i] - lookup_bases[i] >= lookup_size) {
+            if ((value[i] - lookup_bases[i] >= lookup_size) || (value[i] - lookup_bases[i] < 0)) {
                 if (lookupReferences.empty() && lookup_size > 0) {
                     lookup_bases[i] = value[i];
                 } else {
@@ -150,6 +150,7 @@ private:
     }
 
     inline unsigned valueToPos(const T & value) const {
+        //Assuming canLookup is checked before
         unsigned pos = 0;
         for (unsigned i = 0; i < ariety; i++) {
             pos += (value[i] - lookup_bases[i]) * std::pow(lookup_size, i);
@@ -164,8 +165,8 @@ private:
     std::vector<typename std::list<T>::iterator> lookupIterators;
 
     unsigned ariety;
-    unsigned lookup_size;
-    std::vector<unsigned> lookup_bases;
+    int lookup_size;
+    std::vector<int> lookup_bases;
     //fast iterations
     std::vector<const T* > tuples;
 

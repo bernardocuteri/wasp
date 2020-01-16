@@ -20,7 +20,7 @@
 #include <iostream>
 struct TuplesHash;
 
-class TupleWithoutReasons : public std::vector<unsigned> {
+class TupleWithoutReasons : public std::vector<int> {
 public:
 
     TupleWithoutReasons() : predicateName(NULL) {
@@ -30,23 +30,23 @@ public:
     TupleWithoutReasons(const std::string* predicateName, bool negated = false) : predicateName(predicateName), negated(negated) {
     }
 
-    TupleWithoutReasons(const TupleWithoutReasons& orig) : std::vector<unsigned>(orig), predicateName(orig.predicateName), negated(orig.negated), id(orig.id) {
+    TupleWithoutReasons(const TupleWithoutReasons& orig) : std::vector<int>(orig), predicateName(orig.predicateName), negated(orig.negated), id(orig.id) {
     }
 
     virtual ~TupleWithoutReasons() {
 
     }
 
-    TupleWithoutReasons(const std::initializer_list<unsigned> & l, bool negated = false) :
-    std::vector<unsigned>(l), predicateName(NULL), negated(negated) {
+    TupleWithoutReasons(const std::initializer_list<int> & l, bool negated = false) :
+    std::vector<int>(l), predicateName(NULL), negated(negated) {
     }
 
-    TupleWithoutReasons(const std::initializer_list<unsigned> & l, const std::string * predicateName, bool negated = false) :
-    vector<unsigned>(l), predicateName(predicateName), negated(negated) {
+    TupleWithoutReasons(const std::initializer_list<int> & l, const std::string * predicateName, bool negated = false) :
+    vector<int>(l), predicateName(predicateName), negated(negated) {
     }
 
-    TupleWithoutReasons(const std::vector<unsigned> & l, const std::string * predicateName, bool negated = false) :
-    vector<unsigned>(l), predicateName(predicateName), negated(negated) {
+    TupleWithoutReasons(const std::vector<int> & l, const std::string * predicateName, bool negated = false) :
+    vector<int>(l), predicateName(predicateName), negated(negated) {
     }
 
     const std::string* getPredicateName() const {
@@ -120,7 +120,7 @@ public:
         collisionsLists = right.collisionsLists;
         id = right.id;
         negated = right.negated;
-        std::vector<unsigned>::operator=(right);
+        std::vector<int>::operator=(right);
         return *this;
     }
 
@@ -155,7 +155,7 @@ struct TuplesHash {
 
     inline std::size_t operator()(const TupleWithoutReasons & v) const {
         std::size_t seed = 0;
-        for (unsigned i : v) {
+        for (int i : v) {
             seed ^= i + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         }
         return seed;

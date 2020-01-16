@@ -18,6 +18,7 @@
 #include<ostream>
 #include<unordered_set>
 #include<string>
+#include<vector>
 
 namespace aspc {
 
@@ -51,7 +52,7 @@ namespace aspc {
             return operation;
         }
 
-        std::unordered_set<std::string> getAllTerms() const;
+        std::vector<std::string> getAllTerms() const;
         
         std::string getStringRep() const;
 

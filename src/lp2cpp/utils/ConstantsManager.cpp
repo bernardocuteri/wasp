@@ -23,14 +23,14 @@
 
 using namespace std;
 
-const unsigned halfMaxInt = UINT_MAX / 2;
+const int halfMaxInt = INT_MAX / 2;
 
 ConstantsManager::ConstantsManager() : constantsCounter(halfMaxInt) {
 
 }
 
-unsigned ConstantsManager::mapConstant(const std::string & key) {
-    if (isUnsignedInteger(key)) {
+int ConstantsManager::mapConstant(const std::string & key) {
+    if (isInteger(key)) {
         return stoi(key);
     }
     if (!constantToIntMap.count(key)) {
@@ -43,7 +43,7 @@ unsigned ConstantsManager::mapConstant(const std::string & key) {
     return constantToIntMap[key];
 }
 
-string ConstantsManager::unmapConstant(unsigned mapped) const {
+string ConstantsManager::unmapConstant(int mapped) const {
     if (mapped >= halfMaxInt) {
         return inverseMap[mapped - halfMaxInt];
     }

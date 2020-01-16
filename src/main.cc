@@ -74,6 +74,26 @@ int main(int argc, char** argv) {
     signal(SIGINT, my_handler);
     signal(SIGTERM, my_handler);
     signal(SIGXCPU, my_handler);
+    
+    if (wasp::Options::compile_eager!="") {
+        string executablePathAndName = argv[0];
+        string executablePath = executablePathAndName;
+        for (int i = executablePath.size() - 1; i >= 0; i--) {
+            if (executablePath[i] == '/') {
+                executablePath = executablePath.substr(0, i);
+                break;
+            }
+        }
+        std::string executorPath = executablePath + "/src/lp2cpp/Executor.cpp";
+        std::ofstream outfile(executorPath);
+        CompilationManager manager(EAGER_MODE);
+        manager.setOutStream(&outfile);
+        manager.loadProgram(executablePath+"/"+wasp::Options::compile_eager);
+        manager.lp2cpp();
+        outfile.close();
+        return 0;
+    }
+        
 
     if (wasp::Options::lp2cppDatalog) {
         // execute with option lp2cpp-datalog

@@ -35,9 +35,9 @@ const unsigned AUX_MAPS_TOTAL_MEMORY = (sizeof NULL) * 1 * 1024 * 1024; //8MB in
 
 struct VectorHash {
 
-    inline size_t operator()(const std::vector<unsigned>& v) const {
+    inline size_t operator()(const std::vector<int>& v) const {
         size_t seed = 0;
-        for (unsigned i : v) {
+        for (int i : v) {
             seed ^= i + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         }
         return seed;
@@ -66,7 +66,7 @@ public:
     virtual ~AuxiliaryMap() {
     }
 
-    inline const std::vector< const T* >& getValues(const std::vector<unsigned>& key) const {
+    inline const std::vector< const T* >& getValues(const std::vector<int>& key) const {
         if (canLookup(key)) {
             return lookup[valueToPos(key)] == NULL ? EMPTY_RESULT : *lookup[valueToPos(key)];
         }
@@ -79,7 +79,7 @@ public:
     }
 
     inline void insert2(const T & value) {
-        std::vector<unsigned> key(keySize);
+        std::vector<int> key(keySize);
         for (unsigned i = 0; i < keySize; i++) {
             key[i] = value[keyIndices[i]];
         }
@@ -109,20 +109,20 @@ public:
     }
 protected:
 
-    inline bool canLookup(const std::vector<unsigned> & value) const {
+    inline bool canLookup(const std::vector<int> & key) const {
         for (unsigned i = 0; i < keySize; i++) {
-            if (value[i] - lookup_bases[i] >= lookup_size) {
+            if ((key[i] - lookup_bases[i] >= lookup_size) || (key[i] - lookup_bases[i] < 0)) {
                 return false;
             }
         }
         return true;
     }
 
-    inline bool canLookup(const std::vector<unsigned> & value) {
+    inline bool canLookup(const std::vector<int> & key) {
         for (unsigned i = 0; i < keySize; i++) {
-            if (value[i] - lookup_bases[i] >= lookup_size) {
-                if (lookupReferences.empty() && lookup_size>0) {
-                    lookup_bases[i] = value[i];
+            if ((key[i] - lookup_bases[i] >= lookup_size || key[i] - lookup_bases[i] < 0)) {
+                if (lookupReferences.empty() && lookup_size > 0) {
+                    lookup_bases[i] = key[i];
                 } else {
                     return false;
                 }
@@ -131,22 +131,22 @@ protected:
         return true;
     }
 
-    inline unsigned valueToPos(const std::vector<unsigned> & value) const {
+    inline unsigned valueToPos(const std::vector<int> & key) const {
         unsigned pos = 0;
         for (unsigned i = 0; i < keySize; i++) {
-            pos += (value[i] - lookup_bases[i]) * std::pow(lookup_size, i);
+            pos += (key[i] - lookup_bases[i]) * std::pow(lookup_size, i);
         }
         return pos;
     }
 
-    std::unordered_map<std::vector<unsigned>, std::vector< const T* >, VectorHash > tuples;
+    std::unordered_map<std::vector<int>, std::vector< const T* >, VectorHash > tuples;
     unsigned keySize;
     std::vector<unsigned> keyIndices;
     static const std::vector< const T* > EMPTY_RESULT;
     std::list<std::vector<const T *> > lookupReferences;
     std::vector<std::vector<const T *>*> lookup;
-    unsigned lookup_size;
-    std::vector<unsigned> lookup_bases;
+    int lookup_size;
+    std::vector<int> lookup_bases;
 
 
 };

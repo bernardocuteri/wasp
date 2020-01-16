@@ -138,6 +138,7 @@ namespace wasp
 #define OPTIONID_predminimizationchunkpercentage ( 'z' + 352 )
     
 #define OPTIONID_lp2cpp_datalog ( 'z' + 400 )
+#define OPTIONID_compile_eager ( 'z' + 401 )
     
 #ifdef TRACE_ON
 TraceLevels Options::traceLevels;
@@ -265,6 +266,7 @@ unsigned int Options::initValue = 0;
 unsigned int Options::initSign = INIT_SIGN_MINISAT_ALLFALSE;
 
 bool Options::lp2cppDatalog = false;
+string Options::compile_eager = "";
 
 string Options::arg0 = "";
 
@@ -332,6 +334,9 @@ Options::parse(
                 
                 //options for running lp2cpp
                 { "lp2cpp-datalog", no_argument, NULL, OPTIONID_lp2cpp_datalog },
+                
+                //options for compiling only
+                { "compile-eager", required_argument, NULL, OPTIONID_compile_eager },
                 
                 #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL) || defined(ENABLE_CPP_LAZY) || defined(ENABLE_CPP_EAGER) 
                 /* HEURISTIC */
@@ -892,6 +897,13 @@ Options::parse(
                 
             case OPTIONID_lp2cpp_datalog:
                 lp2cppDatalog = true;
+                break;
+                
+            case OPTIONID_compile_eager:
+                if( optarg )
+                {
+                    compile_eager = optarg;
+                }
                 break;
                    
              

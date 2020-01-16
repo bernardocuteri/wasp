@@ -31,8 +31,8 @@ public:
         return instance;
     }
     ConstantsManager();
-    unsigned mapConstant(const std::string & constant);
-    std::string unmapConstant(unsigned mapped) const;
+    int mapConstant(const std::string & constant);
+    std::string unmapConstant(int mapped) const;
     const std::string & getPredicateName(const std::string & predicateName);
 
 private:

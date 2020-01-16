@@ -37,14 +37,14 @@ public:
 
     }
 
-    TupleWithReasons(const std::initializer_list<unsigned> & l, bool negated = false) : TupleWithoutReasons(l, negated) {
+    TupleWithReasons(const std::initializer_list<int> & l, bool negated = false) : TupleWithoutReasons(l, negated) {
     }
 
-    TupleWithReasons(const std::initializer_list<unsigned> & l, const std::string * predicateName, bool negated = false) :
+    TupleWithReasons(const std::initializer_list<int> & l, const std::string * predicateName, bool negated = false) :
     TupleWithoutReasons(l, predicateName, negated) {
     }
 
-    TupleWithReasons(const std::vector<unsigned> & l, const std::string * predicateName, bool negated = false) :
+    TupleWithReasons(const std::vector<int> & l, const std::string * predicateName, bool negated = false) :
     TupleWithoutReasons(l, predicateName, negated) {
     }
 

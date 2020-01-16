@@ -12,6 +12,7 @@
  */
 
 #include "ArithmeticRelation.h"
+#include "../utils/SharedFunctions.h"
 #include "Rule.h"
 #include <iostream>
 #include <cassert>
@@ -28,10 +29,6 @@ std::map<aspc::ComparisonType, std::string> aspc::ArithmeticRelation::comparison
 
 };
 
-bool isVariable(const std::string & v) {
-    return (v[0] >= 'A' && v[0] <= 'Z');
-
-}
 
 aspc::ArithmeticRelation::ArithmeticRelation(const aspc::ArithmeticExpression& left, const aspc::ArithmeticExpression& right, aspc::ComparisonType comparisonType) : left(left), right(right), comparisonType(comparisonType) {
 
@@ -39,7 +36,9 @@ aspc::ArithmeticRelation::ArithmeticRelation(const aspc::ArithmeticExpression& l
 
 void aspc::ArithmeticRelation::addVariablesToSet(std::unordered_set<std::string>& set) const {
     //assert(isBoundedValueAssignment(set));
-    set.insert(left.getTerm1());
+    if(isBoundedValueAssignment(set)) {
+        set.insert(getAssignedVariable(set));
+    }
 
 }
 
@@ -193,7 +192,7 @@ string aspc::ArithmeticRelation::getAssignmentStringRep(const unordered_set<stri
                 return res + evalRight.getStringRep() + " + " + evalLeft.getTerm2();
             }
             else {
-                return res + evalRight.getTerm1() + invertOperation(evalRight.getOperation()) + evalRight.getTerm2() + " + " + evalLeft.getTerm1();
+                return res + " -"+evalRight.getTerm1() + " + " + evalLeft.getTerm1();
             }
             //TODO implement assignment on / and *
         } else {
@@ -203,6 +202,6 @@ string aspc::ArithmeticRelation::getAssignmentStringRep(const unordered_set<stri
 
 
 
-
+    throw std::runtime_error("unable to getAssignmentStringRep");
 
 }
