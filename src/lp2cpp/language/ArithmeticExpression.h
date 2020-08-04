@@ -51,6 +51,9 @@ namespace aspc {
         char getOperation() const {
             return operation;
         }
+        void setTerm1(std::string term){
+            term1=term;
+        }
 
         std::vector<std::string> getAllTerms() const;
         

@@ -34,6 +34,7 @@ EagerConstraintImpl::~EagerConstraintImpl() {
 }
 
 void EagerConstraintImpl::performCompilation() {
+    
     string executablePathAndName = wasp::Options::arg0;
     string executablePath = executablePathAndName;
     for (int i = executablePath.size() - 1; i >= 0; i--) {
@@ -89,6 +90,7 @@ void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<
 #ifdef EAGER_DEBUG
     std::cout << "on literal true" << std::endl;
 #endif
+    
     /*
     aspc::Literal* lit = NULL;
     //std::cout << "lit true " << var << std::endl;
@@ -125,7 +127,6 @@ void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<
     cout << "tot_propr " << prop_time_e / 1000 << endl;
     cout << "tot_solv " << solv_time_e / 1000 << endl;
 #endif
-
     const std::unordered_map<int, std::vector<int> > & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
     for (auto& it : propagatedLiteralsAndReasons) {
         propagatedLiterals.push_back(-it.first);
@@ -145,7 +146,6 @@ void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<
     //    for (auto& it : propagatedLiteralsAndReasons) {
     //        propagatedLiterals.push_back(-literalsMap[it.first]);
     //    }
-
 
 };
 
@@ -243,14 +243,20 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
     }
 
     compilationManager.insertModelGeneratorPredicate(atom.getPredicateName());
+    
+
     if (compilationManager.getBodyPredicates().count(atom.getPredicateName())) {
         if (facts.count(var)) {            
             executionManager.onLiteralTrue(var);
         } else {
+
             watchedAtoms.push_back(var);
             watchedAtoms.push_back(-var);            
             executionManager.onLiteralUndef(var);
         }
+        //std::cout<<"Watch "<<var<<" ";
+        //atom.print();
+        //std::cout<<std::endl;
         watchedAtomsSet.insert(var);
         watchedAtomsSet.insert(-var);
     }
@@ -258,6 +264,8 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
 };
 
 void EagerConstraintImpl::simplifyAtLevelZero(std::vector<int>& output) {
+
+
     std::vector<int> inputInterpretation;
     inputInterpretation.push_back(-1);
     for(int fact:facts) {
@@ -266,8 +274,10 @@ void EagerConstraintImpl::simplifyAtLevelZero(std::vector<int>& output) {
         }
     }
     executionManager.executeProgramOnFacts(inputInterpretation);
+
     executionManager.simplifyAtLevelZero(output);
     //executionManager.clearPropagations();
+    
 }
 
 

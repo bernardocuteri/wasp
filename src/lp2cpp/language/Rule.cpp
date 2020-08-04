@@ -27,11 +27,11 @@ using namespace std;
 unsigned aspc::Rule::rulesCounter = 0;
 string aspc::Rule::inequalityStrings[] = {">=", "<=", ">", "<", "!=", "=="};
 
-aspc::Rule::Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & body, const vector<aspc::ArithmeticRelation> & arithmeticRelations) : head(head), bodyLiterals(body), ruleId(rulesCounter), arithmeticRelations(arithmeticRelations) {
+aspc::Rule::Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & body, const vector<aspc::ArithmeticRelation> & arithmeticRelations, const vector<aspc::ArithmeticRelationWithAggregate> & arithmeticRelationsWithAggregate) : head(head), bodyLiterals(body), ruleId(rulesCounter), arithmeticRelations(arithmeticRelations),arithmeticRelationsWithAggregate(arithmeticRelationsWithAggregate) {
     rulesCounter++;
 }
 
-aspc::Rule::Rule(const vector<Atom>& head, const vector<Literal> & body, const vector<aspc::ArithmeticRelation>& arithmeticRelations, bool) : Rule(head, body, arithmeticRelations) {
+aspc::Rule::Rule(const vector<Atom>& head, const vector<Literal> & body, const vector<aspc::ArithmeticRelation>& arithmeticRelations, bool) : Rule(head, body, arithmeticRelations,std::vector<aspc::ArithmeticRelationWithAggregate>()) {
     //    if(true) {
     //        std::random_shuffle(bodyLiterals.begin(), bodyLiterals.end());
     //        
@@ -47,9 +47,10 @@ aspc::Rule::Rule(const vector<Atom>& head, const vector<Literal> & body, const v
 
 
 }
-
-aspc::Rule::Rule(const Rule& other) :
-head(other.head), bodyLiterals(other.bodyLiterals), ruleId(other.ruleId), arithmeticRelations(other.arithmeticRelations), orderedBodyByStarters(other.orderedBodyByStarters), orderedBodyIndexesByStarters(other.orderedBodyIndexesByStarters) {
+aspc::Rule::Rule(const std::vector<aspc::Atom> & head, const std::vector<aspc::Literal> & body, const std::vector<ArithmeticRelation> & inequalities,const std::vector<ArithmeticRelationWithAggregate> & inequalitiesWithAggregate, bool): Rule(head, body, inequalities,inequalitiesWithAggregate){
+    
+    
+    
     for (unsigned i = 0; i < bodyLiterals.size(); i++) {
         formulas.push_back(new Literal(bodyLiterals.at(i)));
 
@@ -57,12 +58,46 @@ head(other.head), bodyLiterals(other.bodyLiterals), ruleId(other.ruleId), arithm
     for (unsigned i = 0; i < arithmeticRelations.size(); i++) {
         formulas.push_back(new ArithmeticRelation(arithmeticRelations[i]));
     }
+    
+    for (unsigned i = 0; i < arithmeticRelationsWithAggregate.size(); i++) {
+        aggregateLiterals.insert(std::pair<unsigned,std::vector<Literal*>>(formulas.size(),std::vector<Literal*>()));
+        for(unsigned j = 0; j< arithmeticRelationsWithAggregate[i].getAggregate().getAggregateLiterals().size();j++){
+            aggregateLiterals[formulas.size()].push_back(new aspc::Literal(arithmeticRelationsWithAggregate[i].getAggregate().getAggregateLiterals()[j]));
+        }
+        arithmeticRelationsWithAggregate[i].setFormulaIndex(formulas.size());
+        formulas.push_back(new ArithmeticRelationWithAggregate(arithmeticRelationsWithAggregate[i]));
+        //((ArithmeticRelationWithAggregate*)formulas[formulas.size()-1])->setFormulaIndex(formulas.size()-1);
+    }
+}
+        
+
+aspc::Rule::Rule(const Rule& other) :
+head(other.head), bodyLiterals(other.bodyLiterals), ruleId(other.ruleId), arithmeticRelations(other.arithmeticRelations),arithmeticRelationsWithAggregate(other.arithmeticRelationsWithAggregate), orderedBodyByStarters(other.orderedBodyByStarters), orderedBodyIndexesByStarters(other.orderedBodyIndexesByStarters) {
+    for (unsigned i = 0; i < bodyLiterals.size(); i++) {
+        formulas.push_back(new Literal(bodyLiterals.at(i)));
+
+    }
+    for (unsigned i = 0; i < arithmeticRelations.size(); i++) {
+        formulas.push_back(new ArithmeticRelation(arithmeticRelations[i]));
+    }
+    for (unsigned i = 0; i < arithmeticRelationsWithAggregate.size(); i++) {
+        aggregateLiterals.insert(std::pair<unsigned,std::vector<Literal*>>(formulas.size(),std::vector<Literal*>()));
+        for(unsigned j = 0; j< arithmeticRelationsWithAggregate[i].getAggregate().getAggregateLiterals().size();j++){
+            aggregateLiterals[formulas.size()].push_back(new aspc::Literal(arithmeticRelationsWithAggregate[i].getAggregate().getAggregateLiterals()[j]));
+        }
+        formulas.push_back(new ArithmeticRelationWithAggregate(arithmeticRelationsWithAggregate[i]));
+    }
 }
 
 aspc::Rule::~Rule() {
 
     for (const Formula* f : formulas) {
         delete f;
+    }
+    for (std::pair<unsigned,std::vector<aspc::Literal*>> pair:aggregateLiterals){
+        for(aspc::Literal* l : pair.second){
+            delete l;
+        }
     }
 }
 
@@ -147,6 +182,9 @@ const vector<aspc::ArithmeticRelation> & aspc::Rule::getArithmeticRelations() co
     return arithmeticRelations;
 }
 
+const vector<aspc::ArithmeticRelationWithAggregate> & aspc::Rule::getArithmeticRelationsWithAggregate() const {
+    return arithmeticRelationsWithAggregate;
+}
 void aspc::Rule::print() const {
     for (const Atom & atom : head) {
         atom.print();
@@ -177,6 +215,13 @@ bool aspc::Rule::containsNegation() const {
     }
     return false;
 }
+bool aspc::Rule::containsAggregate() const{
+    return !arithmeticRelationsWithAggregate.empty();
+}
+        
+bool aspc::Rule::containsLiteral() const{
+    return !bodyLiterals.empty();
+}
 
 bool aspc::Rule::isConstraint() const {
     return getType() == CONSTRAINT;
@@ -196,7 +241,10 @@ void aspc::Rule::bodyReordering() {
     }
     bodyReordering(starters);
 }
-
+void aspc::Rule::addArithmeticRelationsWithAggregate(ArithmeticRelationWithAggregate r){
+    arithmeticRelationsWithAggregate.push_back(r);
+}
+        
 void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
 
     if (starters.empty()) {
@@ -204,7 +252,7 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
     }
 
     for (unsigned starter : starters) {
-
+        
         unordered_set<string> boundVariables;
 
         if (starter < formulas.size()) {
@@ -217,6 +265,7 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
         list<const Formula*> allFormulas;
         //TODO improve
         for (const Formula* f : formulas) {
+            
             if (starter == formulas.size() || f != formulas[starter]) {
                 allFormulas.push_back(f);
             }
@@ -226,10 +275,12 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
             const Formula* boundLiteral = NULL;
             const Formula* boundValueAssignment = NULL;
             const Formula* positiveLiteral = NULL;
+            const Formula* aggregate = NULL;
             const Formula* selectedFormula = NULL;
 
             for (list<const Formula*>::const_reverse_iterator formula = allFormulas.rbegin(); formula != allFormulas.rend(); formula++) {
-                if ((*formula)->isBoundedRelation(boundVariables)) {
+                
+                if ((*formula)->isBoundedRelation(boundVariables) && !(*formula)->containsAggregate()) {
                     boundExpression = *formula;
                 } else if ((*formula)->isBoundedValueAssignment(boundVariables)) {
                     boundValueAssignment = *formula;
@@ -237,7 +288,10 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
                     boundLiteral = *formula;
                 } else if ((*formula)->isPositiveLiteral()) {
                     positiveLiteral = *formula;
+                } else if ((*formula)->containsAggregate()){
+                    aggregate = *formula;
                 }
+                
             }
 
 
@@ -247,9 +301,12 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
                 selectedFormula = boundValueAssignment;
             } else if (boundLiteral) {
                 selectedFormula = boundLiteral;
-            } else {
+            } else if(positiveLiteral){
                 selectedFormula = positiveLiteral;
+            } else if(aggregate){
+                selectedFormula=aggregate;
             }
+            
             assert(selectedFormula);
             if (selectedFormula != boundExpression && selectedFormula != boundLiteral) {
                 selectedFormula->addVariablesToSet(boundVariables);
@@ -270,10 +327,13 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
             allFormulas.remove(selectedFormula);
 
         }
+        
 
     }
 
-
+    //for(unsigned i : orderedBodyIndexesByStarters[formulas.size()]){
+    //    formulas[i]->print();
+    //}
 
 }
 
@@ -369,6 +429,7 @@ vector<unsigned> aspc::Rule::getStarters() const {
     vector<unsigned> res;
     for (const auto & entry : orderedBodyByStarters) {
         res.push_back(entry.first);
+        
     }
     return res;
 

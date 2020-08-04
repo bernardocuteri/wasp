@@ -127,12 +127,14 @@ ExternalPropagator::onLiteralFalse(
     assert( solver.isFalse( literal ) );
     assert( !solver.conflictDetected() );
     vector< int > output;
+
     if( check_onLitsTrue )
     {
         trueLiterals.push_back( literal.getOppositeLiteral() );
         return true;
     }
     assert( check_onLitTrue );
+
     interpreter->callListMethod( method_plugins_onLitTrue, literal.getOppositeLiteral().getId(), solver.getCurrentDecisionLevel(), output );    
     //True literals are stored in the trail
     if( solver.getCurrentDecisionLevel() > 0 )
@@ -140,8 +142,9 @@ ExternalPropagator::onLiteralFalse(
         assert( !trail.existElement( literal.getOppositeLiteral() ) );
         trail.push_back( literal.getOppositeLiteral() );
     }
-    
+
     computeReason( solver, output );
+
     return true;
 }
 
@@ -260,22 +263,26 @@ ExternalPropagator::getReason(
         assert( check_getReasonForLiteral );
         interpreter->callListMethod( method_plugins_getReasonForLiteral, currentLiteral.getId(), output );
     }
-   
+
     if( output.empty() )
     {
+ 
         if( solver.getCurrentDecisionLevel() != 0 )
             WaspErrorMessage::errorGeneric( "Reason is not well-formed: At least one of the literals in the reason must be inferred at the current decision level." );
         else
             return NULL;
     }
-    
+
     Clause* clause = new Clause();
+
     clause->addLiteral( currentLiteral );
+
     unsigned int max = 0;    
     for( unsigned int i = 0; i < output.size(); i++ )
     {
         checkIdOfLiteral( solver, output[ i ] );
         Literal l = Literal::createLiteralFromInt( output[ i ] );
+
         if( solver.isUndefined( l ) )
             WaspErrorMessage::errorGeneric( "Reason is not well-formed: Literal with id " + to_string( l.getId() ) + " is undefined." );
         if( solver.isTrue( l ) )
@@ -287,9 +294,10 @@ ExternalPropagator::getReason(
         if( dl > max )
             max = dl;
     }
-    
+
     if( max < solver.getCurrentDecisionLevel() )
         WaspErrorMessage::errorGeneric( "Reason is not well-formed: At least one of the literals in the reason must be inferred at the current decision level." );    
+
     return clause;
 }
 
@@ -412,9 +420,12 @@ ExternalPropagator::simplifyAtLevelZero(
         interpreter->callListMethod( method_plugins_simplifyAtLevelZero, output );
         for( unsigned int i = 0; i < output.size(); i++ )
         {
+            
             checkIdOfLiteral( solver, output[ i ] );
+
             if( !solver.addClause( Literal::createLiteralFromInt( output[ i ] ) ) )
                 break;
+            
         }
     }
 }
@@ -591,7 +602,6 @@ ExternalPropagator::computeReason(
 {
     if( output.empty() || ( output.size() == 1 && output[ 0 ] == 0 ) )
         return;
-    
     bool conflictDetected = false;
     Literal conflictLiteral = Literal::null;
     for( unsigned int i = 0; i < output.size(); i++ )
@@ -610,15 +620,17 @@ ExternalPropagator::computeReason(
         handleConflict( solver, conflictLiteral );
         return;
     }
-    
+
     Clause* reason = NULL;
     if( !check_getReasonForLiteral )
     {
         reason = getReason( solver, Literal::null );
         clausesToDelete.push_back( reason );
     }
+
     for( unsigned int i = 0; i < output.size(); i++ )
     {
+
         checkIdOfLiteral( solver, output[ i ] );
         Literal lit = Literal::createLiteralFromInt( output[ i ] );
         if( solver.isTrue( lit ) )
@@ -629,10 +641,15 @@ ExternalPropagator::computeReason(
             Clause* r = getReason( solver, lit );
             solver.assignLiteral( r );
             clausesToDelete.push_back( r );
+
         }
-        else
+        else{
+
             solver.assignLiteral( lit, reason );
+
+        }
     }
+
 }
 
 void

@@ -28,6 +28,8 @@
 #include <cstring>
 #include <bits/unordered_map.h>
 #include "../language/ArithmeticRelation.h"
+#include "../language/Aggregate.h"
+#include "../language/ArithmeticRelationWithAggregate.h"
 
 using namespace std;
 
@@ -43,27 +45,39 @@ void AspCore2ProgramBuilder::buildExpression() {
     buildingTerms.clear();
 }
 
-void AspCore2ProgramBuilder::onAggregate(bool) {
+void AspCore2ProgramBuilder::onAggregate(bool negation) {
+    isNegated=negation;
 
 }
 
+void AspCore2ProgramBuilder::clearAggregateFields(){
+
+    aggreagateLiterals.clear();
+    aggregateVariables.clear();
+    aggregateFunction="None";
+    inequalitySign=aspc::UNASSIGNED;
+    isNegated=false;
+}
 void AspCore2ProgramBuilder::onAggregateElement() {
 
 }
 
-void AspCore2ProgramBuilder::onAggregateFunction(char*) {
-
+void AspCore2ProgramBuilder::onAggregateFunction(char* function) {
+    this->aggregateFunction=function;
 }
 
-void AspCore2ProgramBuilder::onAggregateGroundTerm(char*, bool) {
-
+void AspCore2ProgramBuilder::onAggregateGroundTerm(char* groundTerm, bool negated) {
 }
 
 void AspCore2ProgramBuilder::onAggregateLowerGuard() {
-
+    this->buildExpression();
+    isLower=true;
 }
 
 void AspCore2ProgramBuilder::onAggregateNafLiteral() {
+    
+    this->aggreagateLiterals.push_back(aspc::Literal(naf,aspc::Atom(predicateName,buildingTerms)));
+    buildingTerms.clear();
 
 }
 
@@ -72,18 +86,21 @@ void AspCore2ProgramBuilder::onAggregateUnknownVariable() {
 }
 
 void AspCore2ProgramBuilder::onAggregateUpperGuard() {
-
+    this->buildExpression();
+    isLower=false;
 }
 
-void AspCore2ProgramBuilder::onAggregateVariableTerm(char*) {
-
+void AspCore2ProgramBuilder::onAggregateVariableTerm(char* variableTerm) {
+    this->aggregateVariables.insert(variableTerm);
 }
 
 void AspCore2ProgramBuilder::onArithmeticOperation(char op) {
+
     arithOp = op;
 }
 
 void AspCore2ProgramBuilder::onAtom(bool) {
+
 }
 
 void AspCore2ProgramBuilder::onBody() {
@@ -92,12 +109,18 @@ void AspCore2ProgramBuilder::onBody() {
 
 void AspCore2ProgramBuilder::onBodyLiteral() {
     if (inequalitySign != aspc::UNASSIGNED) {
-        if (buildingTerms.size() == 1) {
+        if(aggregateFunction != "None"){
+            inequalitiesWithAggregate.push_back(aspc::ArithmeticRelationWithAggregate(expression,aspc::Aggregate(aggreagateLiterals,aggregateVariables,aggregateFunction),inequalitySign,isNegated));
+            
+            clearAggregateFields();
+        }
+        else if (buildingTerms.size() == 1) {
             inequalities.push_back(aspc::ArithmeticRelation(expression, aspc::ArithmeticExpression(buildingTerms[0]), inequalitySign));
         } else {
             inequalities.push_back(aspc::ArithmeticRelation(expression, aspc::ArithmeticExpression(buildingTerms[0], buildingTerms[1], arithOp), inequalitySign));
         }
     } else {
+        
         buildingBody.push_back(aspc::Literal(naf, aspc::Atom(predicateName, buildingTerms)));
         if (arietyMap.count(predicateName)) {
             //assert((*arietyMap)[predicateName] == buildingTerms->size());
@@ -139,8 +162,10 @@ void AspCore2ProgramBuilder::onChoiceUpperGuard() {
 }
 
 void AspCore2ProgramBuilder::onConstraint() {
-    program.addRule(aspc::Rule(buildingHead, buildingBody, inequalities, true));
+    
 
+    int size=program.getRules().size();
+    
     for (const aspc::Literal& l : buildingBody) {
         int currentBodyId = predicateIDs.size();
         unordered_map<string, int>::iterator i = predicateIDs.find(l.getPredicateName());
@@ -154,9 +179,40 @@ void AspCore2ProgramBuilder::onConstraint() {
     for (const aspc::Literal& l : buildingBody) {
         program.addPredicate(l.getPredicateName(), l.getAriety());
     }
+    
+    //adding literal in aggregate
+    bool notEqual = false;
+    for (aspc::ArithmeticRelationWithAggregate& r : inequalitiesWithAggregate){
+        if(r.getCompareTypeAsString() == "=="){
+            r.setCompareType(aspc::GTE);
+            if(r.isNegated()){
+                notEqual = true;
+            }else{
+                aspc::ArithmeticRelationWithAggregate r_(r.getGuard(),r.getAggregate(),aspc::GT,true);
+                inequalitiesWithAggregate.push_back(r_);
+            }
+            
+        }
+        for(const aspc::Literal& l: r.getAggregate().getAggregateLiterals()){
+            program.addAggregatePredicate(l.getPredicateName(),l.getAriety());
+        }
+    }
+    aspc::Rule constraint(buildingHead, buildingBody, inequalities,std::vector<aspc::ArithmeticRelationWithAggregate>(inequalitiesWithAggregate), true);
+    program.addRule(constraint);
+    if(notEqual){
+        for(aspc::ArithmeticRelationWithAggregate& r : inequalitiesWithAggregate){
+            //si assume ci sia solo un aggregato
+            r.setNegated(false);
+            r.setPlusOne(true);
+            aspc::Rule copy_(buildingHead, buildingBody, inequalities,inequalitiesWithAggregate, true);
+            program.addRule(copy_);
+        }
+
+    }
     buildingBody.clear();
     buildingHead.clear();
     inequalities.clear();
+    inequalitiesWithAggregate.clear();
 
 }
 
@@ -166,7 +222,8 @@ void AspCore2ProgramBuilder::onDirective(char*, char*) {
 
 void AspCore2ProgramBuilder::onEqualOperator() {
     inequalitySign = aspc::EQ;
-    buildExpression();
+    if(aggregateFunction == "None")
+        buildExpression();
 }
 
 void AspCore2ProgramBuilder::onExistentialAtom() {
@@ -182,19 +239,24 @@ void AspCore2ProgramBuilder::onFunction(char*, int) {
 }
 
 void AspCore2ProgramBuilder::onGreaterOperator() {
+
     inequalitySign = aspc::GT;
-    buildExpression();
+    if(aggregateFunction == "None")
+        buildExpression();
 }
 
 void AspCore2ProgramBuilder::onGreaterOrEqualOperator() {
+
     inequalitySign = aspc::GTE;
-    buildExpression();
+    if(aggregateFunction == "None")
+        buildExpression();
 }
 
 void AspCore2ProgramBuilder::onHead() {
 }
 
 void AspCore2ProgramBuilder::onHeadAtom() {
+
     buildingHead.push_back(aspc::Atom(predicateName, buildingTerms));
     if (arietyMap.count(predicateName)) {
         //assert((*arietyMap)[predicateName] == buildingTerms->size());
@@ -205,13 +267,17 @@ void AspCore2ProgramBuilder::onHeadAtom() {
 }
 
 void AspCore2ProgramBuilder::onLessOperator() {
+
     inequalitySign = aspc::LT;
-    buildExpression();
+    if(aggregateFunction == "None")
+        buildExpression();
 }
 
 void AspCore2ProgramBuilder::onLessOrEqualOperator() {
+
     inequalitySign = aspc::LTE;
-    buildExpression();
+    if(aggregateFunction == "None")
+        buildExpression();
 }
 
 void AspCore2ProgramBuilder::onNafLiteral(bool naf) {
@@ -222,6 +288,7 @@ void AspCore2ProgramBuilder::onNafLiteral(bool naf) {
 }
 
 void AspCore2ProgramBuilder::onPredicateName(char* predicateName) {
+
     //why the following does not work?
     //this->predicateName = predicateName;
     this->predicateName = predicateName;
@@ -237,8 +304,9 @@ void AspCore2ProgramBuilder::onQuery() {
 void AspCore2ProgramBuilder::onRule() {
     if (buildingBody.empty()) {
         program.addFact(buildingHead.back());
+        
     } else {
-        aspc::Rule rule = aspc::Rule(buildingHead, buildingBody, inequalities, true);
+        aspc::Rule rule = aspc::Rule(buildingHead, buildingBody, inequalities,inequalitiesWithAggregate, true);
         program.addRule(rule);
         //adding edges to dependency graph
         for (const aspc::Atom& a : buildingHead) {
@@ -279,6 +347,7 @@ void AspCore2ProgramBuilder::onRule() {
     buildingBody.clear();
     buildingHead.clear();
     inequalities.clear();
+    inequalitiesWithAggregate.clear();
 }
 
 void AspCore2ProgramBuilder::onTerm(int) {
@@ -287,6 +356,7 @@ void AspCore2ProgramBuilder::onTerm(int) {
 
 void AspCore2ProgramBuilder::onTerm(char* value) {
     buildingTerms.push_back(value);
+    
 }
 
 void AspCore2ProgramBuilder::onTermDash() {
@@ -302,8 +372,10 @@ void AspCore2ProgramBuilder::onTermRange(char*, char*) {
 }
 
 void AspCore2ProgramBuilder::onUnequalOperator() {
+
     inequalitySign = aspc::NE;
-    buildExpression();
+    //if(aggregateFunction!="None")
+        buildExpression();
 
 }
 

@@ -39,23 +39,31 @@ MyCppEagerInterpreter::MyCppEagerInterpreter(char* filenameToCompile, const stri
 
 void MyCppEagerInterpreter::callListMethod(const string& method_name, const vector<int>& parameters, vector<int>& output) {
     
+    
     if (method_name == method_plugins_onLitTrue) {
         eagerConstraint.onLiteralTrue(parameters[0], parameters[1], output);           
+    
     } else if (method_name == method_plugins_getReasonForLiteral) {
         eagerConstraint.getReasonForLiteral(parameters[0], output);
+        
     } else if (method_name == method_plugins_getVariablesToFreeze) {
         output.insert(output.end(), eagerConstraint.getVariablesToFreeze().begin(), eagerConstraint.getVariablesToFreeze().end());
+        
     } else if (method_name == method_plugins_getLiterals) {
+        for(int param : parameters){
+            eagerConstraint.onFact(param);
+        }
         output.insert(output.end(), eagerConstraint.getVariablesToFreeze().begin(), eagerConstraint.getVariablesToFreeze().end());
+        
     } else if (method_name == method_plugins_onLiteralsUndefined) {
         eagerConstraint.onLiteralsUndefined(parameters);
+        
     } else if(method_name == method_plugins_onStartingSolver) {
         cout<<"Starting solver using CPP eager propagator on "<<eagerConstraint.getFilepath()<<endl;
+        
     } else if(method_name == method_plugins_simplifyAtLevelZero) {
         eagerConstraint.simplifyAtLevelZero(output);
     }
-    
-    
 
 }
 

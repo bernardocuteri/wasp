@@ -633,16 +633,21 @@ Solver::propagation(
 
 //    Vector< pair< Propagator*, int > >& wl = variablePropagators[ ( getTruthValue( variable ) >> 1 ) ];
     Vector< pair< Propagator*, PropagatorData > >& wl = getDataStructure( complement ).variablePropagators;
+
     for( unsigned i = 0; i < wl.size(); ++i )
     {
+
         if( conflictDetected() )
             break;
         Propagator* propagator = wl[ i ].first;
         assert( "Post propagator is null." && propagator != NULL );
-        bool res = propagator->onLiteralFalse( *this, complement, wl[ i ].second );        
+
+        bool res = propagator->onLiteralFalse( *this, complement, wl[ i ].second );
+
         if( res )
             addInPropagatorsForUnroll( propagator );
     }
+
 }
 
 void
@@ -743,7 +748,8 @@ Solver::propagateAtLevelZero(
     
     shortPropagation( variable );
     if( conflictDetected() )
-        return;    
+        return;
+
     
     {        
         Literal literal = variables.createLiteralFromAssignedVariable( variable );
@@ -759,6 +765,8 @@ Solver::propagateAtLevelZero(
         }
         wl.clearAndDelete();
     }
+    
+
     
     {
         assert( !conflictDetected() );
@@ -792,6 +800,7 @@ Solver::propagateAtLevelZero(
         wl.clearAndDelete();
     }
 
+
 //    assert( variableAllOccurrences[ POSITIVE ].size() == 0 );
 //    assert( variableAllOccurrences[ NEGATIVE ].size() == 0 );
     assert( getDataStructure( Literal( variable, POSITIVE ) ).variableAllOccurrences.size() == 0 );
@@ -799,10 +808,13 @@ Solver::propagateAtLevelZero(
 
     if( !conflictDetected() && hasPropagators() )
     {
+
         propagation( variable );
         if( !conflictDetected() )
             postPropagation( variable );
+
     }
+
 }
 
 void

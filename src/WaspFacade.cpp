@@ -76,6 +76,7 @@ WaspFacade::readInput(
 void
 WaspFacade::solve()
 {
+
     if(runtime_) { WaspErrorMessage::errorGeneric("Calling method solve twice."); return; }
     runtime_ = true;
 
@@ -89,6 +90,8 @@ WaspFacade::solve()
     else if(!solver.isOptimizationProblem() && !wasp::Options::useLazyWeakConstraints) { Enumeration enumeration(solver); enumeration.solve(); }
     else handleWeakConstraints();
     
+    
+
     return;
 }
 

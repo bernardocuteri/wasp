@@ -25,6 +25,7 @@
 #include <string>
 #include <set>
 #include "datastructures/BoundAnnotatedLiteral.h"
+#include "language/ArithmeticRelationWithAggregate.h"
 
 const int LAZY_MODE = 0; 
 const int EAGER_MODE = 1;
@@ -51,9 +52,32 @@ public:
 
     
 private:
-    
+    void countRemainingJoinTuples(std::string aggrIdentifier,std::string pairName,const aspc::ArithmeticRelationWithAggregate* aggregateRelation);
+    void declareDataStructureForAggregate(const aspc::Rule& r,const std::set< std::pair<std::string, unsigned> >& aggregatePredicates);
+    void generateFindSharedValueInJoinTuple(aspc::Program & program);
+    std::string getSharedVariablesValues(std::string* sharedVars)const;
+    bool checkTupleFormat(const aspc::Literal& li,std::string buildIndex,bool tuplePointer);
+    void compileConstrainWithAggregate(const aspc::Rule & r, unsigned start, const aspc::Program & p);
+    void evaluateAggregateAsLast(bool withReason,const aspc::ArithmeticRelationWithAggregate* aggregateRelation, std::vector<unsigned>& joinOrder,int i,const aspc::Rule& r);
+    void propagateAggregate(const aspc::ArithmeticRelationWithAggregate* aggregateRelation,std::string& aggregateIdentifier,bool withReason);
+    void checkExistsShareVariableMap(int ruleId, int aggrIndex,std::string& sharedVariables,bool create);
+    void addJoinTupleToSharedVariablesMap(int ruleId, int aggrIndex,std::string auxMapIndex);
+    void updateTrueSharedVariablesMap(const aspc::Rule & r,aspc::Literal* li,int litIndex,std::vector<int> aggregateIndexes, std::vector<int> literalIndexes);
+    void updateUndefinedSharedVariablesMap(aspc::Rule& r,int startLit);
+    void saveTuples(std::string collectionName,std::string predicateSetName,int aggrIndex,int ruleId);
+    void moveTrueToUndefJoinTuples(int ruleId,int aggrIndex,const aspc::Literal& li, int literalIndex);
+    void declareAuxMap(std::string mapVariableName,std::vector<unsigned> keyIndexes,std::string predicateName,bool createFalseAuxMap);
+    void builJoinTupleStartingFromLiteral(int ruleId,int aggrIndex,const aspc::Literal& li,const aspc::ArithmeticRelationWithAggregate & aggr,int index,bool isLiteralTrue,bool negatedLiteral=false);
+    void printVars(const aspc::Literal& li,std::string tupleName,std::unordered_set<std::string> & boundVars)const;
+    void buildReason(std::string aggrIdentifier,const aspc::ArithmeticRelationWithAggregate* aggregateRelation,bool declareReason);
+    void propagateUndef(bool asTrue,bool withReason,std::string mapVariableName);
+    void canPropagate(aspc::ArithmeticRelationWithAggregate aggr,int index);
+    void propagate(aspc::ArithmeticRelationWithAggregate aggr,int index);
+    void evaluateAggregates(const std::vector<aspc::ArithmeticRelationWithAggregate>& aggrs,const std::vector<unsigned>& joinOrder,const std::unordered_set<std::string> & boundVariables,int & iterations);
+    void buildAggregateReason();
+    void updateSums(std::string,char op);
     void compileRule(const aspc::Rule& r,unsigned start, const aspc::Program& p) ;
-    void declareDataStructures(const aspc::Rule& r, unsigned start);
+    void declareDataStructures(const aspc::Rule& r, unsigned start,const std::set< std::pair<std::string, unsigned> >& aggregatePredicates);
     bool matchConstants(const aspc::Rule & rule, const aspc::Atom & atom, Indentation & ind);
     void generateHeadTupleAndMatchConstants(const aspc::Rule & rule, Indentation & ind, const std::set<std::string> & bodyPredicates);
     void setHeadVariables(Indentation & ind, const aspc::Rule & rule);
@@ -87,6 +111,16 @@ private:
     std::set<std::string> declaredMaps;
     
     AspCore2ProgramBuilder* builder;
+    
+    std::unordered_map<std::string, std::string > aggregateLiteralToAuxiliaryMap;
+    
+    std::unordered_map<std::string, std::string > aggregateLiteralToPredicateWSet;
+    
+    std::unordered_map<std::string, std::string > sharedVariablesMap;
+    
+    std::unordered_map<std::string, std::vector<unsigned> > sharedVariablesIndexesMap;
+    
+    std::unordered_map<std::string, std::vector<unsigned> > aggregateVariablesIndex;
     
     std::unordered_map<std::string, std::set<std::string> > predicateToAuxiliaryMaps;
     

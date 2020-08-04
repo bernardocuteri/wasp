@@ -29,7 +29,9 @@ public:
 
     TupleWithoutReasons(const std::string* predicateName, bool negated = false) : predicateName(predicateName), negated(negated) {
     }
-
+    TupleWithoutReasons(const std::string* predicateName,std::vector<int> v, bool negated = false) : predicateName(predicateName),std::vector<int>(v), negated(negated) {
+    }
+    
     TupleWithoutReasons(const TupleWithoutReasons& orig) : std::vector<int>(orig), predicateName(orig.predicateName), negated(orig.negated), id(orig.id) {
     }
 
@@ -44,9 +46,12 @@ public:
     TupleWithoutReasons(const std::initializer_list<int> & l, const std::string * predicateName, bool negated = false) :
     vector<int>(l), predicateName(predicateName), negated(negated) {
     }
-
+    
     TupleWithoutReasons(const std::vector<int> & l, const std::string * predicateName, bool negated = false) :
     vector<int>(l), predicateName(predicateName), negated(negated) {
+    }
+    TupleWithoutReasons(const std::vector<int> & l, bool negated = false) :
+    vector<int>(l), negated(negated) {
     }
 
     const std::string* getPredicateName() const {

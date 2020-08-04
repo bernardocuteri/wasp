@@ -26,6 +26,7 @@
 #include "Atom.h"
 #include "Literal.h"
 #include "ArithmeticRelation.h"
+#include "ArithmeticRelationWithAggregate.h"
 
 enum RuleType {
     GENERATIVE_RULE, CONSTRAINT
@@ -41,14 +42,17 @@ namespace aspc {
     public:
         static unsigned rulesCounter;
         static std::string inequalityStrings[];
-        Rule(const std::vector<aspc::Atom> & head, const std::vector<aspc::Literal> & body, const std::vector<ArithmeticRelation> & arithmeticRelation);
+        Rule(const std::vector<aspc::Atom> & head, const std::vector<aspc::Literal> & body, const std::vector<ArithmeticRelation> & arithmeticRelation,const std::vector<aspc::ArithmeticRelationWithAggregate> & arithmeticRelationsWithAggregate);
         Rule(const std::vector<aspc::Atom> & head, const std::vector<aspc::Literal> & body, const std::vector<ArithmeticRelation> & inequalities, bool reorderBody);
+        Rule(const std::vector<aspc::Atom> & head, const std::vector<aspc::Literal> & body, const std::vector<ArithmeticRelation> & inequalities,const std::vector<ArithmeticRelationWithAggregate> & inequalitiesWithAggregate, bool reorderBody);
         Rule(const Rule& other);
 
         virtual ~Rule();
         const std::vector<aspc::Atom> & getHead() const;
         const std::vector<aspc::Literal> & getBodyLiterals() const;
         const std::vector<ArithmeticRelation> & getArithmeticRelations() const;
+        const std::vector<ArithmeticRelationWithAggregate> & getArithmeticRelationsWithAggregate() const;
+        void addArithmeticRelationsWithAggregate(ArithmeticRelationWithAggregate r);
         RuleType getType() const;
         unsigned getRuleId() const;
         std::vector<std::map<unsigned, std::pair<unsigned, unsigned> > > getJoinIndicesWithJoinOrder(const std::vector<unsigned> & order) const;
@@ -56,6 +60,8 @@ namespace aspc {
         unsigned getBodySize() const;
         void print() const;
         bool containsNegation() const;
+        bool containsLiteral() const;
+        bool containsAggregate() const;
         bool isConstraint() const;
         std::pair<int, int> findFirstOccurrenceOfVariableByStarter(const std::string & var, unsigned starter) const;
 
@@ -70,14 +76,35 @@ namespace aspc {
 
         const std::vector<const aspc::Formula*> & getFormulas() const;
         std::vector<const aspc::Formula*> getOrderedBodyForReasons(std::unordered_set<std::string> boundVariables) const;
+        
+        aspc::Literal* getAggregateLiteral (unsigned formulas_index,unsigned literal_index)const{
+            return (aggregateLiterals.find(formulas_index)->second)[literal_index];
+        }
 
+        void changeCompareTypeToAggregate(int aggrIndex,aspc::ComparisonType type){
+            arithmeticRelationsWithAggregate[aggrIndex].setCompareType(type);
+        }
+        
+        std::vector<aspc::Literal*> getAggregateLiteral (unsigned formulas_index)const{
+            return aggregateLiterals.find(formulas_index)->second;
+        }
+
+        bool containAggregatePredicate(std::string predicateName)const{
+            for(const aspc::ArithmeticRelationWithAggregate& ar:arithmeticRelationsWithAggregate)
+                for(const aspc::Literal& li : ar.getAggregate().getAggregateLiterals())
+                    if(li.getPredicateName() == predicateName)
+                        return true;
+            return false;
+        }
 
     private:
         std::vector<aspc::Atom> head;
         std::vector<aspc::Literal> bodyLiterals;
         int ruleId;
         std::vector<ArithmeticRelation> arithmeticRelations;
+        std::vector<ArithmeticRelationWithAggregate> arithmeticRelationsWithAggregate;
         std::vector<const aspc::Formula*> formulas;
+        std::unordered_map<unsigned,std::vector<aspc::Literal*> > aggregateLiterals;
 
         std::unordered_map<unsigned, std::vector<const aspc::Formula*> > orderedBodyByStarters;
         std::unordered_map<unsigned, std::vector<unsigned> > orderedBodyIndexesByStarters;

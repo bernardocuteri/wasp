@@ -287,6 +287,7 @@ Variables::assign(
 {
     Var variable = literal.getVariable();
     assert( assignedVariablesSize < numOfVariables );
+    
     if( setTrue( literal ) )
     {
         assert_msg( !checkVariableHasBeenAssigned( variable ), "The variable " << variable << " has been already assigned." );
@@ -315,6 +316,7 @@ Variables::assign(
     int level, 
     Literal literal )
 {
+    
     return assign( level, literal, NULL );
 }
 
@@ -324,6 +326,7 @@ Variables::assign(
     Clause* implicant )
 {
     assert( implicant != NULL );
+
     return assign( level, implicant->getAt( 0 ), implicant );
 }
 

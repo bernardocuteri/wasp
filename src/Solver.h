@@ -1006,6 +1006,7 @@ Solver::addClause(
     Literal literal )
 {
     notifyNewClause(literal);
+        
     if( isTrue( literal ) || propagateLiteralAsDeterministicConsequence( literal ) )
         return true;
     
@@ -1597,12 +1598,15 @@ Solver::propagateLiteralAsDeterministicConsequence(
 
     while( hasNextVariableToPropagate() )
     {
+        
         Var variableToPropagate = getNextVariableToPropagate();
         propagateAtLevelZero( variableToPropagate );
 
         if( conflictDetected() )
             return false;
+
     }    
+
     assert( !conflictDetected() );
 
     return true;
@@ -1735,6 +1739,7 @@ Solver::endPreprocessing()
 bool
 Solver::preprocessing()
 {
+
     statistics( this, beforePreprocessing( numberOfVariables(), numberOfAssignedLiterals(), numberOfClauses() ) );
     if( conflictDetected() )
     {
@@ -1749,14 +1754,16 @@ Solver::preprocessing()
 
     for( unsigned int i = 0; i < externalPropagators.size(); i++ )
     {
+
         externalPropagators[ i ]->simplifyAtLevelZero( *this );
+
         if( conflictDetected() )
         {
             trace( solving, 1, "Conflict at level 0 detected by external propagators.\n" );
             return false;
         }    
     }
-        
+
     clearVariableOccurrences();
     attachWatches();
     clearComponents();

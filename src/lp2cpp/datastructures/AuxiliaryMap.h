@@ -31,7 +31,7 @@
 #include <cmath>
 #include "TupleWithoutReasons.h"
 
-const unsigned AUX_MAPS_TOTAL_MEMORY = (sizeof NULL) * 1 * 1024 * 1024; //8MB in size -> 1KB in size for ariety 1
+const unsigned AUX_MAPS_TOTAL_MEMORY = 0; // (sizeof NULL) * 1 * 1024 * 1024; //8MB in size -> 1KB in size for ariety 1
 
 struct VectorHash {
 
@@ -65,7 +65,16 @@ public:
 
     virtual ~AuxiliaryMap() {
     }
-
+    
+    inline int keySetSize(){
+        
+        int size = lookupReferences.size();
+        for(auto it = lookupReferences.begin(); it!=lookupReferences.end();it++){
+            if(it->empty())
+                size--;
+        }
+        return size;
+    }
     inline const std::vector< const T* >& getValues(const std::vector<int>& key) const {
         if (canLookup(key)) {
             return lookup[valueToPos(key)] == NULL ? EMPTY_RESULT : *lookup[valueToPos(key)];
@@ -82,6 +91,7 @@ public:
         std::vector<int> key(keySize);
         for (unsigned i = 0; i < keySize; i++) {
             key[i] = value[keyIndices[i]];
+            //std::cout<<key[i]<<" ";
         }
         if (canLookup(key)) {
             unsigned pos = valueToPos(key);
@@ -97,6 +107,7 @@ public:
         auto & collisionList = tuples[std::move(key)];
         value.setCollisionListIndex(&collisionList, collisionList.size());
         collisionList.push_back(&value);
+        //std::cout<<"CollisionList size: "<<collisionList.size()<<std::endl;
     }
 
     void clear() {
@@ -106,6 +117,15 @@ public:
             std::fill(lookup_bases.begin(), lookup_bases.end(), 0);
         }
         tuples.clear();
+    }
+    inline unsigned size()const{
+        
+        unsigned size = tuples.size();
+        for (const auto element : tuples){
+            if(element.second.empty())
+                size--;
+        }
+        return size;
     }
 protected:
 
@@ -138,7 +158,9 @@ protected:
         }
         return pos;
     }
-
+    
+    
+    
     std::unordered_map<std::vector<int>, std::vector< const T* >, VectorHash > tuples;
     unsigned keySize;
     std::vector<unsigned> keyIndices;

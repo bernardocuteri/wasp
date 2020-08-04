@@ -133,7 +133,7 @@ public:
     const std::vector<const T*> & getTuples() const {
         return tuples;
     }
-
+    
 private:
 
     inline bool canLookup(const T & value) {

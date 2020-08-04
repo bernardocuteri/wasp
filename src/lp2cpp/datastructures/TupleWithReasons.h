@@ -28,7 +28,9 @@ public:
 
     TupleWithReasons(const std::string* predicateName, bool negated = false) : TupleWithoutReasons(predicateName, negated) {
     }
-
+    TupleWithReasons(const std::string* predicateName,std::vector<int> v, bool negated = false) : TupleWithoutReasons(predicateName,v, negated) {
+        
+    }
     TupleWithReasons(const TupleWithReasons& orig) : TupleWithoutReasons(orig), positiveReasons(orig.positiveReasons),
     negativeReasons(orig.negativeReasons) {
     }
@@ -46,6 +48,9 @@ public:
 
     TupleWithReasons(const std::vector<int> & l, const std::string * predicateName, bool negated = false) :
     TupleWithoutReasons(l, predicateName, negated) {
+    }
+    TupleWithReasons(const std::vector<int> & l, bool negated = false) :
+    TupleWithoutReasons(l, negated) {
     }
 
     void addPositiveReason(const TupleWithReasons* r) const {

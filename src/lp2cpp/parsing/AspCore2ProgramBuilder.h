@@ -31,12 +31,23 @@
 #include "../language/ArithmeticExpression.h"
 #include "../utils/GraphWithTarjanAlgorithm.h"
 #include "../language/ArithmeticRelation.h"
+#include "../language/ArithmeticRelationWithAggregate.h"
 #include <vector>
 #include <unordered_map>
+#include "../language/Aggregate.h"
 
 class AspCore2ProgramBuilder : public DLV2::InputBuilder {
 private:
     aspc::Program program;
+    
+    std::string aggregateFunction="None";
+    std::set<std::string> aggregateVariables;
+    std::vector<aspc::Literal> aggreagateLiterals;
+    bool isLower;
+    bool isNegated;
+    
+    std::vector<aspc::Aggregate> aggregates;
+    
     std::vector<std::string> buildingTerms;
     std::vector<aspc::Literal> buildingBody;
     std::vector<aspc::Atom> buildingHead;
@@ -46,6 +57,7 @@ private:
     char arithOp;
     aspc::ArithmeticExpression expression;
     std::vector<aspc::ArithmeticRelation> inequalities;
+    std::vector<aspc::ArithmeticRelationWithAggregate> inequalitiesWithAggregate;
     std::string predicateName;
     GraphWithTarjanAlgorithm graphWithTarjanAlgorithm;
     std::unordered_map<std::string, int> predicateIDs;
@@ -163,7 +175,7 @@ public:
 //            }
 //        }
 //    }
-    
+    void clearAggregateFields();
     GraphWithTarjanAlgorithm& getGraphWithTarjanAlgorithm();
 
     const std::unordered_map<int, Vertex>& getVertexByIDMap() const;

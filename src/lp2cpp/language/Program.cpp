@@ -34,6 +34,7 @@ aspc::Program::~Program() {
 
 void aspc::Program::addRule(const Rule & r) {
     rules.push_back(r);
+    
     for (const Literal & literal : r.getBodyLiterals()) {
         rules_by_type[r.getType()][literal.getPredicateName()].insert(rules.size()-1);
     }
@@ -98,13 +99,30 @@ void aspc::Program::addPredicate(const string& name, const unsigned ariety) {
 const set<pair<string, unsigned> >& aspc::Program::getPredicates() const {
     return predicates;
 }
-
+const std::set< std::pair<std::string, unsigned> >& aspc::Program::getAggregatePredicates() const{
+    return aggregatePredicates;
+}
+void aspc::Program::addAggregatePredicate(const std::string& name, const unsigned ariety){
+    aggregatePredicates.insert(pair<string, unsigned>(name,ariety));
+}
+void aspc::Program::addArithmeticRelationToRule(unsigned index,aspc::ArithmeticRelationWithAggregate r){
+    rules[index].addArithmeticRelationsWithAggregate(r);
+}
+void aspc::Program::changeCompareTypeToRule(unsigned index,int aggrIndex,aspc::ComparisonType type){
+    rules[index].changeCompareTypeToAggregate(aggrIndex,type);
+}
 set<string> aspc::Program::getBodyPredicates() const {
 
     set<string> res;
     for(const Rule & r:rules) {
        for(const Literal & l: r.getBodyLiterals()) {
            res.insert(l.getPredicateName());
+       }
+       //added for aggregate
+       for(ArithmeticRelationWithAggregate aggr : r.getArithmeticRelationsWithAggregate()){
+           for(Literal l : aggr.getAggregate().getAggregateLiterals()){
+               res.insert(l.getPredicateName());
+           }
        }
     }
     return res;
@@ -120,7 +138,14 @@ set<string> aspc::Program::getHeadPredicates() const {
     }
     return res;
 }
-
+bool aspc::Program::hasConstraintWithLiteral() const{
+    for(const Rule & r: rules) {
+        if(r.isConstraint() && r.containsLiteral()) {
+            return true;
+        }
+    }
+    return false;
+}
 bool aspc::Program::hasConstraint() const {
     for(const Rule & r: rules) {
         if(r.isConstraint()) {

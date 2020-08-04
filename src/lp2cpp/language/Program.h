@@ -34,7 +34,11 @@ namespace aspc {
         void addRule(const aspc::Rule & r);
         void addFact(const aspc::Atom & f);
         void addPredicate(const std::string& name, const unsigned ariety);
+        void addAggregatePredicate(const std::string& name, const unsigned ariety);
+        void addArithmeticRelationToRule(unsigned index,aspc::ArithmeticRelationWithAggregate r);
+        void changeCompareTypeToRule(unsigned index,int aggrIndex,aspc::ComparisonType type);
         const std::set< std::pair<std::string, unsigned> >& getPredicates() const;
+        const std::set< std::pair<std::string, unsigned> >& getAggregatePredicates() const;
         unsigned getRulesSize() const;
         const std::vector<aspc::Rule>& getRules() const;
         std::vector<aspc::Rule>& getRules();
@@ -48,12 +52,14 @@ namespace aspc {
         void print() const;
         std::set<std::string> getBodyPredicates() const;
         std::set<std::string> getHeadPredicates() const;
+        bool hasConstraintWithLiteral()const;
         bool hasConstraint() const;
 
     private:
         std::vector<aspc::Rule> rules; //only rules are compiled
         std::vector<aspc::Atom> facts; //not compiled
         std::set< std::pair<std::string, unsigned> > predicates;
+        std::set< std::pair<std::string, unsigned> > aggregatePredicates;
 
         std::map<RuleType, std::map<std::string, std::set<unsigned> > > rules_by_type;
 

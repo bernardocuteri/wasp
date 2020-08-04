@@ -77,6 +77,7 @@ void ExecutionManager::parseFactsAndExecute(const char *filename) {
 
 void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool fileHasChanged) {
 
+
     string executorFile = executablePath + "/Executor.so";
     FilesManagement fileManagement;
     if (fileHasChanged || !fileManagement.exists(executorFile)) {
@@ -116,6 +117,7 @@ void ExecutionManager::executeProgramOnFacts(const std::vector<aspc::Literal*> &
 }
 
 void ExecutionManager::executeProgramOnFacts(const std::vector<int> & facts) {
+    
     if(executor) {
         executor->executeProgramOnFacts(facts);
     }

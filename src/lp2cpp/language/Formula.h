@@ -27,6 +27,9 @@ namespace aspc {
         virtual void addVariablesToSet(std::unordered_set<std::string> &) const = 0;
         virtual void print() const = 0;
         virtual bool isLiteral() const = 0;
+        virtual bool containsAggregate() const{
+            return false;
+        }
         virtual unsigned firstOccurrenceOfVariableInLiteral(const std::string &) const = 0;
         virtual ~Formula(){};
 
