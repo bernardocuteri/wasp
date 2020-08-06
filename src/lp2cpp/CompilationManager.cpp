@@ -2750,7 +2750,7 @@ void CompilationManager::propagateAggregate(const aspc::ArithmeticRelationWithAg
                         *out << ind << "const auto & it = tupleToVar.find(*aggrTupleU);\n";
                         *out << ind++ << "if(it != tupleToVar.end()) {\n";
                             *out << ind << "int sign = aggrTupleU->isNegated() ? 1:-1;\n";
-                            *out << ind << "atomsTable[it->second].print();\n";
+                            //*out << ind << "atomsTable[it->second].print();\n";
                             *out << ind << "auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>("<<reason<<")}).first->second;\n";
                         *out << --ind << "}\n";
                     *out << --ind << "}\n";
@@ -2875,20 +2875,35 @@ void CompilationManager::countRemainingJoinTuples(std::string aggrIdentifier,std
     }
     *out << ind << "int actualSize"<<aggregateRelation->getFormulaIndex()<<" = "<<pairName<<"SharedVariables.first->size();\n";
     *out << ind << "std::set<std::vector<int>> alreadyCounted"<<aggregateRelation->getFormulaIndex()<<";\n";
-    *out << ind++ << "for(const Tuple * joinTupleUndef : u_"<<aggregateLiteralToPredicateWSet[aggregateRelation->getAggregate().getAggregateLiterals()[0].getPredicateName()+"_"+aggrIdentifier]<<".getValues({})){\n";
-        *out << ind++ << "if("<<pairName<<"SharedVariables.first->getValues({"<<varProjection<<"}).size()==0){\n";
-            *out << ind++ << "if("<<pairName<<"SharedVariables.second->getValues({"<<varProjection<<"}).size()>0){\n";
-                *out << ind << "std::vector<int> key({"<<varProjection<<"});\n";
-                *out << ind << "alreadyCounted"<<aggregateRelation->getFormulaIndex()<<".insert(key);\n";
-            *out << --ind << "}\n";
+    std::string sharedVars = sharedVariablesMap[aggrIdentifier]; 
+    
+    if( sharedVars ==""){
+        *out << ind++ << "for(const Tuple * joinTupleUndef : u_"<<aggregateLiteralToPredicateWSet[aggregateRelation->getAggregate().getAggregateLiterals()[0].getPredicateName()+"_"+aggrIdentifier]<<".getValues({})){\n";
+    }else{
+        std::string sharedVarProjection="";
+        for(unsigned index : sharedVariablesIndexesMap[aggrIdentifier]){
+            sharedVarProjection+=std::to_string(index)+"_";
+        }
+        *out << ind++ << "for(const Tuple * joinTupleUndef : u_"<<aggregateLiteralToPredicateWSet[aggregateRelation->getAggregate().getAggregateLiterals()[0].getPredicateName()+"_"+aggrIdentifier]<<sharedVarProjection<<".getValues({"<<sharedVars<<"})){\n";
+    }    
+    *out << ind++ << "if("<<pairName<<"SharedVariables.first->getValues({"<<varProjection<<"}).size()==0){\n";
+        *out << ind++ << "if("<<pairName<<"SharedVariables.second->getValues({"<<varProjection<<"}).size()>0){\n";
+            *out << ind << "std::vector<int> key({"<<varProjection<<"});\n";
+            *out << ind << "alreadyCounted"<<aggregateRelation->getFormulaIndex()<<".insert(key);\n";
         *out << --ind << "}\n";
+    *out << --ind << "}\n";
+        
     *out << --ind << "}\n";
     *out << ind << "actualSize"<<aggregateRelation->getFormulaIndex()<<"+=alreadyCounted"<<aggregateRelation->getFormulaIndex()<<".size();\n";
 }
 void CompilationManager::evaluateAggregateAsLast(bool withReason, const aspc::ArithmeticRelationWithAggregate* aggregateRelation, std::vector<unsigned>& joinOrder,int i,const aspc::Rule& r){
 
     bool doubleAggregate = r.getArithmeticRelationsWithAggregate().size()>1 && !r.getFormulas()[joinOrder[0]]->containsAggregate();
-    
+    /*if (withReason){
+        *out << ind << "std::cout<<\"For on Facts\"<<std::endl;\n";
+    }else{
+        *out << ind << "std::cout<<\"Decision Level If\"<<std::endl;\n";
+    }*/
     if(r.getBodySize()<=1 && withReason){
         *out << ind++ << "if(";
         for(int i=0;i<aggregateRelation->getAggregate().getAggregateLiterals().size();i++){
@@ -2936,7 +2951,7 @@ void CompilationManager::evaluateAggregateAsLast(bool withReason, const aspc::Ar
             //*out << ind << "std::cout<<\"starting build reason\"<<std::endl;\n";
             buildReason(aggrIdentifier,aggregateRelation,true);    
             //*out << ind << "std::cout<<\"reason built\"<<std::endl;\n";  
-            *out << ind << "std::cout<<\"StarterForReason"<<r.getFormulas()[joinOrder[0]]->isLiteral()<<"\"<<std::endl;\n";
+            //*out << ind << "std::cout<<\"StarterForReason"<<r.getFormulas()[joinOrder[0]]->isLiteral()<<"\"<<std::endl;\n";
             for (unsigned j = 0; j < joinOrder.size()-1; j++) {
                 if (r.getFormulas()[joinOrder[j]]->isLiteral()) {
                     *out << ind++ << "if(tuple"<<j<<"!=tupleU){\n";
@@ -2982,8 +2997,11 @@ void CompilationManager::evaluateAggregateAsLast(bool withReason, const aspc::Ar
                     *out << ind++ << "if(!(actualSize"<<joinOrder[i]<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<"+1)){\n";
                 }
             }
-            //*out << ind << "std::cout<<\""<<r.getRuleId()<<" \"<<"<<pairName<<"SharedVariables.first->size()<<std::endl;\n";
-            //*out << ind << "std::cout<<"<<pairName<<"SharedVariables.second->size()<<std::endl;\n";
+            /*if(aggregateRelation->isNegated())            
+                *out << ind << "std::cout<<\"True Union Undef : \"<<actualSize"<<aggregateRelation->getFormulaIndex()<<"<<std::endl;\n";
+            else
+                *out << ind << "std::cout<<\"True Size : \"<<"<<pairName<<"SharedVariables.second->size()<<std::endl;\n";
+            */
             *out << ind << "std::cout<<\"conflict detected in propagator\"<<std::endl;\n";
             *out << ind << "propagatedLiteralsAndReasons.insert({-1, std::vector<int>("<<reason<<")});\n";
 
@@ -3053,6 +3071,25 @@ void CompilationManager::evaluateAggregateAsLast(bool withReason, const aspc::Ar
     if(r.getBodySize()<=1 && withReason)
         *out << --ind << "}\n";
 }
+void CompilationManager::checkSharedVariablesOnUndefTuple(std::string sharedVars,std::string aggrIdentifier){
+    int pos = sharedVars.find(",");
+    unsigned currentVar=0;
+    *out << ind++ << "if(";
+    while(pos!=std::string::npos){
+        if(currentVar>0)
+            *out << " && ";
+        *out << "joinTupleUndef->at(" <<sharedVariablesIndexesMap[aggrIdentifier][currentVar]<<") == "<<sharedVars.substr(0,pos);
+        sharedVars=sharedVars.substr(pos+1,sharedVars.length());
+        pos = sharedVars.find(",");
+        currentVar++;
+    }
+    if(sharedVars!=""){
+        if(currentVar>0)
+            *out << " && ";
+        *out << "joinTupleUndef->at(" <<sharedVariablesIndexesMap[aggrIdentifier][currentVar]<<") == "<<sharedVars.substr(0,sharedVars.length());
+    }
+    *out << " ){\n";
+}
 void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, unsigned start, const aspc::Program & p){
     std::vector<unsigned> joinOrder = r.getOrderedBodyIndexesByStarter(start);
     /*
@@ -3112,8 +3149,9 @@ void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, uns
                         *out << ind++ << "for(const auto sharedVarTuple : sharedVariables_"<<r.getRuleId()<<"_ToAggregate_"<<joinOrder[0]<<"){\n";
                         
                         
-                        //*out << ind << "std::cout<<\"true sharedVars \"<<sharedVarTuple.first[0]<<\",\"<<sharedVarTuple.first[1]<<\" \"<<sharedVarTuple.second->first->size()<<std::endl;\n";
-                        //*out << ind << "std::cout<<\"undef sharedVars \"<<sharedVarTuple.first[0]<<\",\"<<sharedVarTuple.first[1]<<\" \"<<sharedVarTuple.second->second->size()<<std::endl;\n";
+                        //*out << ind << "std::cout<<\"sharedVars \"<<sharedVarTuple.first[0]<<\" \"<<sharedVarTuple.first[1]<<std::endl;\n";
+                        //*out << ind << "std::cout<<\"true sharedVars \"<<sharedVarTuple.second->first->size()<<std::endl;\n";
+                        //*out << ind << "std::cout<<\"undef sharedVars \"<<sharedVarTuple.second->second->size()<<std::endl;\n";
 
                         closingParenthesis++;
                             int pos = sharedVars.find(',');
@@ -3173,20 +3211,31 @@ void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, uns
                         //la guardia è una costante 
 
                         if(aggregateRelation->isNegated()){
-                            std::string varProjection="";
+                            std::string aggVarProjection="";
                             int currentVar=0;
                             for(int varIndex : aggregateVariablesIndex[aggrIdentifier]){
                                 if(currentVar>0)
-                                    varProjection+=",";
-                                varProjection+="joinTupleUndef->at("+std::to_string(varIndex)+")";
+                                    aggVarProjection+=",";
+                                aggVarProjection+="joinTupleUndef->at("+std::to_string(varIndex)+")";
                                 currentVar++;
                             }
+
+                            
                             *out << ind << "int actualSize = "<<pairName<<".first->size();\n";
                             *out << ind << "std::set<std::vector<int>> alreadyCounted;\n";
-                            *out << ind++ << "for(const Tuple * joinTupleUndef : u_"<<aggregateLiteralToPredicateWSet[aggregateRelation->getAggregate().getAggregateLiterals()[0].getPredicateName()+"_"+aggrIdentifier]<<".getValues({})){\n";
-                                *out << ind++ << "if("<<pairName<<".first->getValues({"<<varProjection<<"}).size()==0){\n";
-                                    *out << ind++ << "if("<<pairName<<".second->getValues({"<<varProjection<<"}).size()>0){\n";
-                                        *out << ind << "std::vector<int> key({"<<varProjection<<"});\n";
+                            sharedVars = sharedVariablesMap[aggrIdentifier]; 
+                            if( sharedVars ==""){
+                                *out << ind++ << "for(const Tuple * joinTupleUndef : u_"<<aggregateLiteralToPredicateWSet[aggregateRelation->getAggregate().getAggregateLiterals()[0].getPredicateName()+"_"+aggrIdentifier]<<".getValues({})){\n";
+                            }else{
+                                std::string sharedVarProjection="";
+                                for(unsigned index : sharedVariablesIndexesMap[aggrIdentifier]){
+                                    sharedVarProjection+=std::to_string(index)+"_";
+                                }
+                                *out << ind++ << "for(const Tuple * joinTupleUndef : u_"<<aggregateLiteralToPredicateWSet[aggregateRelation->getAggregate().getAggregateLiterals()[0].getPredicateName()+"_"+aggrIdentifier]<<sharedVarProjection<<".getValues({"<<sharedVars<<"})){\n";
+                            }
+                                *out << ind++ << "if("<<pairName<<".first->getValues({"<<aggVarProjection<<"}).size()==0){\n";
+                                    *out << ind++ << "if("<<pairName<<".second->getValues({"<<aggVarProjection<<"}).size()>0){\n";
+                                        *out << ind << "std::vector<int> key({"<<aggVarProjection<<"});\n";
                                         *out << ind << "alreadyCounted.insert(key);\n";
                                     *out << --ind << "}\n";
                                 *out << --ind << "}\n";
@@ -3228,7 +3277,18 @@ void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, uns
                             }
                             *out << ind << "int count = "<<pairName<<".first->size();\n";
                             *out << ind << "std::set<std::vector<int>> alreadyCounted;\n";
-                            *out << ind++ << "for(const Tuple * joinTupleUndef : u_"<<aggregateLiteralToPredicateWSet[aggregateRelation->getAggregate().getAggregateLiterals()[0].getPredicateName()+"_"+aggrIdentifier]<<".getValues({})){\n";
+
+                            sharedVars = sharedVariablesMap[aggrIdentifier]; 
+    
+                            if( sharedVars ==""){
+                                *out << ind++ << "for(const Tuple * joinTupleUndef : u_"<<aggregateLiteralToPredicateWSet[aggregateRelation->getAggregate().getAggregateLiterals()[0].getPredicateName()+"_"+aggrIdentifier]<<".getValues({})){\n";
+                            }else{
+                                std::string sharedVarProjection="";
+                                for(unsigned index : sharedVariablesIndexesMap[aggrIdentifier]){
+                                    sharedVarProjection+=std::to_string(index)+"_";
+                                }
+                                *out << ind++ << "for(const Tuple * joinTupleUndef : u_"<<aggregateLiteralToPredicateWSet[aggregateRelation->getAggregate().getAggregateLiterals()[0].getPredicateName()+"_"+aggrIdentifier]<<sharedVarProjection<<".getValues({"<<sharedVars<<"})){\n";
+                            }
                                 *out << ind++ << "if("<<pairName<<".first->getValues({"<<varProjection<<"}).size()==0){\n";
                                     *out << ind++ << "if("<<pairName<<".second->getValues({"<<varProjection<<"}).size()>0){\n";
                                         *out << ind << "std::vector<int> key({"<<varProjection<<"});\n";
@@ -3693,7 +3753,8 @@ void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, uns
                                 aspc::ArithmeticRelationWithAggregate* aggregateRelation = (aspc::ArithmeticRelationWithAggregate*)body[joinOrder[0]];
                                 std::string plusOne = aggregateRelation->isPlusOne() ? "+1":"";
                                 if(aggregateNotBound){
-                                    *out << ind++ << "if(count " <<aggregateRelation->getCompareTypeAsString() <<aggregateRelation->getGuard().getStringRep()<<plusOne << "){\n";
+                                    std::string negation = aggregateRelation->isNegated() ? "!":"";
+                                    *out << ind++ << "if("<<negation<<"(count " <<aggregateRelation->getCompareTypeAsString() <<aggregateRelation->getGuard().getStringRep()<<plusOne << ")){\n";
                                     //*out << ind << "std::cout<<\"Count: \"<<count<<\" X: \"<<X<<std::endl;\n";
                                 }
                                 std::string aggrIdentifier(std::to_string(r.getRuleId())+":"+std::to_string(joinOrder[0]));
@@ -3714,8 +3775,8 @@ void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, uns
                                         //*out << ind-- << "extJoin = false;\n";
                                     }
                                 }
-                                *out << ind++ << "if(!tupleU) {\n";
-                                    *out << ind << "std::cout<<\"conflict detected in propagator\"<<std::endl;\n";
+                                *out << ind++ << "if(tupleU == NULL) {\n";
+                                    *out << ind << "std::cout<<\"conflict detected in propagator External Propagation"<<aggregateRelation->getFormulaIndex()<<"\"<<std::endl;\n";
                                     *out << ind << "propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});\n";
                                 *out << --ind << "}\n";
                                 *out << ind++ << "else {\n";

@@ -51,7 +51,8 @@ public:
 
 
     
-private:
+private:    
+    void checkSharedVariablesOnUndefTuple(std::string sharedVars,std::string aggrIdentifier);
     void countRemainingJoinTuples(std::string aggrIdentifier,std::string pairName,const aspc::ArithmeticRelationWithAggregate* aggregateRelation);
     void declareDataStructureForAggregate(const aspc::Rule& r,const std::set< std::pair<std::string, unsigned> >& aggregatePredicates);
     void generateFindSharedValueInJoinTuple(aspc::Program & program);

@@ -47,9 +47,8 @@ def main():
             out1 = subprocess.getoutput("./countPlainWaspModels.sh "+parameters)
             if args.p:
                 print(out1)
-            plainModelsCount = lastNumberInString(out1)            
+            plainModelsCount = lastNumberInString(out1)  
             print("plain wasp count is "+plainModelsCount)
-            
             out2 = subprocess.getoutput("./countEagerWaspModels.sh "+parameters)
             if args.p:
                 print(out2)
