@@ -84,7 +84,12 @@ def getRandomArithmeticExpression():
 
     return leftSide + " " + relation + " " + rightSide
 def getRandomAggregate(body):
-    toReturn = "#count{"
+    negation = random.randint(0,100)%2
+    if negation == 1:
+        negation = "not "
+    else:
+        negation = ""
+    toReturn = "not "+"#count{"
     aggregateBody=""
     aggregateBodySize = random.randint(1,maxAggregateBodySize)
         
@@ -105,7 +110,7 @@ def getRandomAggregate(body):
         if j>0:
             toReturn+=','
         toReturn+=getRandomElement(candidateAggregateVariable)
-    availableArithmeticRelation=[">",">=","<","<=","="]
+    availableArithmeticRelation=["="]
     compareType = availableArithmeticRelation[random.randint(0,len(availableArithmeticRelation)-1)]
     toReturn+=":"+aggregateBody+"}"+compareType+str(randint(0, maxConstant-1))
     return toReturn

@@ -200,12 +200,14 @@ void AspCore2ProgramBuilder::onConstraint() {
     aspc::Rule constraint(buildingHead, buildingBody, inequalities,std::vector<aspc::ArithmeticRelationWithAggregate>(inequalitiesWithAggregate), true);
     program.addRule(constraint);
     if(notEqual){
+
         for(aspc::ArithmeticRelationWithAggregate& r : inequalitiesWithAggregate){
             //si assume ci sia solo un aggregato
             r.setNegated(false);
             r.setPlusOne(true);
             aspc::Rule copy_(buildingHead, buildingBody, inequalities,inequalitiesWithAggregate, true);
             program.addRule(copy_);
+
         }
 
     }

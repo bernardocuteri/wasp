@@ -234,7 +234,6 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
         performCompilation();
         executionManager.initCompiled();
     }
-    //std::cout<<literalString<<std::endl;
     aspc::Literal atom = parseLiteral2(literalString);
     //this->literals[var] = atom;
     //literalsMap[*atom] = var;
@@ -266,6 +265,7 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
 void EagerConstraintImpl::simplifyAtLevelZero(std::vector<int>& output) {
 
 
+
     std::vector<int> inputInterpretation;
     inputInterpretation.push_back(-1);
     for(int fact:facts) {
@@ -285,6 +285,7 @@ void EagerConstraintImpl::onFact(int var) {
 #ifdef EAGER_DEBUG
     std::cout << "onFact " << var << std::endl;
 #endif
+
     facts.insert(var);
 
 };

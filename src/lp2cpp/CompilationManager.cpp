@@ -1729,7 +1729,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::unordered_map<const std::string*,int>::iterator sum_it;\n"; 
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
         
-        //*out << ind << "std::cout<<\"True \"<<minus;tuple.print();std::cout<<std::endl;\n";
+        *out << ind << "std::cout<<\"True \"<<minus;tuple.print();std::cout<<std::endl;\n";
+        *out << ind << "std::cout<<\"True \"<<var<<std::endl;\n";
         
         *out << ind << "std::unordered_map<const std::string*,PredicateWSet*>::iterator uSetIt = predicateUSetMap.find(tuple.getPredicateName());\n";
         *out << ind++ << "if(uSetIt!=predicateUSetMap.end()) {\n";
@@ -1746,7 +1747,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         *out << ind << "auxMap -> insert2(*insertResult.first);\n";
                     *out << --ind << "}\n";
                 *out << --ind << "}\n";
-            *out << --ind << "}\n";
+            *out << --ind << "}else{\n";
+                *out << ++ind << "it->second->erase(tuple);\n";
+            *out << --ind << "}\n";    
         *out << --ind << "}\n";
 
         //salvo i letterali falsi dei predicati che appaiono nel corpo di qualche aggregato
@@ -1831,6 +1834,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 }
             }
         }
+
+
         /**out << ind << "std::unordered_map<const std::string*,std::vector<int>>::iterator vars = aggregatePredicatesAndVars.find(tuple_pointer->getPredicateName());\n";
         *out << ind << "Tuple tuple(tuple_pointer->getPredicateName(),false);\n";
         *out << ind++ << "if(vars != aggregatePredicatesAndVars.end()){\n";
@@ -1871,7 +1876,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
         *out << ind << "std::unordered_map<const std::string*,int>::iterator sum_it;\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
-        //*out << ind << "std::cout<<\"Undef \"<<minus;tuple.print();std::cout<<std::endl;\n";
+        *out << ind << "std::cout<<\"Undef \"<<minus;tuple.print();std::cout<<std::endl;\n";
+        *out << ind << "std::cout<<\"Undef \"<<var<<std::endl;\n";
+
         
 #ifdef EAGER_DEBUG
         *out << ind << "std::cout<<\"on literal undef \";\n";
@@ -2160,6 +2167,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
         //facts[0] is the decision level for eager mode (-1 is facts level)
         *out << ind << "int decisionLevel = facts[0];\n";
+        *out << ind << "std::cout<<\"Execute program on facts: decision level \"<<decisionLevel<<std::endl;\n";
         
 #ifdef EAGER_DEBUG
         *out << ind << "std::cout<<\"Execute program on facts: decision level \"<<decisionLevel<<std::endl;\n";
@@ -2181,6 +2189,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     } else {
         // mode == EAGER_MODE
         *out << ind++ << "for(unsigned i=1;i<facts.size();i++) {\n";
+        *out << ind << "std::cout<<\"facts: \"<<facts[i]<<std::endl;\n";
+
         *out << ind << "onLiteralTrue(facts[i]);\n";
 
         *out << --ind << "}\n";
@@ -2252,6 +2262,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind++ << "if(decisionLevel==-1) {\n";
         //*out << ind << "std::cout<<\"decisionLevelif\"<<std::endl;\n";
         for (const aspc::Rule& r : program.getRules()) {
+            r.print();
             if (r.isConstraint() && !r.containsAggregate()) {
                 *out << ind++ << "{\n";
                 *out << ind << "const Tuple * tupleU = NULL;\n";
@@ -2874,6 +2885,7 @@ void CompilationManager::countRemainingJoinTuples(std::string aggrIdentifier,std
         currentVar++;
     }
     *out << ind << "int actualSize"<<aggregateRelation->getFormulaIndex()<<" = "<<pairName<<"SharedVariables.first->size();\n";
+    //*out << ind << "std::cout<<\"True ActualSize: \"<<actualSize"<<aggregateRelation->getFormulaIndex()<<"<<std::endl;\n";
     *out << ind << "std::set<std::vector<int>> alreadyCounted"<<aggregateRelation->getFormulaIndex()<<";\n";
     std::string sharedVars = sharedVariablesMap[aggrIdentifier]; 
     
@@ -2885,7 +2897,8 @@ void CompilationManager::countRemainingJoinTuples(std::string aggrIdentifier,std
             sharedVarProjection+=std::to_string(index)+"_";
         }
         *out << ind++ << "for(const Tuple * joinTupleUndef : u_"<<aggregateLiteralToPredicateWSet[aggregateRelation->getAggregate().getAggregateLiterals()[0].getPredicateName()+"_"+aggrIdentifier]<<sharedVarProjection<<".getValues({"<<sharedVars<<"})){\n";
-    }    
+    }
+
     *out << ind++ << "if("<<pairName<<"SharedVariables.first->getValues({"<<varProjection<<"}).size()==0){\n";
         *out << ind++ << "if("<<pairName<<"SharedVariables.second->getValues({"<<varProjection<<"}).size()>0){\n";
             *out << ind << "std::vector<int> key({"<<varProjection<<"});\n";
@@ -2895,15 +2908,19 @@ void CompilationManager::countRemainingJoinTuples(std::string aggrIdentifier,std
         
     *out << --ind << "}\n";
     *out << ind << "actualSize"<<aggregateRelation->getFormulaIndex()<<"+=alreadyCounted"<<aggregateRelation->getFormulaIndex()<<".size();\n";
+    //*out << ind << "std::cout<<\"True + Undef ActualSize: \"<<actualSize"<<aggregateRelation->getFormulaIndex()<<"<<std::endl;\n";
+
 }
 void CompilationManager::evaluateAggregateAsLast(bool withReason, const aspc::ArithmeticRelationWithAggregate* aggregateRelation, std::vector<unsigned>& joinOrder,int i,const aspc::Rule& r){
 
     bool doubleAggregate = r.getArithmeticRelationsWithAggregate().size()>1 && !r.getFormulas()[joinOrder[0]]->containsAggregate();
-    /*if (withReason){
-        *out << ind << "std::cout<<\"For on Facts\"<<std::endl;\n";
+    
+    if (withReason){
+        *out << ind << "std::cout<<\"For on Facts"<<r.getRuleId()<<"\"<<std::endl;\n";
     }else{
-        *out << ind << "std::cout<<\"Decision Level If\"<<std::endl;\n";
-    }*/
+        *out << ind << "std::cout<<\"Decision Level If"<<r.getRuleId()<<"\"<<std::endl;\n";
+    }
+    
     if(r.getBodySize()<=1 && withReason){
         *out << ind++ << "if(";
         for(int i=0;i<aggregateRelation->getAggregate().getAggregateLiterals().size();i++){
@@ -2944,6 +2961,9 @@ void CompilationManager::evaluateAggregateAsLast(bool withReason, const aspc::Ar
     if(aggregateRelation->isNegated() || doubleAggregate)
         countRemainingJoinTuples(aggrIdentifier,pairName,aggregateRelation);
 
+    *out << ind << "std::cout<<\"trueSize map \"<<"<<pairName<<"SharedVariables.first->size()<<std::endl;\n";
+    *out << ind << "std::cout<<\"undefSize map \"<<"<<pairName<<"SharedVariables.second->size()<<std::endl;\n";
+        
     *out << ind++ << "if(tupleU==NULL){\n";
         //il corpo senza aggregato è vero
         if(withReason){
@@ -2968,9 +2988,7 @@ void CompilationManager::evaluateAggregateAsLast(bool withReason, const aspc::Ar
         std::string reason = withReason ? "reason" : "";
         std::string plusOne = aggregateRelation->isPlusOne() ? "+1":"";
         if(aggregateRelation->isNegated()){
-            //*out << ind << "std::cout<<\"trueSize \"<<"<<pairName<<"SharedVariables.first->size()<<std::endl;\n";
-            //*out << ind << "std::cout<<\"undefSize \"<<actualSize-"<<pairName<<"SharedVariables.first->size()<<std::endl;\n";
-            
+            *out << ind << "std::cout<<\"undefSize \"<<actualSize"<<joinOrder[i]<<"-"<<pairName<<"SharedVariables.first->size()<<std::endl;\n";
             *out << ind++ << "if(!(actualSize"<<joinOrder[i]<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<plusOne<<")){\n";
         }else{
             *out << ind++ << "if("<<pairName<<"SharedVariables.first->size()"<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<plusOne<<"){\n";
@@ -3031,7 +3049,7 @@ void CompilationManager::evaluateAggregateAsLast(bool withReason, const aspc::Ar
                 *out << --ind << "}\n";
             
         *out << --ind << "}else{\n";
-        //*out << ind << "std::cout<<\"Undef not in aggregate\"<<std::endl;\n";
+        *out << ind << "std::cout<<\"Undef not in aggregate\"<<std::endl;\n";
         //ho trovato un indefinito prima dell'aggregato
         if(withReason){
             buildReason(aggrIdentifier,aggregateRelation,true);
@@ -3061,6 +3079,7 @@ void CompilationManager::evaluateAggregateAsLast(bool withReason, const aspc::Ar
 
             *out << ++ind << "const auto & it = tupleToVar.find(*tupleU);\n";
             *out << ind++ << "if(it != tupleToVar.end()) {\n";
+                *out << ind << "std::cout<<\"External prop\";tupleU->print();std::cout<<std::endl;\n";
                 *out << ind << "int sign = tupleU->isNegated() ? -1 : 1;\n";
                 *out << ind << "auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>("<<reason<<")}).first->second;\n";
             *out << --ind <<"}\n";
@@ -3205,6 +3224,9 @@ void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, uns
 
 
                     }
+                    *out << ind << "std::cout<<X_1<<std::endl;\n";
+                    *out << ind << "std::cout<<\"trueSize map \"<<sharedVarTuple.second->first->size()<<std::endl;\n";
+                    *out << ind << "std::cout<<\"undefSize map \"<<sharedVarTuple.second->second->size()<<std::endl;\n";
                     
                     if(aggregateRelation->isBoundedRelation(boundVariables)){
                         
@@ -3306,6 +3328,7 @@ void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, uns
                         *out << ind++ << "{\n";
                         closingParenthesis++;
                     }
+
                     //std::cout<<"End Evaluating starting from Aggregate "<<boundVariables.count("X")<<std::endl;            
                         
                 }else{
@@ -3679,6 +3702,7 @@ void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, uns
                                         *out << ind-- << "reason.push_back(it_reason"<<i<<"->second * (tuple"<<i<<"->isNegated() ? -1:1));\n";
                                 }
                             }
+                            *out << ind << "std::cout<<\"propagating Aggregate starting from aggregate\"<<std::endl;\n";
                             propagateAggregate(aggregateRelation,aggrIdentifier,true);
                             *out << --ind << "}\n";
                             
@@ -3785,7 +3809,7 @@ void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, uns
 
                                     *out << ind << "const auto & it = tupleToVar.find(*tupleU);\n";
                                     *out << ind++ << "if(it != tupleToVar.end()) {\n";
-                                        //*out << ind << "std::cout<<\"External propagation\";tupleU->print();std::cout<<std::endl;\n";
+                                        *out << ind << "std::cout<<\"External propagation\";tupleU->print();std::cout<<std::endl;\n";
                                         *out << ind << "int sign = tupleU->isNegated() ? -1 : 1;\n";
                                         *out << ind << "propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;\n";
                                     *out << --ind << "}\n";
