@@ -62,7 +62,7 @@ private:
     void evaluateAggregateAsLast(bool withReason,const aspc::ArithmeticRelationWithAggregate* aggregateRelation, std::vector<unsigned>& joinOrder,int i,const aspc::Rule& r);
     void propagateAggregate(const aspc::ArithmeticRelationWithAggregate* aggregateRelation,std::string& aggregateIdentifier,bool withReason);
     void checkExistsShareVariableMap(int ruleId, int aggrIndex,std::string& sharedVariables,bool create);
-    void addJoinTupleToSharedVariablesMap(int ruleId, int aggrIndex,std::string auxMapIndex);
+    void addJoinTupleToSharedVariablesMap(int ruleId, int aggrIndex,std::string auxMapIndex,std::string joinTupleName);
     void updateTrueSharedVariablesMap(const aspc::Rule & r,aspc::Literal* li,int litIndex,std::vector<int> aggregateIndexes, std::vector<int> literalIndexes);
     void updateUndefinedSharedVariablesMap(aspc::Rule& r,int startLit);
     void saveTuples(std::string collectionName,std::string predicateSetName,int aggrIndex,int ruleId);
@@ -112,6 +112,8 @@ private:
     std::set<std::string> declaredMaps;
     
     AspCore2ProgramBuilder* builder;
+    
+    std::unordered_map<std::string, std::vector<std::string> > sharedVariablesMapForAggregateBody;
     
     std::unordered_map<std::string, std::string > aggregateLiteralToAuxiliaryMap;
     
