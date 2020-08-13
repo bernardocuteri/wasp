@@ -89,7 +89,7 @@ def getRandomAggregate(body):
         negation = "not "
     else:
         negation = ""
-    toReturn = "not "+"#count{"
+    toReturn = negation+"#count{"
     aggregateBody=""
     aggregateBodySize = random.randint(1,maxAggregateBodySize)
         
@@ -110,7 +110,7 @@ def getRandomAggregate(body):
         if j>0:
             toReturn+=','
         toReturn+=getRandomElement(candidateAggregateVariable)
-    availableArithmeticRelation=["="]
+    availableArithmeticRelation=["=",">","<",">=","<="]
     compareType = availableArithmeticRelation[random.randint(0,len(availableArithmeticRelation)-1)]
     toReturn+=":"+aggregateBody+"}"+compareType+str(randint(0, maxConstant-1))
     return toReturn

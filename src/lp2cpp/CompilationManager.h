@@ -59,7 +59,7 @@ private:
     std::string getSharedVariablesValues(std::string* sharedVars)const;
     bool checkTupleFormat(const aspc::Literal& li,std::string buildIndex,bool tuplePointer);
     void compileConstrainWithAggregate(const aspc::Rule & r, unsigned start, const aspc::Program & p);
-    void evaluateAggregateAsLast(bool withReason,const aspc::ArithmeticRelationWithAggregate* aggregateRelation, std::vector<unsigned>& joinOrder,int i,const aspc::Rule& r);
+    void evaluateAggregateAsLast(bool withReason,const aspc::ArithmeticRelationWithAggregate* aggregateRelation, std::vector<unsigned>& joinOrder,int i,const aspc::Rule& r,bool propFirstAggr);
     void propagateAggregate(const aspc::ArithmeticRelationWithAggregate* aggregateRelation,std::string& aggregateIdentifier,bool withReason);
     void checkExistsShareVariableMap(int ruleId, int aggrIndex,std::string& sharedVariables,bool create);
     void addJoinTupleToSharedVariablesMap(int ruleId, int aggrIndex,std::string auxMapIndex,std::string joinTupleName);

@@ -642,16 +642,17 @@ void CompilationManager::builJoinTupleStartingFromLiteral(int ruleId,int aggrInd
                                 *out << ind << "u" << joinTupleName <<".erase(t);\n";
                             *out << --ind << "}\n";
                         *out << --ind << "}else{\n";
-                            //*out << ++ind << "std::cout<<\"Already Added"<<ruleId<<"\"<<std::endl;\n";
+                            ind++;
+                            //*out << ind << "std::cout<<\"Already Added"<<ruleId<<"\"<<std::endl;\n";
 
                         *out << --ind << "}\n";
                     *out << --ind << "}else{\n";
-
+                        ind++;
                         if(aggr.isNegated()){
                             *out << ind++ << "if(!buildFalse){\n";
                         }
                         *out << ind++ << "if(u"<<joinTupleName<<".find(t)==NULL){\n";
-                            *out << ++ind << "const auto& insertResult = u" << joinTupleName <<".insert(Tuple(t));\n";
+                            *out << ind << "const auto& insertResult = u" << joinTupleName <<".insert(Tuple(t));\n";
                             *out << ind++ << "if (insertResult.second) {\n";
                                 *out << ind++ << "for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<joinTupleName<<"]){\n";
                                     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
@@ -1841,14 +1842,16 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     }
                     formulaIndex++;
                 }
-
-                std::string tuple=std::string();
-                for(int litIndex : literalIndexes){
-                    aspc::Literal* li = (aspc::Literal*) r.getFormulas()[litIndex];
-                    *out << ind++ << "if(tuple.getPredicateName() == &_" << li->getPredicateName()<<"){\n";
-                        updateTrueSharedVariablesMap(r,li,litIndex,aggregateIndexes,literalIndexes);
-                    *out << --ind <<"}\n";
+                if(sharedVariablesMap[std::to_string(r.getRuleId())+":"+std::to_string(r.getArithmeticRelationsWithAggregate()[0].getFormulaIndex())]!=""){
+                    std::string tuple=std::string();
+                    for(int litIndex : literalIndexes){
+                        aspc::Literal* li = (aspc::Literal*) r.getFormulas()[litIndex];
+                        *out << ind++ << "if(tuple.getPredicateName() == &_" << li->getPredicateName()<<"){\n";
+                            updateTrueSharedVariablesMap(r,li,litIndex,aggregateIndexes,literalIndexes);
+                        *out << --ind <<"}\n";
+                    }    
                 }
+                
             }
         }
         //*out << ind << "std::cout<<\"TrueSize: \"<<p_p_4_X_4_X_1_p_1_X_0_X_1_p_0_X_3_.getValues({}).size()<<std::endl;\n";
@@ -2951,7 +2954,7 @@ void CompilationManager::countRemainingJoinTuples(std::string aggrIdentifier,std
     //*out << ind << "std::cout<<\"True + Undef ActualSize: \"<<actualSize"<<aggregateRelation->getFormulaIndex()<<"<<std::endl;\n";
 
 }
-void CompilationManager::evaluateAggregateAsLast(bool withReason, const aspc::ArithmeticRelationWithAggregate* aggregateRelation, std::vector<unsigned>& joinOrder,int i,const aspc::Rule& r){
+void CompilationManager::evaluateAggregateAsLast(bool withReason, const aspc::ArithmeticRelationWithAggregate* aggregateRelation, std::vector<unsigned>& joinOrder,int i,const aspc::Rule& r,bool propFirstAggr){
 
     bool doubleAggregate = r.getArithmeticRelationsWithAggregate().size()>1 && !r.getFormulas()[joinOrder[0]]->containsAggregate();
     
@@ -3033,102 +3036,104 @@ void CompilationManager::evaluateAggregateAsLast(bool withReason, const aspc::Ar
         }else{
             *out << ind++ << "if("<<pairName<<"SharedVariables.first->size()"<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<plusOne<<"){\n";
         }
-            // aggregato vero
-            if(doubleAggregate){
-                if(aggregateRelation->isNegated())
-                    secondCondition = " && (!(actualSize"+std::to_string(joinOrder[i])+aggregateRelation->getCompareTypeAsString()+aggregateRelation->getGuard().getStringRep()+"+1))";
-                else
-                    secondCondition = " && ("+pairName+"SharedVariables.first->size()"+aggregateRelation->getCompareTypeAsString()+aggregateRelation->getGuard().getStringRep()+")";
-                
-                for(const aspc::ArithmeticRelationWithAggregate& ar : r.getArithmeticRelationsWithAggregate()){
-                    if(ar.getFormulaIndex()!=joinOrder[i]){
-                        aggregateRelation = &ar;
-                        plusOne = aggregateRelation->isPlusOne() ? "+1" : "";
+        if(!propFirstAggr){
+                // aggregato vero
+                if(doubleAggregate){
+                    if(aggregateRelation->isNegated())
+                        secondCondition = " && (!(actualSize"+std::to_string(joinOrder[i])+aggregateRelation->getCompareTypeAsString()+aggregateRelation->getGuard().getStringRep()+"+1))";
+                    else
+                        secondCondition = " && ("+pairName+"SharedVariables.first->size()"+aggregateRelation->getCompareTypeAsString()+aggregateRelation->getGuard().getStringRep()+")";
+                    
+                    for(const aspc::ArithmeticRelationWithAggregate& ar : r.getArithmeticRelationsWithAggregate()){
+                        if(ar.getFormulaIndex()!=joinOrder[i]){
+                            aggregateRelation = &ar;
+                            plusOne = aggregateRelation->isPlusOne() ? "+1" : "";
+                        }
+                    }
+                    if(withReason)
+                        buildReason(aggrIdentifier,aggregateRelation,false);
+                    
+                    if(!aggregateRelation->isNegated()){
+                        *out << ind++ << "if("<<pairName<<"SharedVariables.first->size()"<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<"){\n";
+                    }else{
+                        *out << ind++ << "if(!(actualSize"<<joinOrder[i]<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<"+1)){\n";
                     }
                 }
-                if(withReason)
-                    buildReason(aggrIdentifier,aggregateRelation,false);
+                /*if(aggregateRelation->isNegated())            
+                    *out << ind << "std::cout<<\"True Union Undef : \"<<actualSize"<<aggregateRelation->getFormulaIndex()<<"<<std::endl;\n";
+                else
+                    *out << ind << "std::cout<<\"True Size : \"<<"<<pairName<<"SharedVariables.second->size()<<std::endl;\n";
+                */
+                *out << ind << "std::cout<<\"conflict detected in propagator\"<<std::endl;\n";
+                *out << ind << "propagatedLiteralsAndReasons.insert({-1, std::vector<int>("<<reason<<")});\n";
+
+            *out << --ind << "}else{\n";
+            //std::string aggrIdentifier(std::to_string(r.getRuleId())+":"+std::to_string(aggregateRelation->getFormulaIndex()));
+            ind++;
+                //aggregato non vero
                 
-                if(!aggregateRelation->isNegated()){
-                    *out << ind++ << "if("<<pairName<<"SharedVariables.first->size()"<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<"){\n";
-                }else{
-                    *out << ind++ << "if(!(actualSize"<<joinOrder[i]<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<"+1)){\n";
+                if(aggregateRelation->isNegated()){
+                    *out << ind++ << "if(actualSize"<<joinOrder[i]<<" == "<<aggregateRelation->getGuard().getStringRep()<<plusOne<<"){\n";
                 }
-            }
-            /*if(aggregateRelation->isNegated())            
-                *out << ind << "std::cout<<\"True Union Undef : \"<<actualSize"<<aggregateRelation->getFormulaIndex()<<"<<std::endl;\n";
-            else
-                *out << ind << "std::cout<<\"True Size : \"<<"<<pairName<<"SharedVariables.second->size()<<std::endl;\n";
-            */
-            *out << ind << "std::cout<<\"conflict detected in propagator\"<<std::endl;\n";
-            *out << ind << "propagatedLiteralsAndReasons.insert({-1, std::vector<int>("<<reason<<")});\n";
+                else{
+                    std::string minusOne = aggregateRelation->getCompareTypeAsString() == ">=" ? "-1" : "";
+                    *out << ind++ << "if("<<pairName<<"SharedVariables.first->size() == "<<aggregateRelation->getGuard().getStringRep()<<plusOne<<minusOne<<"){\n";
+                }
+                    //*out << ind << "std::cout<<\"Starting propagation\"<<std::endl;\n";            
+                    //*out << ind << "std::cout<<\"total size: \"<<actualSize<<std::endl;\n";            
+                    //*out << ind << "std::cout<<\"undef size: \"<<"<<pairName<<"SharedVariables.second->size()<<std::endl;\n";            
 
-        *out << --ind << "}else{\n";
-        //std::string aggrIdentifier(std::to_string(r.getRuleId())+":"+std::to_string(aggregateRelation->getFormulaIndex()));
-        ind++;
-            //aggregato non vero
-            
-            if(aggregateRelation->isNegated()){
-                *out << ind++ << "if(actualSize"<<joinOrder[i]<<" == "<<aggregateRelation->getGuard().getStringRep()<<plusOne<<"){\n";
-            }
-            else{
-                std::string minusOne = aggregateRelation->getCompareTypeAsString() == ">=" ? "-1" : "";
-                *out << ind++ << "if("<<pairName<<"SharedVariables.first->size() == "<<aggregateRelation->getGuard().getStringRep()<<plusOne<<minusOne<<"){\n";
-            }
-                //*out << ind << "std::cout<<\"Starting propagation\"<<std::endl;\n";            
-                //*out << ind << "std::cout<<\"total size: \"<<actualSize<<std::endl;\n";            
-                //*out << ind << "std::cout<<\"undef size: \"<<"<<pairName<<"SharedVariables.second->size()<<std::endl;\n";            
+                    //se un'altra chiave verrà aggiunta l'aggregato diventa vero e si viola il constraint
 
-                //se un'altra chiave verrà aggiunta l'aggregato diventa vero e si viola il constraint
+                    propagateAggregate(aggregateRelation,aggrIdentifier,withReason);
 
-                propagateAggregate(aggregateRelation,aggrIdentifier,withReason);
-
+                    *out << --ind << "}\n";
                 *out << --ind << "}\n";
+                if(doubleAggregate)
+                    *out << --ind << "}\n";
+                
+            *out << --ind << "}else{\n";
+            //*out << ind << "std::cout<<\"Undef not in aggregate\"<<std::endl;\n";
+            //ho trovato un indefinito prima dell'aggregato
+            if(withReason){
+                buildReason(aggrIdentifier,aggregateRelation,true);
+                //l'aggregato viene valutato alla fine quindi prendo le tuple precedenti
+                for (unsigned j = 0; j < joinOrder.size()-1; j++) {
+                    if (r.getFormulas()[joinOrder[j]]->isLiteral()) {
+                        *out << ind++ << "if(tuple"<<j<<"!=tupleU){\n";
+                            *out << ind << "const auto & it_reason"<<j<<" = tupleToVar.find(Tuple(*tuple"<<j<<"));\n";
+                            *out << ind++ << "if(it_reason"<<j<<"!=tupleToVar.end())\n";
+                                *out << ind-- << "reason.push_back(it_reason"<<j<<"->second * (tuple"<<j<<"->isNegated() ? -1:1));\n";
+                        *out << --ind <<"}\n";
+                    }
+                }
+                if(doubleAggregate)
+                    for(const aspc::ArithmeticRelationWithAggregate& ar : r.getArithmeticRelationsWithAggregate()){
+                        if(ar.getFormulaIndex()==joinOrder[i])
+                            buildReason(aggrIdentifier,&ar,false);
+                    }
+            }
+            if(!aggregateRelation->isNegated()){
+                *out << ++ind << "if("<<pairName<<"SharedVariables.first->size()"<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<plusOne<<""<<secondCondition<<"){\n";
+
+            }else{
+                //std::string subUndefKey = withReason ? " - alreadyCounted.size()" : "";
+                *out << ++ind << "if(!(actualSize"<<joinOrder[i]<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<plusOne<<")"<<secondCondition<<"){\n";
+            }
+
+                *out << ++ind << "const auto & it = tupleToVar.find(*tupleU);\n";
+                *out << ind++ << "if(it != tupleToVar.end()) {\n";
+                    //*out << ind << "std::cout<<\"External prop\";tupleU->print();std::cout<<std::endl;\n";
+                    *out << ind << "int sign = tupleU->isNegated() ? -1 : 1;\n";
+                    *out << ind << "auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>("<<reason<<")}).first->second;\n";
+                *out << --ind <<"}\n";
             *out << --ind << "}\n";
-            if(doubleAggregate)
-                *out << --ind << "}\n";
-            
-        *out << --ind << "}else{\n";
-        //*out << ind << "std::cout<<\"Undef not in aggregate\"<<std::endl;\n";
-        //ho trovato un indefinito prima dell'aggregato
-        if(withReason){
-            buildReason(aggrIdentifier,aggregateRelation,true);
-            //l'aggregato viene valutato alla fine quindi prendo le tuple precedenti
-            for (unsigned j = 0; j < joinOrder.size()-1; j++) {
-                if (r.getFormulas()[joinOrder[j]]->isLiteral()) {
-                    *out << ind++ << "if(tuple"<<j<<"!=tupleU){\n";
-                        *out << ind << "const auto & it_reason"<<j<<" = tupleToVar.find(Tuple(*tuple"<<j<<"));\n";
-                        *out << ind++ << "if(it_reason"<<j<<"!=tupleToVar.end())\n";
-                            *out << ind-- << "reason.push_back(it_reason"<<j<<"->second * (tuple"<<j<<"->isNegated() ? -1:1));\n";
-                    *out << --ind <<"}\n";
-                }
-            }
-            if(doubleAggregate)
-                for(const aspc::ArithmeticRelationWithAggregate& ar : r.getArithmeticRelationsWithAggregate()){
-                    if(ar.getFormulaIndex()==joinOrder[i])
-                        buildReason(aggrIdentifier,&ar,false);
-                }
-        }
-        if(!aggregateRelation->isNegated()){
-            *out << ++ind << "if("<<pairName<<"SharedVariables.first->size()"<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<plusOne<<""<<secondCondition<<"){\n";
-
-        }else{
-            //std::string subUndefKey = withReason ? " - alreadyCounted.size()" : "";
-            *out << ++ind << "if(!(actualSize"<<joinOrder[i]<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<plusOne<<")"<<secondCondition<<"){\n";
-        }
-
-            *out << ++ind << "const auto & it = tupleToVar.find(*tupleU);\n";
-            *out << ind++ << "if(it != tupleToVar.end()) {\n";
-                //*out << ind << "std::cout<<\"External prop\";tupleU->print();std::cout<<std::endl;\n";
-                *out << ind << "int sign = tupleU->isNegated() ? -1 : 1;\n";
-                *out << ind << "auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>("<<reason<<")}).first->second;\n";
-            *out << --ind <<"}\n";
+                
         *out << --ind << "}\n";
-            
-    *out << --ind << "}\n";
 
-    if(r.getBodySize()<=1 && withReason)
-        *out << --ind << "}\n";
+        if(r.getBodySize()<=1 && withReason)
+            *out << --ind << "}\n";
+        }
 }
 void CompilationManager::checkSharedVariablesOnUndefTuple(std::string sharedVars,std::string aggrIdentifier){
     int pos = sharedVars.find(",");
@@ -3375,7 +3380,7 @@ void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, uns
                     //se mi trovo a livello decisionale -1 oppure valuto l'aggregato come ultimo 
 
                     //*out << ind << "std::cout<<\"Evaluate Aggregate as Last" << decisionLevelCheck << "\"<<std::endl;\n";
-                    evaluateAggregateAsLast(decisionLevelCheck,aggregateRelation,joinOrder,i,r);
+                    evaluateAggregateAsLast(decisionLevelCheck,aggregateRelation,joinOrder,i,r,aggregateIndex==-2);
                 }
                 //std::cout<<"Starter : "<<start<<" Aggregate "<<i<<std::endl;
             }else if (i != 0 || start == r.getBodySize()) {
@@ -3745,6 +3750,11 @@ void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, uns
                             //*out << ind << "std::cout<<\"propagating Aggregate starting from aggregate\"<<std::endl;\n";
                             propagateAggregate(aggregateRelation,aggrIdentifier,true);
                             *out << --ind << "}\n";
+                            if(r.getFormulas()[joinOrder[body.size()-1]]->containsAggregate()){
+                                *out << --ind << "}//close aggregate if\n";
+                                *out << --ind << "}//close tupleU if\n";
+
+                            }
                             
                         }else if(!r.containsAggregate()){
                             //needed for propagations at level 0.. constraint may fail, then return incoherence (value 1)
@@ -3813,51 +3823,54 @@ void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, uns
                             *out << --ind << "}\n";
                         }else if(aggregateIndex==0 && r.getBodyLiterals().size()>0){
                                 
-                                //propagazione partita dall'aggregato
-                                aspc::ArithmeticRelationWithAggregate* aggregateRelation = (aspc::ArithmeticRelationWithAggregate*)body[joinOrder[0]];
-                                std::string plusOne = aggregateRelation->isPlusOne() ? "+1":"";
-                                if(aggregateNotBound){
-                                    std::string negation = aggregateRelation->isNegated() ? "!":"";
-                                    *out << ind++ << "if("<<negation<<"(count " <<aggregateRelation->getCompareTypeAsString() <<aggregateRelation->getGuard().getStringRep()<<plusOne << ")){\n";
-                                    //*out << ind << "std::cout<<\"Count: \"<<count<<\" X: \"<<X<<std::endl;\n";
-                                }
-                                std::string aggrIdentifier(std::to_string(r.getRuleId())+":"+std::to_string(joinOrder[0]));
-                                //*out << ind << "std::cout<<\"Building reason\"<<std::endl;\n";
-                                buildReason(aggrIdentifier,aggregateRelation,true);
-                                //*out << ind << "std::cout<<\"Reason built\"<<std::endl;\n";
-                                //*out << ind << "bool extJoin = true;\n";
-                                for (unsigned j = 1;j <= joinOrder[0]; j++) {
-                                    if (r.getFormulas()[joinOrder[j]]->isLiteral()) {
-
-                                        *out << ind++ << "if(tuple"<<j<<"!=tupleU){\n";
-                                            *out << ind << "const auto & it_reason"<<j<<" = tupleToVar.find(Tuple(*tuple"<<j<<"));\n";
-                                            *out << ind++ << "if(it_reason"<<j<<"!=tupleToVar.end())\n";
-                                                *out << ind-- << "reason.push_back(it_reason"<<j<<"->second * (tuple"<<j<<"->isNegated() ? -1:1));\n";
-                                        *out << --ind <<"}\n";
-                                        //*out << ind << "std::cout<<\"Tuple "<<j<<"\";tuple"<<j<<"->print();std::cout<<std::endl;\n";
-                                        //*out << ind++ << "if(!tuple"<<j<<")\n";
-                                        //*out << ind-- << "extJoin = false;\n";
+                                if(!r.getFormulas()[joinOrder[body.size()-1]]->containsAggregate()){
+                                    //propagazione partita dall'aggregato
+                                    aspc::ArithmeticRelationWithAggregate* aggregateRelation = (aspc::ArithmeticRelationWithAggregate*)body[joinOrder[0]];
+                                    std::string plusOne = aggregateRelation->isPlusOne() ? "+1":"";
+                                    if(aggregateNotBound){
+                                        std::string negation = aggregateRelation->isNegated() ? "!":"";
+                                        *out << ind++ << "if("<<negation<<"(count " <<aggregateRelation->getCompareTypeAsString() <<aggregateRelation->getGuard().getStringRep()<<plusOne << ")){\n";
+                                        //*out << ind << "std::cout<<\"Count: \"<<count<<\" X: \"<<X<<std::endl;\n";
                                     }
-                                }
-                                *out << ind++ << "if(tupleU == NULL) {\n";
-                                    *out << ind << "std::cout<<\"conflict detected in propagator External Propagation"<<aggregateRelation->getFormulaIndex()<<"\"<<std::endl;\n";
-                                    *out << ind << "propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});\n";
-                                *out << --ind << "}\n";
-                                *out << ind++ << "else {\n";
-                                
+                                    std::string aggrIdentifier(std::to_string(r.getRuleId())+":"+std::to_string(joinOrder[0]));
+                                    //*out << ind << "std::cout<<\"Building reason\"<<std::endl;\n";
+                                    buildReason(aggrIdentifier,aggregateRelation,true);
+                                    //*out << ind << "std::cout<<\"Reason built\"<<std::endl;\n";
+                                    //*out << ind << "bool extJoin = true;\n";
+                                    for (unsigned j = 1;j <= joinOrder[0]; j++) {
+                                        if (r.getFormulas()[joinOrder[j]]->isLiteral()) {
+
+                                            *out << ind++ << "if(tuple"<<j<<"!=tupleU){\n";
+                                                *out << ind << "const auto & it_reason"<<j<<" = tupleToVar.find(Tuple(*tuple"<<j<<"));\n";
+                                                *out << ind++ << "if(it_reason"<<j<<"!=tupleToVar.end())\n";
+                                                    *out << ind-- << "reason.push_back(it_reason"<<j<<"->second * (tuple"<<j<<"->isNegated() ? -1:1));\n";
+                                            *out << --ind <<"}\n";
+                                            //*out << ind << "std::cout<<\"Tuple "<<j<<"\";tuple"<<j<<"->print();std::cout<<std::endl;\n";
+                                            //*out << ind++ << "if(!tuple"<<j<<")\n";
+                                            //*out << ind-- << "extJoin = false;\n";
+                                        }
+                                    }
+                                    *out << ind++ << "if(tupleU == NULL) {\n";
+                                        *out << ind << "std::cout<<\"conflict detected in propagator External Propagation"<<aggregateRelation->getFormulaIndex()<<"\"<<std::endl;\n";
+                                        *out << ind << "propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});\n";
+                                    *out << --ind << "}\n";
+                                    *out << ind++ << "else {\n";
                                     
+                                        
 
-                                    *out << ind << "const auto & it = tupleToVar.find(*tupleU);\n";
-                                    *out << ind++ << "if(it != tupleToVar.end()) {\n";
-                                        //*out << ind << "std::cout<<\"External propagation\";tupleU->print();std::cout<<std::endl;\n";
-                                        *out << ind << "int sign = tupleU->isNegated() ? -1 : 1;\n";
-                                        *out << ind << "propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;\n";
+                                        *out << ind << "const auto & it = tupleToVar.find(*tupleU);\n";
+                                        *out << ind++ << "if(it != tupleToVar.end()) {\n";
+                                            //*out << ind << "std::cout<<\"External propagation\";tupleU->print();std::cout<<std::endl;\n";
+                                            *out << ind << "int sign = tupleU->isNegated() ? -1 : 1;\n";
+                                            *out << ind << "propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;\n";
+                                        *out << --ind << "}\n";
                                     *out << --ind << "}\n";
-                                *out << --ind << "}\n";
-                                if(aggregateNotBound){
-                                    *out << --ind << "}\n";
+                                    if(aggregateNotBound){
+                                        *out << --ind << "}\n";
+                                    }
+
                                 }
-
+                                
                         }
                     }
                     //TESTING FEATURE, LIMIT NUMBER OF FAILED CONSTRAINTS
