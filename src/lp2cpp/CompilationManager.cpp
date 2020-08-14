@@ -1381,6 +1381,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                     varsAlreadyAdded.insert(pair.first);
                                     sharedVariablesIndexesMap[key].push_back(pair.second);
                                 //}
+                                break;
                             }
                         }
                     }
@@ -3747,6 +3748,9 @@ void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, uns
                                         *out << ind-- << "reason.push_back(it_reason"<<i<<"->second * (tuple"<<i<<"->isNegated() ? -1:1));\n";
                                 }
                             }
+                            *out << ind << "const auto & it_reason_starter = tupleToVar.find(Tuple(starter));\n";
+                            *out << ind++ << "if(it_reason_starter!=tupleToVar.end())\n";
+                                *out << ind-- << "reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));\n";
                             //*out << ind << "std::cout<<\"propagating Aggregate starting from aggregate\"<<std::endl;\n";
                             propagateAggregate(aggregateRelation,aggrIdentifier,true);
                             *out << --ind << "}\n";
@@ -3850,7 +3854,12 @@ void CompilationManager::compileConstrainWithAggregate(const aspc::Rule & r, uns
                                             //*out << ind-- << "extJoin = false;\n";
                                         }
                                     }
+                                    *out << ind << "const auto & it_reason_starter = tupleToVar.find(Tuple(starter));\n";
+                                    *out << ind++ << "if(it_reason_starter!=tupleToVar.end())\n";
+                                        *out << ind-- << "reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));\n";
+
                                     *out << ind++ << "if(tupleU == NULL) {\n";
+                                        
                                         *out << ind << "std::cout<<\"conflict detected in propagator External Propagation"<<aggregateRelation->getFormulaIndex()<<"\"<<std::endl;\n";
                                         *out << ind << "propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});\n";
                                     *out << --ind << "}\n";
