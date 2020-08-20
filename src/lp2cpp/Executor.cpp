@@ -30,28 +30,55 @@ std::unordered_map<const std::string*, PredicateWSet*> predicateUSetMap;
 std::unordered_map<const std::string*,int> maxPossibleSums;
 std::unordered_map<const std::string*,int> trueSums;
 std::unordered_map<const std::string*,std::vector<int>> aggregatePredicatesAndVars;
-const std::string _c = "c";
-PredicateWSet wc(2);
-PredicateWSet uc(2);
-PredicateWSet fc(2);
-const std::string _d = "d";
-PredicateWSet wd(2);
-PredicateWSet ud(2);
-PredicateWSet fd(2);
-const std::string _e = "e";
-PredicateWSet we(3);
-PredicateWSet ue(3);
-PredicateWSet fe(3);
-const std::string _f = "f";
-PredicateWSet wf(2);
-PredicateWSet uf(2);
-PredicateWSet ff(2);
-const std::string _e_X_A_Y_f_B_Y_ = "e_X_A_Y_f_B_Y_";
-PredicateWSet we_X_A_Y_f_B_Y_(5);
-PredicateWSet ue_X_A_Y_f_B_Y_(5);
-std::map<std::vector<int>, std::pair< AuxMap*,AuxMap*>*> sharedVariables_0_ToAggregate_2;
+const std::string _clique = "clique";
+PredicateWSet wclique(1);
+PredicateWSet uclique(1);
+PredicateWSet fclique(1);
+const std::string _cliquesize = "cliquesize";
+PredicateWSet wcliquesize(2);
+PredicateWSet ucliquesize(2);
+PredicateWSet fcliquesize(2);
+const std::string _in = "in";
+PredicateWSet win(2);
+PredicateWSet uin(2);
+PredicateWSet fin(2);
+const std::string _rest = "rest";
+PredicateWSet wrest(3);
+PredicateWSet urest(3);
+PredicateWSet frest(3);
+const std::string _aux = "aux";
+PredicateWSet waux(2);
+PredicateWSet uaux(2);
+PredicateWSet faux(2);
+const std::string _member = "member";
+PredicateWSet wmember(2);
+PredicateWSet umember(2);
+PredicateWSet fmember(2);
+const std::string _pair = "pair";
+PredicateWSet wpair(2);
+PredicateWSet upair(2);
+PredicateWSet fpair(2);
+const std::string _in_C_X_pair_C_X_ = "in_C_X_pair_C_X_";
+PredicateWSet win_C_X_pair_C_X_(4);
+PredicateWSet uin_C_X_pair_C_X_(4);
+std::map<std::vector<int>, std::pair< AuxMap*,AuxMap*>*> sharedVariables_0_ToAggregate_1;
+const std::string _aux_R_Y_member_Y_R_ = "aux_R_Y_member_Y_R_";
+PredicateWSet waux_R_Y_member_Y_R_(4);
+PredicateWSet uaux_R_Y_member_Y_R_(4);
+std::map<std::vector<int>, std::pair< AuxMap*,AuxMap*>*> sharedVariables_1_ToAggregate_3;
+std::map<std::vector<int>, std::pair< AuxMap*,AuxMap*>*> sharedVariables_1_ToAggregate_4;
 Executor::~Executor() {
-    for(auto sharedVar : sharedVariables_0_ToAggregate_2){
+    for(auto sharedVar : sharedVariables_0_ToAggregate_1){
+        delete sharedVar.second->first;
+        delete sharedVar.second->second;
+        delete sharedVar.second;
+    }
+    for(auto sharedVar : sharedVariables_1_ToAggregate_3){
+        delete sharedVar.second->first;
+        delete sharedVar.second->second;
+        delete sharedVar.second;
+    }
+    for(auto sharedVar : sharedVariables_1_ToAggregate_4){
         delete sharedVar.second->first;
         delete sharedVar.second->second;
         delete sharedVar.second;
@@ -109,47 +136,80 @@ void explainNegativeLiteral(const Tuple * lit, std::unordered_set<std::string> &
 std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToAuxiliaryMaps;
 std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToUndefAuxiliaryMaps;
 std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToFalseAuxiliaryMaps;
-AuxMap pe_0_1_2_({0,1,2});
-AuxMap ue_0_1_2_({0,1,2});
-AuxMap fe_0_1_2_({0,1,2});
-AuxMap pe_({});
-AuxMap ue_({});
-AuxMap fe_({});
-AuxMap pf_1_({1});
-AuxMap uf_1_({1});
-AuxMap ff_1_({1});
-AuxMap pf_0_1_({0,1});
-AuxMap uf_0_1_({0,1});
-AuxMap ff_0_1_({0,1});
-AuxMap pf_({});
-AuxMap uf_({});
-AuxMap ff_({});
-AuxMap pe_2_({2});
-AuxMap ue_2_({2});
-AuxMap fe_2_({2});
-AuxMap p_e_X_A_Y_f_B_Y_1_3_({1,3});
-AuxMap u_e_X_A_Y_f_B_Y_1_3_({1,3});
-AuxMap p_e_X_A_Y_f_B_Y_({});
-AuxMap u_e_X_A_Y_f_B_Y_({});
-AuxMap p_e_X_A_Y_f_B_Y_0_2_4_({0,2,4});
-AuxMap u_e_X_A_Y_f_B_Y_0_2_4_({0,2,4});
-AuxMap p_e_X_A_Y_f_B_Y_0_1_2_({0,1,2});
-AuxMap u_e_X_A_Y_f_B_Y_0_1_2_({0,1,2});
-AuxMap p_e_X_A_Y_f_B_Y_3_4_({3,4});
-AuxMap u_e_X_A_Y_f_B_Y_3_4_({3,4});
-AuxMap pc_0_1_({0,1});
-AuxMap uc_0_1_({0,1});
-AuxMap pd_0_({0});
-AuxMap ud_0_({0});
-AuxMap pc_({});
-AuxMap uc_({});
-AuxMap pc_1_({1});
-AuxMap uc_1_({1});
+AuxMap pin_0_1_({0,1});
+AuxMap uin_0_1_({0,1});
+AuxMap fin_0_1_({0,1});
+AuxMap pin_({});
+AuxMap uin_({});
+AuxMap fin_({});
+AuxMap ppair_0_1_({0,1});
+AuxMap upair_0_1_({0,1});
+AuxMap fpair_0_1_({0,1});
+AuxMap ppair_({});
+AuxMap upair_({});
+AuxMap fpair_({});
+AuxMap p_in_C_X_pair_C_X_1_({1});
+AuxMap u_in_C_X_pair_C_X_1_({1});
+AuxMap p_in_C_X_pair_C_X_({});
+AuxMap u_in_C_X_pair_C_X_({});
+AuxMap p_in_C_X_pair_C_X_0_2_({0,2});
+AuxMap u_in_C_X_pair_C_X_0_2_({0,2});
+AuxMap p_in_C_X_pair_C_X_0_1_({0,1});
+AuxMap u_in_C_X_pair_C_X_0_1_({0,1});
+AuxMap p_in_C_X_pair_C_X_2_3_({2,3});
+AuxMap u_in_C_X_pair_C_X_2_3_({2,3});
+AuxMap pclique_0_({0});
+AuxMap uclique_0_({0});
+AuxMap pclique_({});
+AuxMap uclique_({});
+AuxMap paux_0_1_({0,1});
+AuxMap uaux_0_1_({0,1});
+AuxMap faux_0_1_({0,1});
+AuxMap paux_({});
+AuxMap uaux_({});
+AuxMap faux_({});
+AuxMap pmember_0_1_({0,1});
+AuxMap umember_0_1_({0,1});
+AuxMap fmember_0_1_({0,1});
+AuxMap pmember_({});
+AuxMap umember_({});
+AuxMap fmember_({});
+AuxMap p_aux_R_Y_member_Y_R_1_({1});
+AuxMap u_aux_R_Y_member_Y_R_1_({1});
+AuxMap p_aux_R_Y_member_Y_R_({});
+AuxMap u_aux_R_Y_member_Y_R_({});
+AuxMap p_aux_R_Y_member_Y_R_0_3_({0,3});
+AuxMap u_aux_R_Y_member_Y_R_0_3_({0,3});
+AuxMap p_aux_R_Y_member_Y_R_0_1_({0,1});
+AuxMap u_aux_R_Y_member_Y_R_0_1_({0,1});
+AuxMap p_aux_R_Y_member_Y_R_2_3_({2,3});
+AuxMap u_aux_R_Y_member_Y_R_2_3_({2,3});
+AuxMap prest_0_1_2_({0,1,2});
+AuxMap urest_0_1_2_({0,1,2});
+AuxMap pcliquesize_0_1_({0,1});
+AuxMap ucliquesize_0_1_({0,1});
+AuxMap prest_2_({2});
+AuxMap urest_2_({2});
+AuxMap prest_0_1_({0,1});
+AuxMap urest_0_1_({0,1});
 //printing aux maps needed for reasons of negative literals;
 //printing functions prototypes for reasons of negative literals;
+void explain_not_cliquesize_0_1_(const std::vector<int> &, std::unordered_set<std::string> &, std::vector<const Tuple *> &);
 void explainPositiveLiteral(const Tuple *, std::unordered_set<std::string> &, std::vector<const Tuple*> &);
 //printing functions for reasons of negative literals;
+void explain_not_cliquesize_0_1_(const std::vector<int> & lit, std::unordered_set<std::string> & open_set, std::vector<const Tuple *> & output){
+    std::string canonicalRep = _cliquesize;
+    canonicalRep += std::to_string(lit[0]);
+    canonicalRep += ",";
+    canonicalRep += std::to_string(lit[1]);
+    if(open_set.find(canonicalRep)!=open_set.end()){
+        return;
+    }
+    open_set.insert(canonicalRep);
+    open_set.erase(canonicalRep);
+}
 void createFunctionsMap() {
+    explainNegativeFunctionsMap[&_cliquesize] = explain_not_cliquesize_0_1_;
 }
 void printTuples(const std::string & predicateName, const Tuples & tuples) {
     for (const std::vector<int> * tuple : tuples) {
@@ -221,7 +281,7 @@ inline void Executor::onLiteralTrue(int var) {
             }
         }
     }
-    if(var<0 && ( tuple.getPredicateName() == &_e || tuple.getPredicateName() == &_f)){
+    if(var<0 && ( tuple.getPredicateName() == &_aux || tuple.getPredicateName() == &_in || tuple.getPredicateName() == &_member || tuple.getPredicateName() == &_pair)){
         std::unordered_map<const std::string*, PredicateWSet*>::iterator it_false = predicateFSetMap.find(tuple.getPredicateName());
         if (it_false == predicateFSetMap.end()) {
             } else {
@@ -235,15 +295,14 @@ inline void Executor::onLiteralTrue(int var) {
             }
         }
     }
-    if(tuple.getPredicateName() == &_e){
+    if(tuple.getPredicateName() == &_in){
         if(var > 0){
-            int X = tuple.at(0);
-            int A = tuple.at(1);
-            int Y = tuple.at(2);
+            int C = tuple.at(0);
+            int X = tuple.at(1);
             bool buildUndef=false;
             bool buildFalse=false;
-            const std::vector<const Tuple*>& tuples1 = pf_1_.getValues({Y});
-            const std::vector<const Tuple*>& tuplesU1 = uf_1_.getValues({Y});
+            const std::vector<const Tuple*>& tuples1 = ppair_0_1_.getValues({C, X});
+            const std::vector<const Tuple*>& tuplesU1 = upair_0_1_.getValues({C, X});
             for(int i=0;i<tuples1.size()+tuplesU1.size();i++){
                 bool buildUndef=false;
                 const Tuple* tuple1;
@@ -253,37 +312,36 @@ inline void Executor::onLiteralTrue(int var) {
                     buildUndef=true;
                     tuple1=tuplesU1[i-tuples1.size()];
                 }
-                int B = tuple1->at(0);
-                Tuple t(std::vector<int>({X,A,Y,B,Y}),&_e_X_A_Y_f_B_Y_);
+                Tuple t(std::vector<int>({C,X,C,X}),&_in_C_X_pair_C_X_);
                 if(!buildUndef){
-                    if(we_X_A_Y_f_B_Y_.find(t)==NULL){
-                        const auto& insertResult = we_X_A_Y_f_B_Y_.insert(Tuple(t));
+                    if(win_C_X_pair_C_X_.find(t)==NULL){
+                        const auto& insertResult = win_C_X_pair_C_X_.insert(Tuple(t));
                         if (insertResult.second) {
-                            for(AuxMap* auxMap : predicateToAuxiliaryMaps[&_e_X_A_Y_f_B_Y_]){
+                            for(AuxMap* auxMap : predicateToAuxiliaryMaps[&_in_C_X_pair_C_X_]){
                                 auxMap -> insert2(*insertResult.first);
                             }
                             {
-                                Tuple sharedTuple(std::vector<int>({X,Y,Y}));
-                                if(sharedVariables_0_ToAggregate_2.count(sharedTuple)!=0){
-                                    auto joinTuples = sharedVariables_0_ToAggregate_2[sharedTuple];
+                                Tuple sharedTuple(std::vector<int>({C,C}));
+                                if(sharedVariables_0_ToAggregate_1.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_0_ToAggregate_1[sharedTuple];
                                     joinTuples->first->insert2(*insertResult.first);
                                 }
                             }
-                            ue_X_A_Y_f_B_Y_.erase(t);
+                            uin_C_X_pair_C_X_.erase(t);
                         }
                     }else{
                     }
                 }else{
-                    if(ue_X_A_Y_f_B_Y_.find(t)==NULL){
-                        const auto& insertResult = ue_X_A_Y_f_B_Y_.insert(Tuple(t));
+                    if(uin_C_X_pair_C_X_.find(t)==NULL){
+                        const auto& insertResult = uin_C_X_pair_C_X_.insert(Tuple(t));
                         if (insertResult.second) {
-                            for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_e_X_A_Y_f_B_Y_]){
+                            for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_in_C_X_pair_C_X_]){
                                 auxMap -> insert2(*insertResult.first);
                             }
                             {
-                                Tuple sharedTuple(std::vector<int>({X,Y,Y}));
-                                if(sharedVariables_0_ToAggregate_2.count(sharedTuple)!=0){
-                                    auto joinTuples = sharedVariables_0_ToAggregate_2[sharedTuple];
+                                Tuple sharedTuple(std::vector<int>({C,C}));
+                                if(sharedVariables_0_ToAggregate_1.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_0_ToAggregate_1[sharedTuple];
                                     joinTuples->second->insert2(*insertResult.first);
                                 }
                             }
@@ -292,13 +350,12 @@ inline void Executor::onLiteralTrue(int var) {
                 }
             }
         }else{
-            int X = tuple.at(0);
-            int A = tuple.at(1);
-            int Y = tuple.at(2);
+            int C = tuple.at(0);
+            int X = tuple.at(1);
             bool buildUndef=false;
             bool buildFalse=false;
-            const std::vector<const Tuple*>& tuplesU1 = uf_1_.getValues({Y});
-            const std::vector<const Tuple*>& tuples1 = pf_1_.getValues({Y});
+            const std::vector<const Tuple*>& tuplesU1 = upair_0_1_.getValues({C, X});
+            const std::vector<const Tuple*>& tuples1 = ppair_0_1_.getValues({C, X});
             for(int i=0;i<tuples1.size()+tuplesU1.size();i++){
                 bool buildUndef=false;
                 const Tuple* tuple1;
@@ -308,21 +365,20 @@ inline void Executor::onLiteralTrue(int var) {
                     buildUndef=true;
                     tuple1=tuplesU1[i-tuples1.size()];
                 }
-                int B = tuple1->at(0);
-                Tuple t(std::vector<int>({X,A,Y,B,Y}),&_e_X_A_Y_f_B_Y_);
-                ue_X_A_Y_f_B_Y_.erase(t);
-                we_X_A_Y_f_B_Y_.erase(t);
+                Tuple t(std::vector<int>({C,X,C,X}),&_in_C_X_pair_C_X_);
+                uin_C_X_pair_C_X_.erase(t);
+                win_C_X_pair_C_X_.erase(t);
             }
         }
     }
-    if(tuple.getPredicateName() == &_f){
+    if(tuple.getPredicateName() == &_pair){
         if(var > 0){
-            int B = tuple.at(0);
-            int Y = tuple.at(1);
+            int C = tuple.at(0);
+            int X = tuple.at(1);
             bool buildUndef=false;
             bool buildFalse=false;
-            const std::vector<const Tuple*>& tuples0 = pe_2_.getValues({Y});
-            const std::vector<const Tuple*>& tuplesU0 = ue_2_.getValues({Y});
+            const std::vector<const Tuple*>& tuples0 = pin_0_1_.getValues({C, X});
+            const std::vector<const Tuple*>& tuplesU0 = uin_0_1_.getValues({C, X});
             for(int i=0;i<tuples0.size()+tuplesU0.size();i++){
                 bool buildUndef=false;
                 const Tuple* tuple0;
@@ -332,38 +388,36 @@ inline void Executor::onLiteralTrue(int var) {
                     buildUndef=true;
                     tuple0=tuplesU0[i-tuples0.size()];
                 }
-                int X = tuple0->at(0);
-                int A = tuple0->at(1);
-                Tuple t(std::vector<int>({X,A,Y,B,Y}),&_e_X_A_Y_f_B_Y_);
+                Tuple t(std::vector<int>({C,X,C,X}),&_in_C_X_pair_C_X_);
                 if(!buildUndef){
-                    if(we_X_A_Y_f_B_Y_.find(t)==NULL){
-                        const auto& insertResult = we_X_A_Y_f_B_Y_.insert(Tuple(t));
+                    if(win_C_X_pair_C_X_.find(t)==NULL){
+                        const auto& insertResult = win_C_X_pair_C_X_.insert(Tuple(t));
                         if (insertResult.second) {
-                            for(AuxMap* auxMap : predicateToAuxiliaryMaps[&_e_X_A_Y_f_B_Y_]){
+                            for(AuxMap* auxMap : predicateToAuxiliaryMaps[&_in_C_X_pair_C_X_]){
                                 auxMap -> insert2(*insertResult.first);
                             }
                             {
-                                Tuple sharedTuple(std::vector<int>({X,Y,Y}));
-                                if(sharedVariables_0_ToAggregate_2.count(sharedTuple)!=0){
-                                    auto joinTuples = sharedVariables_0_ToAggregate_2[sharedTuple];
+                                Tuple sharedTuple(std::vector<int>({C,C}));
+                                if(sharedVariables_0_ToAggregate_1.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_0_ToAggregate_1[sharedTuple];
                                     joinTuples->first->insert2(*insertResult.first);
                                 }
                             }
-                            ue_X_A_Y_f_B_Y_.erase(t);
+                            uin_C_X_pair_C_X_.erase(t);
                         }
                     }else{
                     }
                 }else{
-                    if(ue_X_A_Y_f_B_Y_.find(t)==NULL){
-                        const auto& insertResult = ue_X_A_Y_f_B_Y_.insert(Tuple(t));
+                    if(uin_C_X_pair_C_X_.find(t)==NULL){
+                        const auto& insertResult = uin_C_X_pair_C_X_.insert(Tuple(t));
                         if (insertResult.second) {
-                            for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_e_X_A_Y_f_B_Y_]){
+                            for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_in_C_X_pair_C_X_]){
                                 auxMap -> insert2(*insertResult.first);
                             }
                             {
-                                Tuple sharedTuple(std::vector<int>({X,Y,Y}));
-                                if(sharedVariables_0_ToAggregate_2.count(sharedTuple)!=0){
-                                    auto joinTuples = sharedVariables_0_ToAggregate_2[sharedTuple];
+                                Tuple sharedTuple(std::vector<int>({C,C}));
+                                if(sharedVariables_0_ToAggregate_1.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_0_ToAggregate_1[sharedTuple];
                                     joinTuples->second->insert2(*insertResult.first);
                                 }
                             }
@@ -372,12 +426,12 @@ inline void Executor::onLiteralTrue(int var) {
                 }
             }
         }else{
-            int B = tuple.at(0);
-            int Y = tuple.at(1);
+            int C = tuple.at(0);
+            int X = tuple.at(1);
             bool buildUndef=false;
             bool buildFalse=false;
-            const std::vector<const Tuple*>& tuplesU0 = ue_2_.getValues({Y});
-            const std::vector<const Tuple*>& tuples0 = pe_2_.getValues({Y});
+            const std::vector<const Tuple*>& tuplesU0 = uin_0_1_.getValues({C, X});
+            const std::vector<const Tuple*>& tuples0 = pin_0_1_.getValues({C, X});
             for(int i=0;i<tuples0.size()+tuplesU0.size();i++){
                 bool buildUndef=false;
                 const Tuple* tuple0;
@@ -387,79 +441,612 @@ inline void Executor::onLiteralTrue(int var) {
                     buildUndef=true;
                     tuple0=tuplesU0[i-tuples0.size()];
                 }
-                int X = tuple0->at(0);
-                int A = tuple0->at(1);
-                Tuple t(std::vector<int>({X,A,Y,B,Y}),&_e_X_A_Y_f_B_Y_);
-                ue_X_A_Y_f_B_Y_.erase(t);
-                we_X_A_Y_f_B_Y_.erase(t);
+                Tuple t(std::vector<int>({C,X,C,X}),&_in_C_X_pair_C_X_);
+                uin_C_X_pair_C_X_.erase(t);
+                win_C_X_pair_C_X_.erase(t);
             }
         }
     }
-    if(tuple.getPredicateName() == &_c){
-        int X = tuple.at(0);
-        int Y = tuple.at(1);
-        const std::vector<const Tuple *>& tuples1 = pd_0_.getValues({Y});
-        const std::vector<const Tuple *>& tuplesU1 = ud_0_.getValues({Y});
+    if(tuple.getPredicateName() == &_clique){
+        int C = tuple.at(0);
+        if(var>0){
+            Tuple sharedTuple(std::vector<int>({C,C}));
+            if(!sharedVariables_0_ToAggregate_1.count(sharedTuple)){
+                sharedVariables_0_ToAggregate_1[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                const std::vector<const Tuple*>* trueJoinTuples = &p_in_C_X_pair_C_X_0_2_.getValues({C,C});
+                const std::vector<const Tuple*>* undefJoinTuples = &u_in_C_X_pair_C_X_0_2_.getValues({C,C});
+                for(int i=0;i<trueJoinTuples->size();i++){
+                    const auto findResult = win_C_X_pair_C_X_.find(Tuple(*trueJoinTuples->at(i)));
+                    if(findResult!=NULL){
+                        sharedVariables_0_ToAggregate_1[sharedTuple]->first->insert2(*findResult);
+                    }
+                }
+                for(int i=0;i<undefJoinTuples->size();i++){
+                    const auto findResult = uin_C_X_pair_C_X_.find(Tuple(*undefJoinTuples->at(i)));
+                    if(findResult!=NULL){
+                        sharedVariables_0_ToAggregate_1[sharedTuple]->second->insert2(*findResult);
+                    }
+                }
+            }
+        }else{
+        }
+    }
+    if(tuple.getPredicateName() == &_aux){
+        if(var > 0){
+            int R = tuple.at(0);
+            int Y = tuple.at(1);
+            bool buildUndef=false;
+            bool buildFalse=false;
+            const std::vector<const Tuple*>& tuples1 = pmember_0_1_.getValues({Y, R});
+            const std::vector<const Tuple*>& tuplesU1 = umember_0_1_.getValues({Y, R});
+            for(int i=0;i<tuples1.size()+tuplesU1.size();i++){
+                bool buildUndef=false;
+                const Tuple* tuple1;
+                if(i<tuples1.size())
+                    tuple1=tuples1[i];
+                else{
+                    buildUndef=true;
+                    tuple1=tuplesU1[i-tuples1.size()];
+                }
+                Tuple t(std::vector<int>({R,Y,Y,R}),&_aux_R_Y_member_Y_R_);
+                if(!buildUndef){
+                    if(waux_R_Y_member_Y_R_.find(t)==NULL){
+                        const auto& insertResult = waux_R_Y_member_Y_R_.insert(Tuple(t));
+                        if (insertResult.second) {
+                            for(AuxMap* auxMap : predicateToAuxiliaryMaps[&_aux_R_Y_member_Y_R_]){
+                                auxMap -> insert2(*insertResult.first);
+                            }
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                                    joinTuples->first->insert2(*insertResult.first);
+                                }
+                            }
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                                    joinTuples->first->insert2(*insertResult.first);
+                                }
+                            }
+                            uaux_R_Y_member_Y_R_.erase(t);
+                        }
+                    }else{
+                    }
+                }else{
+                    if(uaux_R_Y_member_Y_R_.find(t)==NULL){
+                        const auto& insertResult = uaux_R_Y_member_Y_R_.insert(Tuple(t));
+                        if (insertResult.second) {
+                            for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_]){
+                                auxMap -> insert2(*insertResult.first);
+                            }
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                                    joinTuples->second->insert2(*insertResult.first);
+                                }
+                            }
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                                    joinTuples->second->insert2(*insertResult.first);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            int R = tuple.at(0);
+            int Y = tuple.at(1);
+            bool buildUndef=false;
+            bool buildFalse=false;
+            const std::vector<const Tuple*>& tuplesU1 = umember_0_1_.getValues({Y, R});
+            const std::vector<const Tuple*>& tuples1 = pmember_0_1_.getValues({Y, R});
+            for(int i=0;i<tuples1.size()+tuplesU1.size();i++){
+                bool buildUndef=false;
+                const Tuple* tuple1;
+                if(i<tuples1.size())
+                    tuple1=tuples1[i];
+                else{
+                    buildUndef=true;
+                    tuple1=tuplesU1[i-tuples1.size()];
+                }
+                Tuple t(std::vector<int>({R,Y,Y,R}),&_aux_R_Y_member_Y_R_);
+                uaux_R_Y_member_Y_R_.erase(t);
+                waux_R_Y_member_Y_R_.erase(t);
+            }
+        }
+    }
+    if(tuple.getPredicateName() == &_member){
+        if(var > 0){
+            int Y = tuple.at(0);
+            int R = tuple.at(1);
+            bool buildUndef=false;
+            bool buildFalse=false;
+            const std::vector<const Tuple*>& tuples0 = paux_0_1_.getValues({R, Y});
+            const std::vector<const Tuple*>& tuplesU0 = uaux_0_1_.getValues({R, Y});
+            for(int i=0;i<tuples0.size()+tuplesU0.size();i++){
+                bool buildUndef=false;
+                const Tuple* tuple0;
+                if(i<tuples0.size())
+                    tuple0=tuples0[i];
+                else{
+                    buildUndef=true;
+                    tuple0=tuplesU0[i-tuples0.size()];
+                }
+                Tuple t(std::vector<int>({R,Y,Y,R}),&_aux_R_Y_member_Y_R_);
+                if(!buildUndef){
+                    if(waux_R_Y_member_Y_R_.find(t)==NULL){
+                        const auto& insertResult = waux_R_Y_member_Y_R_.insert(Tuple(t));
+                        if (insertResult.second) {
+                            for(AuxMap* auxMap : predicateToAuxiliaryMaps[&_aux_R_Y_member_Y_R_]){
+                                auxMap -> insert2(*insertResult.first);
+                            }
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                                    joinTuples->first->insert2(*insertResult.first);
+                                }
+                            }
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                                    joinTuples->first->insert2(*insertResult.first);
+                                }
+                            }
+                            uaux_R_Y_member_Y_R_.erase(t);
+                        }
+                    }else{
+                    }
+                }else{
+                    if(uaux_R_Y_member_Y_R_.find(t)==NULL){
+                        const auto& insertResult = uaux_R_Y_member_Y_R_.insert(Tuple(t));
+                        if (insertResult.second) {
+                            for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_]){
+                                auxMap -> insert2(*insertResult.first);
+                            }
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                                    joinTuples->second->insert2(*insertResult.first);
+                                }
+                            }
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                                    joinTuples->second->insert2(*insertResult.first);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            int Y = tuple.at(0);
+            int R = tuple.at(1);
+            bool buildUndef=false;
+            bool buildFalse=false;
+            const std::vector<const Tuple*>& tuplesU0 = uaux_0_1_.getValues({R, Y});
+            const std::vector<const Tuple*>& tuples0 = paux_0_1_.getValues({R, Y});
+            for(int i=0;i<tuples0.size()+tuplesU0.size();i++){
+                bool buildUndef=false;
+                const Tuple* tuple0;
+                if(i<tuples0.size())
+                    tuple0=tuples0[i];
+                else{
+                    buildUndef=true;
+                    tuple0=tuplesU0[i-tuples0.size()];
+                }
+                Tuple t(std::vector<int>({R,Y,Y,R}),&_aux_R_Y_member_Y_R_);
+                uaux_R_Y_member_Y_R_.erase(t);
+                waux_R_Y_member_Y_R_.erase(t);
+            }
+        }
+    }
+    if(tuple.getPredicateName() == &_aux){
+        if(var > 0){
+            int R = tuple.at(0);
+            int Y = tuple.at(1);
+            bool buildUndef=false;
+            bool buildFalse=false;
+            const std::vector<const Tuple*>& tuples1 = pmember_0_1_.getValues({Y, R});
+            const std::vector<const Tuple*>& tuplesU1 = umember_0_1_.getValues({Y, R});
+            for(int i=0;i<tuples1.size()+tuplesU1.size();i++){
+                bool buildUndef=false;
+                const Tuple* tuple1;
+                if(i<tuples1.size())
+                    tuple1=tuples1[i];
+                else{
+                    buildUndef=true;
+                    tuple1=tuplesU1[i-tuples1.size()];
+                }
+                Tuple t(std::vector<int>({R,Y,Y,R}),&_aux_R_Y_member_Y_R_);
+                if(!buildUndef && !buildFalse){
+                    if(waux_R_Y_member_Y_R_.find(t)==NULL){
+                        const auto& insertResult = waux_R_Y_member_Y_R_.insert(Tuple(t));
+                        if (insertResult.second) {
+                            for(AuxMap* auxMap : predicateToAuxiliaryMaps[&_aux_R_Y_member_Y_R_]){
+                                auxMap -> insert2(*insertResult.first);
+                            }
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                                    joinTuples->first->insert2(*insertResult.first);
+                                }
+                            }
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                                    joinTuples->first->insert2(*insertResult.first);
+                                }
+                            }
+                            uaux_R_Y_member_Y_R_.erase(t);
+                        }
+                    }else{
+                    }
+                }else{
+                    if(!buildFalse){
+                        if(uaux_R_Y_member_Y_R_.find(t)==NULL){
+                            const auto& insertResult = uaux_R_Y_member_Y_R_.insert(Tuple(t));
+                            if (insertResult.second) {
+                                for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_]){
+                                    auxMap -> insert2(*insertResult.first);
+                                }
+                                {
+                                    Tuple sharedTuple(std::vector<int>({R,R}));
+                                    if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                                        auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                                        joinTuples->second->insert2(*insertResult.first);
+                                    }
+                                }
+                                {
+                                    Tuple sharedTuple(std::vector<int>({R,R}));
+                                    if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                                        auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                                        joinTuples->second->insert2(*insertResult.first);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            int R = tuple.at(0);
+            int Y = tuple.at(1);
+            bool buildUndef=false;
+            bool buildFalse=false;
+            const std::vector<const Tuple*>& tuplesU1 = umember_0_1_.getValues({Y, R});
+            const std::vector<const Tuple*>& tuples1 = pmember_0_1_.getValues({Y, R});
+            const std::vector<const Tuple*>& tuplesF1 = fmember_0_1_.getValues({Y, R});
+            for(int i=0;i<tuples1.size()+tuplesU1.size()+tuplesF1.size();i++){
+                buildUndef=false;
+                buildFalse=false;
+                const Tuple* tuple1;
+                if(i<tuples1.size())
+                    tuple1=tuples1[i];
+                else if (i < tuplesU1.size()+tuples1.size()){
+                    buildUndef=true;
+                    tuple1=tuplesU1[i-tuples1.size()];
+                }else{
+                    tuple1=tuplesF1[i-tuples1.size()-tuplesU1.size()];
+                    buildFalse=true;
+                }
+                Tuple t(std::vector<int>({R,Y,Y,R}),&_aux_R_Y_member_Y_R_);
+                uaux_R_Y_member_Y_R_.erase(t);
+                waux_R_Y_member_Y_R_.erase(t);
+            }
+        }
+    }
+    if(tuple.getPredicateName() == &_member){
+        if(var > 0){
+            int Y = tuple.at(0);
+            int R = tuple.at(1);
+            bool buildUndef=false;
+            bool buildFalse=false;
+            const std::vector<const Tuple*>& tuples0 = paux_0_1_.getValues({R, Y});
+            const std::vector<const Tuple*>& tuplesU0 = uaux_0_1_.getValues({R, Y});
+            for(int i=0;i<tuples0.size()+tuplesU0.size();i++){
+                bool buildUndef=false;
+                const Tuple* tuple0;
+                if(i<tuples0.size())
+                    tuple0=tuples0[i];
+                else{
+                    buildUndef=true;
+                    tuple0=tuplesU0[i-tuples0.size()];
+                }
+                Tuple t(std::vector<int>({R,Y,Y,R}),&_aux_R_Y_member_Y_R_);
+                if(!buildUndef && !buildFalse){
+                    if(waux_R_Y_member_Y_R_.find(t)==NULL){
+                        const auto& insertResult = waux_R_Y_member_Y_R_.insert(Tuple(t));
+                        if (insertResult.second) {
+                            for(AuxMap* auxMap : predicateToAuxiliaryMaps[&_aux_R_Y_member_Y_R_]){
+                                auxMap -> insert2(*insertResult.first);
+                            }
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                                    joinTuples->first->insert2(*insertResult.first);
+                                }
+                            }
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                                    auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                                    joinTuples->first->insert2(*insertResult.first);
+                                }
+                            }
+                            uaux_R_Y_member_Y_R_.erase(t);
+                        }
+                    }else{
+                    }
+                }else{
+                    if(!buildFalse){
+                        if(uaux_R_Y_member_Y_R_.find(t)==NULL){
+                            const auto& insertResult = uaux_R_Y_member_Y_R_.insert(Tuple(t));
+                            if (insertResult.second) {
+                                for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_]){
+                                    auxMap -> insert2(*insertResult.first);
+                                }
+                                {
+                                    Tuple sharedTuple(std::vector<int>({R,R}));
+                                    if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                                        auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                                        joinTuples->second->insert2(*insertResult.first);
+                                    }
+                                }
+                                {
+                                    Tuple sharedTuple(std::vector<int>({R,R}));
+                                    if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                                        auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                                        joinTuples->second->insert2(*insertResult.first);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            int Y = tuple.at(0);
+            int R = tuple.at(1);
+            bool buildUndef=false;
+            bool buildFalse=false;
+            const std::vector<const Tuple*>& tuplesU0 = uaux_0_1_.getValues({R, Y});
+            const std::vector<const Tuple*>& tuples0 = paux_0_1_.getValues({R, Y});
+            const std::vector<const Tuple*>& tuplesF0 = faux_0_1_.getValues({R, Y});
+            for(int i=0;i<tuples0.size()+tuplesU0.size()+tuplesF0.size();i++){
+                buildUndef=false;
+                buildFalse=false;
+                const Tuple* tuple0;
+                if(i<tuples0.size())
+                    tuple0=tuples0[i];
+                else if (i < tuplesU0.size()+tuples0.size()){
+                    buildUndef=true;
+                    tuple0=tuplesU0[i-tuples0.size()];
+                }else{
+                    tuple0=tuplesF0[i-tuples0.size()-tuplesU0.size()];
+                    buildFalse=true;
+                }
+                Tuple t(std::vector<int>({R,Y,Y,R}),&_aux_R_Y_member_Y_R_);
+                uaux_R_Y_member_Y_R_.erase(t);
+                waux_R_Y_member_Y_R_.erase(t);
+            }
+        }
+    }
+    if(tuple.getPredicateName() == &_in){
+        int C = tuple.at(0);
+        int X = tuple.at(1);
+        const std::vector<const Tuple *>& tuples1 = prest_0_1_.getValues({C, X});
+        const std::vector<const Tuple *>& tuplesU1 = urest_0_1_.getValues({C, X});
         const Tuple * tuple1;
         for(int i=0; i< tuples1.size() + tuplesU1.size();i++){
             if(i<tuples1.size())
                 tuple1= tuples1[i];
             else tuple1 = tuplesU1[i-tuples1.size()];
-            int Z = tuple1->at(1);
-            if(var>0){
-                Tuple sharedTuple(std::vector<int>({X,Y,Y}));
-                if(!sharedVariables_0_ToAggregate_2.count(sharedTuple)){
-                    sharedVariables_0_ToAggregate_2[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1,3})),new AuxMap(std::vector<unsigned>({1,3})));
-                    const std::vector<const Tuple*>* trueJoinTuples = &p_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
-                    const std::vector<const Tuple*>* undefJoinTuples = &u_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
-                    for(int i=0;i<trueJoinTuples->size();i++){
-                        const auto findResult = we_X_A_Y_f_B_Y_.find(Tuple(*trueJoinTuples->at(i)));
-                        if(findResult!=NULL){
-                            sharedVariables_0_ToAggregate_2[sharedTuple]->first->insert2(*findResult);
+            int R = tuple1->at(2);
+            std::vector<const Tuple *> tuples2;
+            const Tuple* t2= wcliquesize.find({R, 1});
+            if(t2!=NULL) tuples2.push_back(t2);
+            std::vector<const Tuple *> tuplesU2;
+            const Tuple* tU2= ucliquesize.find({R, 1});
+            if(tU2!=NULL) tuplesU2.push_back(tU2);
+            const Tuple * tuple2;
+            for(int i=0; i< tuples2.size() + tuplesU2.size();i++){
+                if(i<tuples2.size())
+                    tuple2= tuples2[i];
+                else tuple2 = tuplesU2[i-tuples2.size()];
+                if(var>0){
+                    Tuple sharedTuple(std::vector<int>({R,R}));
+                    if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                        sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        for(int i=0;i<trueJoinTuples->size();i++){
+                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                            }
+                        }
+                        for(int i=0;i<undefJoinTuples->size();i++){
+                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                            }
                         }
                     }
-                    for(int i=0;i<undefJoinTuples->size();i++){
-                        const auto findResult = ue_X_A_Y_f_B_Y_.find(Tuple(*undefJoinTuples->at(i)));
-                        if(findResult!=NULL){
-                            sharedVariables_0_ToAggregate_2[sharedTuple]->second->insert2(*findResult);
-                        }
-                    }
+                }else{
                 }
-            }else{
+                if(var>0){
+                    Tuple sharedTuple(std::vector<int>({R,R}));
+                    if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                        sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        for(int i=0;i<trueJoinTuples->size();i++){
+                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                            }
+                        }
+                        for(int i=0;i<undefJoinTuples->size();i++){
+                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                            }
+                        }
+                    }
+                }else{
+                }
             }
         }
     }
-    if(tuple.getPredicateName() == &_d){
-        int Y = tuple.at(0);
-        int Z = tuple.at(1);
-        const std::vector<const Tuple *>& tuples0 = pc_1_.getValues({Y});
-        const std::vector<const Tuple *>& tuplesU0 = uc_1_.getValues({Y});
+    if(tuple.getPredicateName() == &_rest){
+        int C = tuple.at(0);
+        int X = tuple.at(1);
+        int R = tuple.at(2);
+        std::vector<const Tuple *> tuples0;
+        const Tuple* t0= win.find({C, X});
+        if(t0!=NULL) tuples0.push_back(t0);
+        std::vector<const Tuple *> tuplesU0;
+        const Tuple* tU0= uin.find({C, X});
+        if(tU0!=NULL) tuplesU0.push_back(tU0);
         const Tuple * tuple0;
         for(int i=0; i< tuples0.size() + tuplesU0.size();i++){
             if(i<tuples0.size())
                 tuple0= tuples0[i];
             else tuple0 = tuplesU0[i-tuples0.size()];
-            int X = tuple0->at(0);
-            if(var>0){
-                Tuple sharedTuple(std::vector<int>({X,Y,Y}));
-                if(!sharedVariables_0_ToAggregate_2.count(sharedTuple)){
-                    sharedVariables_0_ToAggregate_2[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1,3})),new AuxMap(std::vector<unsigned>({1,3})));
-                    const std::vector<const Tuple*>* trueJoinTuples = &p_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
-                    const std::vector<const Tuple*>* undefJoinTuples = &u_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
-                    for(int i=0;i<trueJoinTuples->size();i++){
-                        const auto findResult = we_X_A_Y_f_B_Y_.find(Tuple(*trueJoinTuples->at(i)));
-                        if(findResult!=NULL){
-                            sharedVariables_0_ToAggregate_2[sharedTuple]->first->insert2(*findResult);
+            std::vector<const Tuple *> tuples2;
+            const Tuple* t2= wcliquesize.find({R, 1});
+            if(t2!=NULL) tuples2.push_back(t2);
+            std::vector<const Tuple *> tuplesU2;
+            const Tuple* tU2= ucliquesize.find({R, 1});
+            if(tU2!=NULL) tuplesU2.push_back(tU2);
+            const Tuple * tuple2;
+            for(int i=0; i< tuples2.size() + tuplesU2.size();i++){
+                if(i<tuples2.size())
+                    tuple2= tuples2[i];
+                else tuple2 = tuplesU2[i-tuples2.size()];
+                if(var>0){
+                    Tuple sharedTuple(std::vector<int>({R,R}));
+                    if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                        sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        for(int i=0;i<trueJoinTuples->size();i++){
+                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                            }
+                        }
+                        for(int i=0;i<undefJoinTuples->size();i++){
+                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                            }
                         }
                     }
-                    for(int i=0;i<undefJoinTuples->size();i++){
-                        const auto findResult = ue_X_A_Y_f_B_Y_.find(Tuple(*undefJoinTuples->at(i)));
-                        if(findResult!=NULL){
-                            sharedVariables_0_ToAggregate_2[sharedTuple]->second->insert2(*findResult);
-                        }
-                    }
+                }else{
                 }
-            }else{
+                if(var>0){
+                    Tuple sharedTuple(std::vector<int>({R,R}));
+                    if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                        sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        for(int i=0;i<trueJoinTuples->size();i++){
+                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                            }
+                        }
+                        for(int i=0;i<undefJoinTuples->size();i++){
+                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                            }
+                        }
+                    }
+                }else{
+                }
+            }
+        }
+    }
+    if(tuple.getPredicateName() == &_cliquesize){
+        int R = tuple.at(0);
+        const std::vector<const Tuple *>& tuples0 = pin_.getValues({});
+        const std::vector<const Tuple *>& tuplesU0 = uin_.getValues({});
+        const Tuple * tuple0;
+        for(int i=0; i< tuples0.size() + tuplesU0.size();i++){
+            if(i<tuples0.size())
+                tuple0= tuples0[i];
+            else tuple0 = tuplesU0[i-tuples0.size()];
+            int C = tuple0->at(0);
+            int X = tuple0->at(1);
+            std::vector<const Tuple *> tuples1;
+            const Tuple* t1= wrest.find({C, X, R});
+            if(t1!=NULL) tuples1.push_back(t1);
+            std::vector<const Tuple *> tuplesU1;
+            const Tuple* tU1= urest.find({C, X, R});
+            if(tU1!=NULL) tuplesU1.push_back(tU1);
+            const Tuple * tuple1;
+            for(int i=0; i< tuples1.size() + tuplesU1.size();i++){
+                if(i<tuples1.size())
+                    tuple1= tuples1[i];
+                else tuple1 = tuplesU1[i-tuples1.size()];
+                if(var>0){
+                    Tuple sharedTuple(std::vector<int>({R,R}));
+                    if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                        sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        for(int i=0;i<trueJoinTuples->size();i++){
+                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                            }
+                        }
+                        for(int i=0;i<undefJoinTuples->size();i++){
+                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                            }
+                        }
+                    }
+                }else{
+                }
+                if(var>0){
+                    Tuple sharedTuple(std::vector<int>({R,R}));
+                    if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                        sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        for(int i=0;i<trueJoinTuples->size();i++){
+                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                            }
+                        }
+                        for(int i=0;i<undefJoinTuples->size();i++){
+                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                            }
+                        }
+                    }
+                }else{
+                }
             }
         }
     }
@@ -475,7 +1062,7 @@ inline void Executor::onLiteralUndef(int var) {
             wSetIt->second->erase(tuple);
         }
     }
-    if(var<0 && ( tuple.getPredicateName() == &_e || tuple.getPredicateName() == &_f)){
+    if(var<0 && ( tuple.getPredicateName() == &_aux || tuple.getPredicateName() == &_in || tuple.getPredicateName() == &_member || tuple.getPredicateName() == &_pair)){
         std::unordered_map<const std::string*, PredicateWSet*>::iterator falseSetIt = predicateFSetMap.find(tuple.getPredicateName());
         if (falseSetIt != predicateFSetMap.end()) {
             falseSetIt->second->erase(tuple);
@@ -491,35 +1078,33 @@ inline void Executor::onLiteralUndef(int var) {
             }
         }
     }
-    if(tuple.getPredicateName() == &_e){
+    if(tuple.getPredicateName() == &_in){
         if(var > 0){
-            const std::vector<const Tuple* >& trueJoinTuples = p_e_X_A_Y_f_B_Y_0_1_2_.getValues({tuple[0],tuple[1],tuple[2]});
+            const std::vector<const Tuple* >& trueJoinTuples = p_in_C_X_pair_C_X_0_1_.getValues({tuple[0],tuple[1]});
             for(const Tuple* t :trueJoinTuples){
-                const auto insertResult = ue_X_A_Y_f_B_Y_.insert(Tuple(*t));
+                const auto insertResult = uin_C_X_pair_C_X_.insert(Tuple(*t));
                 if(insertResult.second){
-                    for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_e_X_A_Y_f_B_Y_]) {
+                    for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_in_C_X_pair_C_X_]) {
                         auxMap -> insert2(*insertResult.first);
                     }
-                    int X = t->at(0);
-                    int Y = t->at(2);
+                    int C = t->at(0);
                     {
-                        Tuple sharedTuple(std::vector<int>({X,Y,Y}));
-                        if(sharedVariables_0_ToAggregate_2.count(sharedTuple)!=0){
-                            auto joinTuples = sharedVariables_0_ToAggregate_2[sharedTuple];
+                        Tuple sharedTuple(std::vector<int>({C,C}));
+                        if(sharedVariables_0_ToAggregate_1.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_0_ToAggregate_1[sharedTuple];
                             joinTuples->second->insert2(*insertResult.first);
                         }
                     }
                 }
-                we_X_A_Y_f_B_Y_.erase(*t);
+                win_C_X_pair_C_X_.erase(*t);
             }
         }
-        int X = tuple.at(0);
-        int A = tuple.at(1);
-        int Y = tuple.at(2);
+        int C = tuple.at(0);
+        int X = tuple.at(1);
         bool buildUndef=false;
         bool buildFalse=false;
-        const std::vector<const Tuple*>& tuplesU1 = pf_1_.getValues({Y});
-        const std::vector<const Tuple*>& tuples1 = uf_1_.getValues({Y});
+        const std::vector<const Tuple*>& tuplesU1 = ppair_0_1_.getValues({C, X});
+        const std::vector<const Tuple*>& tuples1 = upair_0_1_.getValues({C, X});
         for(int i=0;i<tuples1.size()+tuplesU1.size();i++){
             const Tuple* tuple1;
             if(i<tuples1.size())
@@ -527,51 +1112,51 @@ inline void Executor::onLiteralUndef(int var) {
             else{
                 tuple1=tuplesU1[i-tuples1.size()];
             }
-            int B = tuple1->at(0);
-            Tuple tupleUndef(std::vector<int>({X,A,Y,B,Y}),&_e_X_A_Y_f_B_Y_);
-            const auto& insertResult = ue_X_A_Y_f_B_Y_.insert(Tuple(tupleUndef));
-            if (insertResult.second) {
-                for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_e_X_A_Y_f_B_Y_]){
-                    auxMap -> insert2(*insertResult.first);
-                }
-                {
-                    Tuple sharedTuple(std::vector<int>({X,Y,Y}));
-                    if(sharedVariables_0_ToAggregate_2.count(sharedTuple)!=0){
-                        auto joinTuples = sharedVariables_0_ToAggregate_2[sharedTuple];
-                        joinTuples->second->insert2(*insertResult.first);
+            Tuple tupleUndef(std::vector<int>({C,X,C,X}),&_in_C_X_pair_C_X_);
+            if(uin_C_X_pair_C_X_.find(Tuple(tupleUndef)) == NULL){
+                const auto& insertResult = uin_C_X_pair_C_X_.insert(Tuple(tupleUndef));
+                if (insertResult.second) {
+                    for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_in_C_X_pair_C_X_]){
+                        auxMap -> insert2(*insertResult.first);
+                    }
+                    {
+                        Tuple sharedTuple(std::vector<int>({C,C}));
+                        if(sharedVariables_0_ToAggregate_1.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_0_ToAggregate_1[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
                     }
                 }
             }
         }
     }
-    if(tuple.getPredicateName() == &_f){
+    if(tuple.getPredicateName() == &_pair){
         if(var > 0){
-            const std::vector<const Tuple* >& trueJoinTuples = p_e_X_A_Y_f_B_Y_3_4_.getValues({tuple[0],tuple[1]});
+            const std::vector<const Tuple* >& trueJoinTuples = p_in_C_X_pair_C_X_2_3_.getValues({tuple[0],tuple[1]});
             for(const Tuple* t :trueJoinTuples){
-                const auto insertResult = ue_X_A_Y_f_B_Y_.insert(Tuple(*t));
+                const auto insertResult = uin_C_X_pair_C_X_.insert(Tuple(*t));
                 if(insertResult.second){
-                    for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_e_X_A_Y_f_B_Y_]) {
+                    for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_in_C_X_pair_C_X_]) {
                         auxMap -> insert2(*insertResult.first);
                     }
-                    int X = t->at(0);
-                    int Y = t->at(2);
+                    int C = t->at(0);
                     {
-                        Tuple sharedTuple(std::vector<int>({X,Y,Y}));
-                        if(sharedVariables_0_ToAggregate_2.count(sharedTuple)!=0){
-                            auto joinTuples = sharedVariables_0_ToAggregate_2[sharedTuple];
+                        Tuple sharedTuple(std::vector<int>({C,C}));
+                        if(sharedVariables_0_ToAggregate_1.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_0_ToAggregate_1[sharedTuple];
                             joinTuples->second->insert2(*insertResult.first);
                         }
                     }
                 }
-                we_X_A_Y_f_B_Y_.erase(*t);
+                win_C_X_pair_C_X_.erase(*t);
             }
         }
-        int B = tuple.at(0);
-        int Y = tuple.at(1);
+        int C = tuple.at(0);
+        int X = tuple.at(1);
         bool buildUndef=false;
         bool buildFalse=false;
-        const std::vector<const Tuple*>& tuplesU0 = pe_2_.getValues({Y});
-        const std::vector<const Tuple*>& tuples0 = ue_2_.getValues({Y});
+        const std::vector<const Tuple*>& tuplesU0 = pin_0_1_.getValues({C, X});
+        const std::vector<const Tuple*>& tuples0 = uin_0_1_.getValues({C, X});
         for(int i=0;i<tuples0.size()+tuplesU0.size();i++){
             const Tuple* tuple0;
             if(i<tuples0.size())
@@ -579,81 +1164,505 @@ inline void Executor::onLiteralUndef(int var) {
             else{
                 tuple0=tuplesU0[i-tuples0.size()];
             }
-            int X = tuple0->at(0);
-            int A = tuple0->at(1);
-            Tuple tupleUndef(std::vector<int>({X,A,Y,B,Y}),&_e_X_A_Y_f_B_Y_);
-            const auto& insertResult = ue_X_A_Y_f_B_Y_.insert(Tuple(tupleUndef));
-            if (insertResult.second) {
-                for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_e_X_A_Y_f_B_Y_]){
-                    auxMap -> insert2(*insertResult.first);
-                }
-                {
-                    Tuple sharedTuple(std::vector<int>({X,Y,Y}));
-                    if(sharedVariables_0_ToAggregate_2.count(sharedTuple)!=0){
-                        auto joinTuples = sharedVariables_0_ToAggregate_2[sharedTuple];
-                        joinTuples->second->insert2(*insertResult.first);
+            Tuple tupleUndef(std::vector<int>({C,X,C,X}),&_in_C_X_pair_C_X_);
+            if(uin_C_X_pair_C_X_.find(Tuple(tupleUndef)) == NULL){
+                const auto& insertResult = uin_C_X_pair_C_X_.insert(Tuple(tupleUndef));
+                if (insertResult.second) {
+                    for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_in_C_X_pair_C_X_]){
+                        auxMap -> insert2(*insertResult.first);
+                    }
+                    {
+                        Tuple sharedTuple(std::vector<int>({C,C}));
+                        if(sharedVariables_0_ToAggregate_1.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_0_ToAggregate_1[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
                     }
                 }
             }
         }
     }
-    if(tuple.getPredicateName() == &_c){
-        int X = tuple.at(0);
+    if(tuple.getPredicateName() == &_clique){
+        int C = tuple.at(0);
+        {
+            Tuple sharedTuple(std::vector<int>({C,C}));
+            if(!sharedVariables_0_ToAggregate_1.count(sharedTuple)){
+                sharedVariables_0_ToAggregate_1[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                const std::vector<const Tuple*>* undefJoinTuples = &u_in_C_X_pair_C_X_0_2_.getValues({C,C});
+                const std::vector<const Tuple*>* trueJoinTuples = &p_in_C_X_pair_C_X_0_2_.getValues({C,C});
+                for(int i=0;i<undefJoinTuples->size();i++){
+                    const auto findResult = uin_C_X_pair_C_X_.find(Tuple(*undefJoinTuples->at(i)));
+                    if(findResult!=NULL){
+                        sharedVariables_0_ToAggregate_1[sharedTuple]->second->insert2(*findResult);
+                    }
+                }
+                for(int i=0;i<trueJoinTuples->size();i++){
+                    const auto findResult = win_C_X_pair_C_X_.find(Tuple(*trueJoinTuples->at(i)));
+                    if(findResult!=NULL){
+                        sharedVariables_0_ToAggregate_1[sharedTuple]->first->insert2(*findResult);
+                    }
+                }
+            }
+        }
+    }
+    if(tuple.getPredicateName() == &_aux){
+        if(var > 0){
+            const std::vector<const Tuple* >& trueJoinTuples = p_aux_R_Y_member_Y_R_0_1_.getValues({tuple[0],tuple[1]});
+            for(const Tuple* t :trueJoinTuples){
+                const auto insertResult = uaux_R_Y_member_Y_R_.insert(Tuple(*t));
+                if(insertResult.second){
+                    for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_]) {
+                        auxMap -> insert2(*insertResult.first);
+                    }
+                    int R = t->at(0);
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                }
+                waux_R_Y_member_Y_R_.erase(*t);
+            }
+        }
+        int R = tuple.at(0);
         int Y = tuple.at(1);
-        const std::vector<const Tuple *>& undefTuples1 = ud_0_.getValues({Y});
-        const std::vector<const Tuple*>& trueTuples1 = pd_0_.getValues({Y});
+        bool buildUndef=false;
+        bool buildFalse=false;
+        const std::vector<const Tuple*>& tuplesU1 = pmember_0_1_.getValues({Y, R});
+        const std::vector<const Tuple*>& tuples1 = umember_0_1_.getValues({Y, R});
+        for(int i=0;i<tuples1.size()+tuplesU1.size();i++){
+            const Tuple* tuple1;
+            if(i<tuples1.size())
+                tuple1=tuples1[i];
+            else{
+                tuple1=tuplesU1[i-tuples1.size()];
+            }
+            Tuple tupleUndef(std::vector<int>({R,Y,Y,R}),&_aux_R_Y_member_Y_R_);
+            if(uaux_R_Y_member_Y_R_.find(Tuple(tupleUndef)) == NULL){
+                const auto& insertResult = uaux_R_Y_member_Y_R_.insert(Tuple(tupleUndef));
+                if (insertResult.second) {
+                    for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_]){
+                        auxMap -> insert2(*insertResult.first);
+                    }
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if(tuple.getPredicateName() == &_member){
+        if(var > 0){
+            const std::vector<const Tuple* >& trueJoinTuples = p_aux_R_Y_member_Y_R_2_3_.getValues({tuple[0],tuple[1]});
+            for(const Tuple* t :trueJoinTuples){
+                const auto insertResult = uaux_R_Y_member_Y_R_.insert(Tuple(*t));
+                if(insertResult.second){
+                    for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_]) {
+                        auxMap -> insert2(*insertResult.first);
+                    }
+                    int R = t->at(0);
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                }
+                waux_R_Y_member_Y_R_.erase(*t);
+            }
+        }
+        int Y = tuple.at(0);
+        int R = tuple.at(1);
+        bool buildUndef=false;
+        bool buildFalse=false;
+        const std::vector<const Tuple*>& tuplesU0 = paux_0_1_.getValues({R, Y});
+        const std::vector<const Tuple*>& tuples0 = uaux_0_1_.getValues({R, Y});
+        for(int i=0;i<tuples0.size()+tuplesU0.size();i++){
+            const Tuple* tuple0;
+            if(i<tuples0.size())
+                tuple0=tuples0[i];
+            else{
+                tuple0=tuplesU0[i-tuples0.size()];
+            }
+            Tuple tupleUndef(std::vector<int>({R,Y,Y,R}),&_aux_R_Y_member_Y_R_);
+            if(uaux_R_Y_member_Y_R_.find(Tuple(tupleUndef)) == NULL){
+                const auto& insertResult = uaux_R_Y_member_Y_R_.insert(Tuple(tupleUndef));
+                if (insertResult.second) {
+                    for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_]){
+                        auxMap -> insert2(*insertResult.first);
+                    }
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if(tuple.getPredicateName() == &_aux){
+        if(var > 0){
+            const std::vector<const Tuple* >& trueJoinTuples = p_aux_R_Y_member_Y_R_0_1_.getValues({tuple[0],tuple[1]});
+            for(const Tuple* t :trueJoinTuples){
+                const auto insertResult = uaux_R_Y_member_Y_R_.insert(Tuple(*t));
+                if(insertResult.second){
+                    for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_]) {
+                        auxMap -> insert2(*insertResult.first);
+                    }
+                    int R = t->at(0);
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                }
+                waux_R_Y_member_Y_R_.erase(*t);
+            }
+        }
+        int R = tuple.at(0);
+        int Y = tuple.at(1);
+        bool buildUndef=false;
+        bool buildFalse=false;
+        const std::vector<const Tuple*>& tuplesU1 = pmember_0_1_.getValues({Y, R});
+        const std::vector<const Tuple*>& tuples1 = umember_0_1_.getValues({Y, R});
+        for(int i=0;i<tuples1.size()+tuplesU1.size();i++){
+            const Tuple* tuple1;
+            if(i<tuples1.size())
+                tuple1=tuples1[i];
+            else{
+                tuple1=tuplesU1[i-tuples1.size()];
+            }
+            Tuple tupleUndef(std::vector<int>({R,Y,Y,R}),&_aux_R_Y_member_Y_R_);
+            if(uaux_R_Y_member_Y_R_.find(Tuple(tupleUndef)) == NULL){
+                const auto& insertResult = uaux_R_Y_member_Y_R_.insert(Tuple(tupleUndef));
+                if (insertResult.second) {
+                    for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_]){
+                        auxMap -> insert2(*insertResult.first);
+                    }
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if(tuple.getPredicateName() == &_member){
+        if(var > 0){
+            const std::vector<const Tuple* >& trueJoinTuples = p_aux_R_Y_member_Y_R_2_3_.getValues({tuple[0],tuple[1]});
+            for(const Tuple* t :trueJoinTuples){
+                const auto insertResult = uaux_R_Y_member_Y_R_.insert(Tuple(*t));
+                if(insertResult.second){
+                    for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_]) {
+                        auxMap -> insert2(*insertResult.first);
+                    }
+                    int R = t->at(0);
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                }
+                waux_R_Y_member_Y_R_.erase(*t);
+            }
+        }
+        int Y = tuple.at(0);
+        int R = tuple.at(1);
+        bool buildUndef=false;
+        bool buildFalse=false;
+        const std::vector<const Tuple*>& tuplesU0 = paux_0_1_.getValues({R, Y});
+        const std::vector<const Tuple*>& tuples0 = uaux_0_1_.getValues({R, Y});
+        for(int i=0;i<tuples0.size()+tuplesU0.size();i++){
+            const Tuple* tuple0;
+            if(i<tuples0.size())
+                tuple0=tuples0[i];
+            else{
+                tuple0=tuplesU0[i-tuples0.size()];
+            }
+            Tuple tupleUndef(std::vector<int>({R,Y,Y,R}),&_aux_R_Y_member_Y_R_);
+            if(uaux_R_Y_member_Y_R_.find(Tuple(tupleUndef)) == NULL){
+                const auto& insertResult = uaux_R_Y_member_Y_R_.insert(Tuple(tupleUndef));
+                if (insertResult.second) {
+                    for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_]){
+                        auxMap -> insert2(*insertResult.first);
+                    }
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_3.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_3[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                    {
+                        Tuple sharedTuple(std::vector<int>({R,R}));
+                        if(sharedVariables_1_ToAggregate_4.count(sharedTuple)!=0){
+                            auto joinTuples = sharedVariables_1_ToAggregate_4[sharedTuple];
+                            joinTuples->second->insert2(*insertResult.first);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if(tuple.getPredicateName() == &_in){
+        int C = tuple.at(0);
+        int X = tuple.at(1);
+        const std::vector<const Tuple *>& undefTuples1 = urest_0_1_.getValues({C, X});
+        const std::vector<const Tuple*>& trueTuples1 = prest_0_1_.getValues({C, X});
         for(int i=0;i<undefTuples1.size()+trueTuples1.size();i++){
             const Tuple * tuple1;
             if(i<undefTuples1.size())
                 tuple1 = undefTuples1[i];
             else tuple1 = trueTuples1[i-undefTuples1.size()];
-            int Z = tuple1->at(1);
-            Tuple sharedTuple(std::vector<int>({X,Y,Y}));
-            if(!sharedVariables_0_ToAggregate_2.count(sharedTuple)){
-                sharedVariables_0_ToAggregate_2[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1,3})),new AuxMap(std::vector<unsigned>({1,3})));
-                const std::vector<const Tuple*>* undefJoinTuples = &u_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
-                const std::vector<const Tuple*>* trueJoinTuples = &p_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
-                for(int i=0;i<undefJoinTuples->size();i++){
-                    const auto findResult = ue_X_A_Y_f_B_Y_.find(Tuple(*undefJoinTuples->at(i)));
-                    if(findResult!=NULL){
-                        sharedVariables_0_ToAggregate_2[sharedTuple]->second->insert2(*findResult);
+            int R = tuple1->at(2);
+            const Tuple* undefT = ucliquesize.find({R, 1});
+            const Tuple* trueT = wcliquesize.find({R, 1});
+            std::vector<const Tuple *> undefTuples2;
+            if(undefT != NULL) undefTuples2.push_back(undefT);
+            std::vector<const Tuple *> trueTuples2;
+            if(trueT != NULL) trueTuples2.push_back(undefT);
+            for(int i=0;i<undefTuples2.size()+trueTuples2.size();i++){
+                const Tuple * tuple2;
+                if(i<undefTuples2.size())
+                    tuple2 = undefTuples2[i];
+                else tuple2 = trueTuples2[i-undefTuples2.size()];
+                {
+                    Tuple sharedTuple(std::vector<int>({R,R}));
+                    if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                        sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        for(int i=0;i<undefJoinTuples->size();i++){
+                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                            }
+                        }
+                        for(int i=0;i<trueJoinTuples->size();i++){
+                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                            }
+                        }
                     }
                 }
-                for(int i=0;i<trueJoinTuples->size();i++){
-                    const auto findResult = we_X_A_Y_f_B_Y_.find(Tuple(*trueJoinTuples->at(i)));
-                    if(findResult!=NULL){
-                        sharedVariables_0_ToAggregate_2[sharedTuple]->first->insert2(*findResult);
+                {
+                    Tuple sharedTuple(std::vector<int>({R,R}));
+                    if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                        sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        for(int i=0;i<undefJoinTuples->size();i++){
+                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                            }
+                        }
+                        for(int i=0;i<trueJoinTuples->size();i++){
+                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                            }
+                        }
                     }
                 }
             }
         }
     }
-    if(tuple.getPredicateName() == &_d){
-        int Y = tuple.at(0);
-        int Z = tuple.at(1);
-        const std::vector<const Tuple *>& undefTuples0 = uc_1_.getValues({Y});
-        const std::vector<const Tuple*>& trueTuples0 = pc_1_.getValues({Y});
+    if(tuple.getPredicateName() == &_rest){
+        int C = tuple.at(0);
+        int X = tuple.at(1);
+        int R = tuple.at(2);
+        const Tuple* undefT = uin.find({C, X});
+        const Tuple* trueT = win.find({C, X});
+        std::vector<const Tuple *> undefTuples0;
+        if(undefT != NULL) undefTuples0.push_back(undefT);
+        std::vector<const Tuple *> trueTuples0;
+        if(trueT != NULL) trueTuples0.push_back(undefT);
         for(int i=0;i<undefTuples0.size()+trueTuples0.size();i++){
             const Tuple * tuple0;
             if(i<undefTuples0.size())
                 tuple0 = undefTuples0[i];
             else tuple0 = trueTuples0[i-undefTuples0.size()];
-            int X = tuple0->at(0);
-            Tuple sharedTuple(std::vector<int>({X,Y,Y}));
-            if(!sharedVariables_0_ToAggregate_2.count(sharedTuple)){
-                sharedVariables_0_ToAggregate_2[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1,3})),new AuxMap(std::vector<unsigned>({1,3})));
-                const std::vector<const Tuple*>* undefJoinTuples = &u_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
-                const std::vector<const Tuple*>* trueJoinTuples = &p_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
-                for(int i=0;i<undefJoinTuples->size();i++){
-                    const auto findResult = ue_X_A_Y_f_B_Y_.find(Tuple(*undefJoinTuples->at(i)));
-                    if(findResult!=NULL){
-                        sharedVariables_0_ToAggregate_2[sharedTuple]->second->insert2(*findResult);
+            const Tuple* undefT = ucliquesize.find({R, 1});
+            const Tuple* trueT = wcliquesize.find({R, 1});
+            std::vector<const Tuple *> undefTuples2;
+            if(undefT != NULL) undefTuples2.push_back(undefT);
+            std::vector<const Tuple *> trueTuples2;
+            if(trueT != NULL) trueTuples2.push_back(undefT);
+            for(int i=0;i<undefTuples2.size()+trueTuples2.size();i++){
+                const Tuple * tuple2;
+                if(i<undefTuples2.size())
+                    tuple2 = undefTuples2[i];
+                else tuple2 = trueTuples2[i-undefTuples2.size()];
+                {
+                    Tuple sharedTuple(std::vector<int>({R,R}));
+                    if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                        sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        for(int i=0;i<undefJoinTuples->size();i++){
+                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                            }
+                        }
+                        for(int i=0;i<trueJoinTuples->size();i++){
+                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                            }
+                        }
                     }
                 }
-                for(int i=0;i<trueJoinTuples->size();i++){
-                    const auto findResult = we_X_A_Y_f_B_Y_.find(Tuple(*trueJoinTuples->at(i)));
-                    if(findResult!=NULL){
-                        sharedVariables_0_ToAggregate_2[sharedTuple]->first->insert2(*findResult);
+                {
+                    Tuple sharedTuple(std::vector<int>({R,R}));
+                    if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                        sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        for(int i=0;i<undefJoinTuples->size();i++){
+                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                            }
+                        }
+                        for(int i=0;i<trueJoinTuples->size();i++){
+                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if(tuple.getPredicateName() == &_cliquesize){
+        int R = tuple.at(0);
+        const std::vector<const Tuple *>& undefTuples0 = uin_.getValues({});
+        const std::vector<const Tuple*>& trueTuples0 = pin_.getValues({});
+        for(int i=0;i<undefTuples0.size()+trueTuples0.size();i++){
+            const Tuple * tuple0;
+            if(i<undefTuples0.size())
+                tuple0 = undefTuples0[i];
+            else tuple0 = trueTuples0[i-undefTuples0.size()];
+            int C = tuple0->at(0);
+            int X = tuple0->at(1);
+            const Tuple* undefT = urest.find({C, X, R});
+            const Tuple* trueT = wrest.find({C, X, R});
+            std::vector<const Tuple *> undefTuples1;
+            if(undefT != NULL) undefTuples1.push_back(undefT);
+            std::vector<const Tuple *> trueTuples1;
+            if(trueT != NULL) trueTuples1.push_back(undefT);
+            for(int i=0;i<undefTuples1.size()+trueTuples1.size();i++){
+                const Tuple * tuple1;
+                if(i<undefTuples1.size())
+                    tuple1 = undefTuples1[i];
+                else tuple1 = trueTuples1[i-undefTuples1.size()];
+                {
+                    Tuple sharedTuple(std::vector<int>({R,R}));
+                    if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                        sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        for(int i=0;i<undefJoinTuples->size();i++){
+                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                            }
+                        }
+                        for(int i=0;i<trueJoinTuples->size();i++){
+                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                            }
+                        }
+                    }
+                }
+                {
+                    Tuple sharedTuple(std::vector<int>({R,R}));
+                    if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                        sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                        for(int i=0;i<undefJoinTuples->size();i++){
+                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                            }
+                        }
+                        for(int i=0;i<trueJoinTuples->size();i++){
+                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                            }
+                        }
                     }
                 }
             }
@@ -674,58 +1683,104 @@ void Executor::clear() {
 }
 void Executor::init() {
     createFunctionsMap();
-    predicateWSetMap[&_c]=&wc;
-    predicateUSetMap[&_c]=&uc;
-    stringToUniqueStringPointer["c"] = &_c;
-    predicateWSetMap[&_d]=&wd;
-    predicateUSetMap[&_d]=&ud;
-    stringToUniqueStringPointer["d"] = &_d;
-    aggregatePredicatesAndVars [&_e]= std::vector<int>({1});
-    predicateWSetMap[&_e]=&we;
-    predicateFSetMap[&_e]=&fe;
-    predicateUSetMap[&_e]=&ue;
-    stringToUniqueStringPointer["e"] = &_e;
-    aggregatePredicatesAndVars [&_f]= std::vector<int>({0});
-    predicateWSetMap[&_f]=&wf;
-    predicateFSetMap[&_f]=&ff;
-    predicateUSetMap[&_f]=&uf;
-    stringToUniqueStringPointer["f"] = &_f;
-    predicateToAuxiliaryMaps[&_d].push_back(&pd_0_);
-    predicateToAuxiliaryMaps[&_c].push_back(&pc_);
-    predicateToAuxiliaryMaps[&_c].push_back(&pc_0_1_);
-    predicateToAuxiliaryMaps[&_c].push_back(&pc_1_);
-    predicateToAuxiliaryMaps[&_e_X_A_Y_f_B_Y_].push_back(&p_e_X_A_Y_f_B_Y_);
-    predicateToAuxiliaryMaps[&_e_X_A_Y_f_B_Y_].push_back(&p_e_X_A_Y_f_B_Y_0_1_2_);
-    predicateToAuxiliaryMaps[&_e_X_A_Y_f_B_Y_].push_back(&p_e_X_A_Y_f_B_Y_0_2_4_);
-    predicateToAuxiliaryMaps[&_e_X_A_Y_f_B_Y_].push_back(&p_e_X_A_Y_f_B_Y_1_3_);
-    predicateToAuxiliaryMaps[&_e_X_A_Y_f_B_Y_].push_back(&p_e_X_A_Y_f_B_Y_3_4_);
-    predicateToAuxiliaryMaps[&_e].push_back(&pe_);
-    predicateToAuxiliaryMaps[&_e].push_back(&pe_0_1_2_);
-    predicateToAuxiliaryMaps[&_e].push_back(&pe_2_);
-    predicateToAuxiliaryMaps[&_f].push_back(&pf_);
-    predicateToAuxiliaryMaps[&_f].push_back(&pf_0_1_);
-    predicateToAuxiliaryMaps[&_f].push_back(&pf_1_);
-    predicateToUndefAuxiliaryMaps[&_d].push_back(&ud_0_);
-    predicateToUndefAuxiliaryMaps[&_c].push_back(&uc_);
-    predicateToUndefAuxiliaryMaps[&_c].push_back(&uc_0_1_);
-    predicateToUndefAuxiliaryMaps[&_c].push_back(&uc_1_);
-    predicateToUndefAuxiliaryMaps[&_e_X_A_Y_f_B_Y_].push_back(&u_e_X_A_Y_f_B_Y_);
-    predicateToUndefAuxiliaryMaps[&_e_X_A_Y_f_B_Y_].push_back(&u_e_X_A_Y_f_B_Y_0_1_2_);
-    predicateToUndefAuxiliaryMaps[&_e_X_A_Y_f_B_Y_].push_back(&u_e_X_A_Y_f_B_Y_0_2_4_);
-    predicateToUndefAuxiliaryMaps[&_e_X_A_Y_f_B_Y_].push_back(&u_e_X_A_Y_f_B_Y_1_3_);
-    predicateToUndefAuxiliaryMaps[&_e_X_A_Y_f_B_Y_].push_back(&u_e_X_A_Y_f_B_Y_3_4_);
-    predicateToUndefAuxiliaryMaps[&_e].push_back(&ue_);
-    predicateToUndefAuxiliaryMaps[&_e].push_back(&ue_0_1_2_);
-    predicateToUndefAuxiliaryMaps[&_e].push_back(&ue_2_);
-    predicateToUndefAuxiliaryMaps[&_f].push_back(&uf_);
-    predicateToUndefAuxiliaryMaps[&_f].push_back(&uf_0_1_);
-    predicateToUndefAuxiliaryMaps[&_f].push_back(&uf_1_);
-    predicateToFalseAuxiliaryMaps[&_f].push_back(&ff_);
-    predicateToFalseAuxiliaryMaps[&_f].push_back(&ff_0_1_);
-    predicateToFalseAuxiliaryMaps[&_f].push_back(&ff_1_);
-    predicateToFalseAuxiliaryMaps[&_e].push_back(&fe_);
-    predicateToFalseAuxiliaryMaps[&_e].push_back(&fe_0_1_2_);
-    predicateToFalseAuxiliaryMaps[&_e].push_back(&fe_2_);
+    predicateWSetMap[&_clique]=&wclique;
+    predicateUSetMap[&_clique]=&uclique;
+    stringToUniqueStringPointer["clique"] = &_clique;
+    predicateWSetMap[&_cliquesize]=&wcliquesize;
+    predicateUSetMap[&_cliquesize]=&ucliquesize;
+    stringToUniqueStringPointer["cliquesize"] = &_cliquesize;
+    predicateWSetMap[&_in]=&win;
+    predicateUSetMap[&_in]=&uin;
+    stringToUniqueStringPointer["in"] = &_in;
+    predicateWSetMap[&_rest]=&wrest;
+    predicateUSetMap[&_rest]=&urest;
+    stringToUniqueStringPointer["rest"] = &_rest;
+    aggregatePredicatesAndVars [&_in]= std::vector<int>({1});
+    predicateWSetMap[&_in]=&win;
+    predicateFSetMap[&_in]=&fin;
+    predicateUSetMap[&_in]=&uin;
+    stringToUniqueStringPointer["in"] = &_in;
+    aggregatePredicatesAndVars [&_pair]= std::vector<int>({1});
+    predicateWSetMap[&_pair]=&wpair;
+    predicateFSetMap[&_pair]=&fpair;
+    predicateUSetMap[&_pair]=&upair;
+    stringToUniqueStringPointer["pair"] = &_pair;
+    aggregatePredicatesAndVars [&_aux]= std::vector<int>({1});
+    predicateWSetMap[&_aux]=&waux;
+    predicateFSetMap[&_aux]=&faux;
+    predicateUSetMap[&_aux]=&uaux;
+    stringToUniqueStringPointer["aux"] = &_aux;
+    aggregatePredicatesAndVars [&_member]= std::vector<int>({0});
+    predicateWSetMap[&_member]=&wmember;
+    predicateFSetMap[&_member]=&fmember;
+    predicateUSetMap[&_member]=&umember;
+    stringToUniqueStringPointer["member"] = &_member;
+    aggregatePredicatesAndVars [&_aux]= std::vector<int>({1});
+    predicateWSetMap[&_aux]=&waux;
+    predicateFSetMap[&_aux]=&faux;
+    predicateUSetMap[&_aux]=&uaux;
+    stringToUniqueStringPointer["aux"] = &_aux;
+    aggregatePredicatesAndVars [&_member]= std::vector<int>({0});
+    predicateWSetMap[&_member]=&wmember;
+    predicateFSetMap[&_member]=&fmember;
+    predicateUSetMap[&_member]=&umember;
+    stringToUniqueStringPointer["member"] = &_member;
+    predicateToAuxiliaryMaps[&_cliquesize].push_back(&pcliquesize_0_1_);
+    predicateToAuxiliaryMaps[&_rest].push_back(&prest_0_1_);
+    predicateToAuxiliaryMaps[&_rest].push_back(&prest_0_1_2_);
+    predicateToAuxiliaryMaps[&_rest].push_back(&prest_2_);
+    predicateToAuxiliaryMaps[&_aux_R_Y_member_Y_R_].push_back(&p_aux_R_Y_member_Y_R_);
+    predicateToAuxiliaryMaps[&_aux_R_Y_member_Y_R_].push_back(&p_aux_R_Y_member_Y_R_0_1_);
+    predicateToAuxiliaryMaps[&_aux_R_Y_member_Y_R_].push_back(&p_aux_R_Y_member_Y_R_0_3_);
+    predicateToAuxiliaryMaps[&_aux_R_Y_member_Y_R_].push_back(&p_aux_R_Y_member_Y_R_1_);
+    predicateToAuxiliaryMaps[&_aux_R_Y_member_Y_R_].push_back(&p_aux_R_Y_member_Y_R_2_3_);
+    predicateToAuxiliaryMaps[&_pair].push_back(&ppair_);
+    predicateToAuxiliaryMaps[&_pair].push_back(&ppair_0_1_);
+    predicateToAuxiliaryMaps[&_in].push_back(&pin_);
+    predicateToAuxiliaryMaps[&_in].push_back(&pin_0_1_);
+    predicateToAuxiliaryMaps[&_aux].push_back(&paux_);
+    predicateToAuxiliaryMaps[&_aux].push_back(&paux_0_1_);
+    predicateToAuxiliaryMaps[&_clique].push_back(&pclique_);
+    predicateToAuxiliaryMaps[&_clique].push_back(&pclique_0_);
+    predicateToAuxiliaryMaps[&_in_C_X_pair_C_X_].push_back(&p_in_C_X_pair_C_X_);
+    predicateToAuxiliaryMaps[&_in_C_X_pair_C_X_].push_back(&p_in_C_X_pair_C_X_0_1_);
+    predicateToAuxiliaryMaps[&_in_C_X_pair_C_X_].push_back(&p_in_C_X_pair_C_X_0_2_);
+    predicateToAuxiliaryMaps[&_in_C_X_pair_C_X_].push_back(&p_in_C_X_pair_C_X_1_);
+    predicateToAuxiliaryMaps[&_in_C_X_pair_C_X_].push_back(&p_in_C_X_pair_C_X_2_3_);
+    predicateToAuxiliaryMaps[&_member].push_back(&pmember_);
+    predicateToAuxiliaryMaps[&_member].push_back(&pmember_0_1_);
+    predicateToUndefAuxiliaryMaps[&_cliquesize].push_back(&ucliquesize_0_1_);
+    predicateToUndefAuxiliaryMaps[&_rest].push_back(&urest_0_1_);
+    predicateToUndefAuxiliaryMaps[&_rest].push_back(&urest_0_1_2_);
+    predicateToUndefAuxiliaryMaps[&_rest].push_back(&urest_2_);
+    predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_].push_back(&u_aux_R_Y_member_Y_R_);
+    predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_].push_back(&u_aux_R_Y_member_Y_R_0_1_);
+    predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_].push_back(&u_aux_R_Y_member_Y_R_0_3_);
+    predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_].push_back(&u_aux_R_Y_member_Y_R_1_);
+    predicateToUndefAuxiliaryMaps[&_aux_R_Y_member_Y_R_].push_back(&u_aux_R_Y_member_Y_R_2_3_);
+    predicateToUndefAuxiliaryMaps[&_pair].push_back(&upair_);
+    predicateToUndefAuxiliaryMaps[&_pair].push_back(&upair_0_1_);
+    predicateToUndefAuxiliaryMaps[&_in].push_back(&uin_);
+    predicateToUndefAuxiliaryMaps[&_in].push_back(&uin_0_1_);
+    predicateToUndefAuxiliaryMaps[&_aux].push_back(&uaux_);
+    predicateToUndefAuxiliaryMaps[&_aux].push_back(&uaux_0_1_);
+    predicateToUndefAuxiliaryMaps[&_clique].push_back(&uclique_);
+    predicateToUndefAuxiliaryMaps[&_clique].push_back(&uclique_0_);
+    predicateToUndefAuxiliaryMaps[&_in_C_X_pair_C_X_].push_back(&u_in_C_X_pair_C_X_);
+    predicateToUndefAuxiliaryMaps[&_in_C_X_pair_C_X_].push_back(&u_in_C_X_pair_C_X_0_1_);
+    predicateToUndefAuxiliaryMaps[&_in_C_X_pair_C_X_].push_back(&u_in_C_X_pair_C_X_0_2_);
+    predicateToUndefAuxiliaryMaps[&_in_C_X_pair_C_X_].push_back(&u_in_C_X_pair_C_X_1_);
+    predicateToUndefAuxiliaryMaps[&_in_C_X_pair_C_X_].push_back(&u_in_C_X_pair_C_X_2_3_);
+    predicateToUndefAuxiliaryMaps[&_member].push_back(&umember_);
+    predicateToUndefAuxiliaryMaps[&_member].push_back(&umember_0_1_);
+    predicateToFalseAuxiliaryMaps[&_member].push_back(&fmember_);
+    predicateToFalseAuxiliaryMaps[&_member].push_back(&fmember_0_1_);
+    predicateToFalseAuxiliaryMaps[&_aux].push_back(&faux_);
+    predicateToFalseAuxiliaryMaps[&_aux].push_back(&faux_0_1_);
+    predicateToFalseAuxiliaryMaps[&_in].push_back(&fin_);
+    predicateToFalseAuxiliaryMaps[&_in].push_back(&fin_0_1_);
+    predicateToFalseAuxiliaryMaps[&_pair].push_back(&fpair_);
+    predicateToFalseAuxiliaryMaps[&_pair].push_back(&fpair_0_1_);
 }
 void Executor::executeProgramOnFacts(const std::vector<aspc::Literal*> & facts) {}
 void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
@@ -739,10 +1794,10 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
             const Tuple * tupleU = NULL;
             bool tupleUNegated = false;
             const std::vector<const Tuple* >* tuples;
-            tuples = &pc_.getValues({});
+            tuples = &pclique_.getValues({});
             const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
             if(tupleU == NULL){
-                tuplesU = &uc_.getValues({});
+                tuplesU = &uclique_.getValues({});
             }
             for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
                 const Tuple * tuple0 = NULL;
@@ -757,13 +1812,128 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                     tupleU = tuple0;
                     tupleUNegated = false;
                 }
-                int X = (*tuple0)[0];
-                int Y = (*tuple0)[1];
+                int C = (*tuple0)[0];
+                std::pair<AuxMap*,AuxMap*> joinTuples_0_1;
+                joinTuples_0_1.first = &p_in_C_X_pair_C_X_;
+                joinTuples_0_1.second = &u_in_C_X_pair_C_X_;
+                {
+                    Tuple sharedTuple(std::vector<int>({C,C}));
+                    if(!sharedVariables_0_ToAggregate_1.count(sharedTuple)){
+                        sharedVariables_0_ToAggregate_1[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                        const std::vector<const Tuple*>* trueJoinTuples = &p_in_C_X_pair_C_X_0_2_.getValues({C,C});
+                        const std::vector<const Tuple*>* undefJoinTuples = &u_in_C_X_pair_C_X_0_2_.getValues({C,C});
+                        for(int i=0;i<trueJoinTuples->size();i++){
+                            const auto findResult = win_C_X_pair_C_X_.find(Tuple(*trueJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_0_ToAggregate_1[sharedTuple]->first->insert2(*findResult);
+                            }
+                        }
+                        for(int i=0;i<undefJoinTuples->size();i++){
+                            const auto findResult = uin_C_X_pair_C_X_.find(Tuple(*undefJoinTuples->at(i)));
+                            if(findResult!=NULL){
+                                sharedVariables_0_ToAggregate_1[sharedTuple]->second->insert2(*findResult);
+                            }
+                        }
+                    }
+                }
+                std::pair<AuxMap*,AuxMap*> joinTuples_0_1SharedVariables = *sharedVariables_0_ToAggregate_1[std::vector<int>({C,C})];
+                if(tupleU==NULL){
+                    if(joinTuples_0_1SharedVariables.first->size()>=2+1){
+                        std::cout<<"conflict detected in propagator0"<<std::endl;
+                        propagatedLiteralsAndReasons.insert({-1, std::vector<int>()});
+                    }else{
+                        if(joinTuples_0_1SharedVariables.first->size() == 2+1-1){
+                            const std::vector<const Tuple*>* undefinedTuples = &u_in_C_X_pair_C_X_0_2_.getValues({C,C});
+                            for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
+                                if(joinTuples_0_1SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0){
+                                    const Tuple* aggrTupleU=NULL;
+                                    const std::vector<const Tuple*>* tuplesin;
+                                    const std::vector<const Tuple*>* tuplesUin=&EMPTY_TUPLES;
+                                    tuplesin= &pin_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                    if(aggrTupleU==NULL)
+                                        tuplesUin= &uin_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                    for(int j2=0;j2<tuplesin->size()+tuplesUin->size();j2++){
+                                        const Tuple* auxTuple2=NULL;
+                                        bool addedToReason=false;
+                                        if(j2 < tuplesin->size()){
+                                            auxTuple2 = tuplesin->at(j2);
+                                            if(tuplesUin != &EMPTY_TUPLES) {
+                                            }
+                                        }else{
+                                            auxTuple2 = tuplesUin->at(j2-tuplesin->size());
+                                            aggrTupleU = auxTuple2;
+                                        }
+                                        const std::vector<const Tuple*>* tuplespair;
+                                        const std::vector<const Tuple*>* tuplesUpair=&EMPTY_TUPLES;
+                                        tuplespair= &ppair_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                        if(aggrTupleU==NULL)
+                                            tuplesUpair= &upair_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                        for(int j4=0;j4<tuplespair->size()+tuplesUpair->size();j4++){
+                                            const Tuple* auxTuple4=NULL;
+                                            bool addedToReason=false;
+                                            if(j4 < tuplespair->size()){
+                                                auxTuple4 = tuplespair->at(j4);
+                                                if(tuplesUpair != &EMPTY_TUPLES) {
+                                                }
+                                            }else{
+                                                auxTuple4 = tuplesUpair->at(j4-tuplespair->size());
+                                                aggrTupleU = auxTuple4;
+                                            }
+                                            if(aggrTupleU == NULL){
+                                                std::cout<<"Tuple undefined not well formed"<<std::endl;
+                                            }else{
+                                                const auto & it = tupleToVar.find(*aggrTupleU);
+                                                if(it != tupleToVar.end()) {
+                                                    int sign = aggrTupleU->isNegated() ? -1 : 1;
+                                                    auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    if(joinTuples_0_1SharedVariables.first->size()>=2+1){
+                        const auto & it = tupleToVar.find(*tupleU);
+                        if(it != tupleToVar.end()) {
+                            int sign = tupleU->isNegated() ? -1 : 1;
+                            auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
+                        }
+                    }
+                }
+            }//close par
+        }//close local scope
+        {
+            const Tuple * tupleU = NULL;
+            bool tupleUNegated = false;
+            const std::vector<const Tuple* >* tuples;
+            tuples = &pin_.getValues({});
+            const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
+            if(tupleU == NULL){
+                tuplesU = &uin_.getValues({});
+            }
+            for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
+                const Tuple * tuple0 = NULL;
+                if(i<tuples->size()){
+                    tuple0 = tuples->at(i);
+                    if(tuplesU != &EMPTY_TUPLES) {
+                        tupleU = NULL;
+                    }
+                }
+                else {
+                    tuple0 = tuplesU->at(i-tuples->size());
+                    tupleU = tuple0;
+                    tupleUNegated = false;
+                }
+                int C = (*tuple0)[0];
+                int X = (*tuple0)[1];
                 const std::vector<const Tuple* >* tuples;
-                tuples = &pd_0_.getValues({Y});
+                tuples = &prest_0_1_.getValues({C, X});
                 const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
                 if(tupleU == NULL){
-                    tuplesU = &ud_0_.getValues({Y});
+                    tuplesU = &urest_0_1_.getValues({C, X});
                 }
                 for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
                     const Tuple * tuple1 = NULL;
@@ -778,78 +1948,307 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                         tupleU = tuple1;
                         tupleUNegated = false;
                     }
-                    int Z = (*tuple1)[1];
-                    std::pair<AuxMap*,AuxMap*> joinTuples_0_2;
-                    joinTuples_0_2.first = &p_e_X_A_Y_f_B_Y_;
-                    joinTuples_0_2.second = &u_e_X_A_Y_f_B_Y_;
-                    std::pair<AuxMap*,AuxMap*> joinTuples_0_2SharedVariables = *sharedVariables_0_ToAggregate_2[std::vector<int>({X,Y,Y})];
-                    if(tupleU==NULL){
-                        if(joinTuples_0_2SharedVariables.first->size()>=3){
-                            std::cout<<"conflict detected in propagator"<<std::endl;
-                            propagatedLiteralsAndReasons.insert({-1, std::vector<int>()});
-                        }else{
-                            if(joinTuples_0_2SharedVariables.first->size() == 3-1){
-                                const std::vector<const Tuple*>* undefinedTuples = &u_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
-                                for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
-                                    if(joinTuples_0_2SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1),undefinedTuples->at(iUndef)->at(3)}).size() == 0){
-                                        const Tuple* aggrTupleU=NULL;
-                                        const std::vector<const Tuple*>* tuplese;
-                                        const std::vector<const Tuple*>* tuplesUe=&EMPTY_TUPLES;
-                                        tuplese= &pe_0_1_2_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1),undefinedTuples->at(iUndef)->at(2)});
-                                        if(aggrTupleU==NULL)
-                                            tuplesUe= &ue_0_1_2_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1),undefinedTuples->at(iUndef)->at(2)});
-                                        for(int j3=0;j3<tuplese->size()+tuplesUe->size();j3++){
-                                            const Tuple* auxTuple3=NULL;
-                                            bool addedToReason=false;
-                                            if(j3 < tuplese->size()){
-                                                auxTuple3 = tuplese->at(j3);
-                                                if(tuplesUe != &EMPTY_TUPLES) {
-                                                }
-                                            }else{
-                                                auxTuple3 = tuplesUe->at(j3-tuplese->size());
-                                                aggrTupleU = auxTuple3;
+                    int R = (*tuple1)[2];
+                    const Tuple negativeTuple = Tuple({R, 1}, &_cliquesize, true);
+                    const Tuple * tuple2 = &negativeTuple;
+                    bool lTrue = (wcliquesize.find(negativeTuple)!=NULL);
+                    const Tuple * undefTuple = ucliquesize.find(negativeTuple);
+                    if((!lTrue && undefTuple == NULL) || (undefTuple && tupleU == NULL)){
+                        if(undefTuple){
+                            tuple2 = tupleU = undefTuple;
+                            tupleU->print();
+                            tupleUNegated = true;
+                        }
+                        std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                        joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                        joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                        {
+                            Tuple sharedTuple(std::vector<int>({R,R}));
+                            if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                                sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                for(int i=0;i<trueJoinTuples->size();i++){
+                                    const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                    if(findResult!=NULL){
+                                        sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                                    }
+                                }
+                                for(int i=0;i<undefJoinTuples->size();i++){
+                                    const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                    if(findResult!=NULL){
+                                        sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                                    }
+                                }
+                            }
+                        }
+                        std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                        if(tupleU==NULL){
+                            if(joinTuples_1_3SharedVariables.first->size()>=0){
+                                std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                                joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                                joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                                {
+                                    Tuple sharedTuple(std::vector<int>({R,R}));
+                                    if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                                        sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        for(int i=0;i<trueJoinTuples->size();i++){
+                                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                            if(findResult!=NULL){
+                                                sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
                                             }
-                                            const std::vector<const Tuple*>* tuplesf;
-                                            const std::vector<const Tuple*>* tuplesUf=&EMPTY_TUPLES;
-                                            tuplesf= &pf_0_1_.getValues({undefinedTuples->at(iUndef)->at(3),undefinedTuples->at(iUndef)->at(4)});
-                                            if(aggrTupleU==NULL)
-                                                tuplesUf= &uf_0_1_.getValues({undefinedTuples->at(iUndef)->at(3),undefinedTuples->at(iUndef)->at(4)});
-                                            for(int j5=0;j5<tuplesf->size()+tuplesUf->size();j5++){
-                                                const Tuple* auxTuple5=NULL;
-                                                bool addedToReason=false;
-                                                if(j5 < tuplesf->size()){
-                                                    auxTuple5 = tuplesf->at(j5);
-                                                    if(tuplesUf != &EMPTY_TUPLES) {
+                                        }
+                                        for(int i=0;i<undefJoinTuples->size();i++){
+                                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                            if(findResult!=NULL){
+                                                sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                                            }
+                                        }
+                                    }
+                                }
+                                std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                                int actualSize4 = joinTuples_1_4SharedVariables.first->size();
+                                std::set<std::vector<int>> alreadyCounted4;
+                                for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                                    if(joinTuples_1_4SharedVariables.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                                        if(joinTuples_1_4SharedVariables.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                            std::vector<int> key({joinTupleUndef->at(1)});
+                                            alreadyCounted4.insert(key);
+                                        }
+                                    }
+                                }
+                                actualSize4+=alreadyCounted4.size();
+                                if(!(actualSize4>=0+1)){
+                                    std::cout<<"conflict detected in propagatoron last aggregate starting from literal1"<<std::endl;
+                                    propagatedLiteralsAndReasons.insert({-1, std::vector<int>()});
+                                }else{
+                                    if(actualSize4 == 0+1){
+                                        const std::vector<const Tuple*>* undefinedTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
+                                            if(joinTuples_1_4SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0 && joinTuples_1_4SharedVariables.second->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 1){
+                                                {
+                                                    const Tuple* aggrTupleU = uaux.find({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                    if(aggrTupleU != NULL){
+                                                        const auto & it = tupleToVar.find(*aggrTupleU);
+                                                        if(it != tupleToVar.end()) {
+                                                            int sign = aggrTupleU->isNegated() ? 1:-1;
+                                                            auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
+                                                        }
                                                     }
-                                                }else{
-                                                    auxTuple5 = tuplesUf->at(j5-tuplesf->size());
-                                                    aggrTupleU = auxTuple5;
                                                 }
-                                                if(aggrTupleU == NULL){
-                                                    std::cout<<"Tuple undefined not well formed"<<std::endl;
-                                                    propagatedLiteralsAndReasons.insert({-1, std::vector<int>()});
-                                                }else{
-                                                    const auto & it = tupleToVar.find(*aggrTupleU);
-                                                    if(it != tupleToVar.end()) {
-                                                        int sign = aggrTupleU->isNegated() ? -1 : 1;
-                                                        auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
+                                                {
+                                                    const Tuple* aggrTupleU = umember.find({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                    if(aggrTupleU != NULL){
+                                                        const auto & it = tupleToVar.find(*aggrTupleU);
+                                                        if(it != tupleToVar.end()) {
+                                                            int sign = aggrTupleU->isNegated() ? 1:-1;
+                                                            auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
                                     }
                                 }
+                            }//close ext aggregate if
+                        }else{
+                        std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                        joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                        joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                        {
+                            Tuple sharedTuple(std::vector<int>({R,R}));
+                            if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                                sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                for(int i=0;i<trueJoinTuples->size();i++){
+                                    const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                    if(findResult!=NULL){
+                                        sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                                    }
+                                }
+                                for(int i=0;i<undefJoinTuples->size();i++){
+                                    const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                    if(findResult!=NULL){
+                                        sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                                    }
+                                }
                             }
                         }
-                    }else{
-                        if(joinTuples_0_2SharedVariables.first->size()>=3){
-                            const auto & it = tupleToVar.find(*tupleU);
-                            if(it != tupleToVar.end()) {
-                                int sign = tupleU->isNegated() ? -1 : 1;
-                                auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
+                        std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                        int actualSize4 = joinTuples_1_4SharedVariables.first->size();
+                        std::set<std::vector<int>> alreadyCounted4;
+                        for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                            if(joinTuples_1_4SharedVariables.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                                if(joinTuples_1_4SharedVariables.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                    std::vector<int> key({joinTupleUndef->at(1)});
+                                    alreadyCounted4.insert(key);
+                                }
                             }
                         }
-                    }
+                        actualSize4+=alreadyCounted4.size();
+                            if(!(actualSize4>=0+1) && (joinTuples_1_3SharedVariables.first->size()>=0)){
+                                const auto & it = tupleToVar.find(*tupleU);
+                                if(it != tupleToVar.end()) {
+                                    int sign = tupleU->isNegated() ? -1 : 1;
+                                    auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
+                                }
+                            }
+                        }
+                        std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                        joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                        joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                        {
+                            Tuple sharedTuple(std::vector<int>({R,R}));
+                            if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                                sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                for(int i=0;i<trueJoinTuples->size();i++){
+                                    const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                    if(findResult!=NULL){
+                                        sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                                    }
+                                }
+                                for(int i=0;i<undefJoinTuples->size();i++){
+                                    const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                    if(findResult!=NULL){
+                                        sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                                    }
+                                }
+                            }
+                        }
+                        std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                        int actualSize4 = joinTuples_1_4SharedVariables.first->size();
+                        std::set<std::vector<int>> alreadyCounted4;
+                        for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                            if(joinTuples_1_4SharedVariables.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                                if(joinTuples_1_4SharedVariables.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                    std::vector<int> key({joinTupleUndef->at(1)});
+                                    alreadyCounted4.insert(key);
+                                }
+                            }
+                        }
+                        actualSize4+=alreadyCounted4.size();
+                        if(tupleU==NULL){
+                            if(!(actualSize4>=0+1)){
+                                std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                                joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                                joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                                {
+                                    Tuple sharedTuple(std::vector<int>({R,R}));
+                                    if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                                        sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        for(int i=0;i<trueJoinTuples->size();i++){
+                                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                            if(findResult!=NULL){
+                                                sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                                            }
+                                        }
+                                        for(int i=0;i<undefJoinTuples->size();i++){
+                                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                            if(findResult!=NULL){
+                                                sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                                            }
+                                        }
+                                    }
+                                }
+                                std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                                if(joinTuples_1_3SharedVariables.first->size()>=0){
+                                    std::cout<<"conflict detected in propagatoron last aggregate starting from literal1"<<std::endl;
+                                    propagatedLiteralsAndReasons.insert({-1, std::vector<int>()});
+                                }else{
+                                    if(joinTuples_1_3SharedVariables.first->size() == 0-1){
+                                        const std::vector<const Tuple*>* undefinedTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
+                                            if(joinTuples_1_3SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0){
+                                                const Tuple* aggrTupleU=NULL;
+                                                const std::vector<const Tuple*>* tuplesaux;
+                                                const std::vector<const Tuple*>* tuplesUaux=&EMPTY_TUPLES;
+                                                tuplesaux= &paux_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                if(aggrTupleU==NULL)
+                                                    tuplesUaux= &uaux_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                for(int j2=0;j2<tuplesaux->size()+tuplesUaux->size();j2++){
+                                                    const Tuple* auxTuple2=NULL;
+                                                    bool addedToReason=false;
+                                                    if(j2 < tuplesaux->size()){
+                                                        auxTuple2 = tuplesaux->at(j2);
+                                                        if(tuplesUaux != &EMPTY_TUPLES) {
+                                                        }
+                                                    }else{
+                                                        auxTuple2 = tuplesUaux->at(j2-tuplesaux->size());
+                                                        aggrTupleU = auxTuple2;
+                                                    }
+                                                    const std::vector<const Tuple*>* tuplesmember;
+                                                    const std::vector<const Tuple*>* tuplesUmember=&EMPTY_TUPLES;
+                                                    tuplesmember= &pmember_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                    if(aggrTupleU==NULL)
+                                                        tuplesUmember= &umember_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                    for(int j4=0;j4<tuplesmember->size()+tuplesUmember->size();j4++){
+                                                        const Tuple* auxTuple4=NULL;
+                                                        bool addedToReason=false;
+                                                        if(j4 < tuplesmember->size()){
+                                                            auxTuple4 = tuplesmember->at(j4);
+                                                            if(tuplesUmember != &EMPTY_TUPLES) {
+                                                            }
+                                                        }else{
+                                                            auxTuple4 = tuplesUmember->at(j4-tuplesmember->size());
+                                                            aggrTupleU = auxTuple4;
+                                                        }
+                                                        if(aggrTupleU == NULL){
+                                                            std::cout<<"Tuple undefined not well formed"<<std::endl;
+                                                        }else{
+                                                            const auto & it = tupleToVar.find(*aggrTupleU);
+                                                            if(it != tupleToVar.end()) {
+                                                                int sign = aggrTupleU->isNegated() ? -1 : 1;
+                                                                auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }//close ext aggregate if
+                        }else{
+                        std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                        joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                        joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                        {
+                            Tuple sharedTuple(std::vector<int>({R,R}));
+                            if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                                sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                for(int i=0;i<trueJoinTuples->size();i++){
+                                    const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                    if(findResult!=NULL){
+                                        sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                                    }
+                                }
+                                for(int i=0;i<undefJoinTuples->size();i++){
+                                    const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                    if(findResult!=NULL){
+                                        sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                                    }
+                                }
+                            }
+                        }
+                        std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                            if(joinTuples_1_3SharedVariables.first->size()>=0 && (!(actualSize4>=0+1))){
+                                const auto & it = tupleToVar.find(*tupleU);
+                                if(it != tupleToVar.end()) {
+                                    int sign = tupleU->isNegated() ? -1 : 1;
+                                    auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
+                                }
+                            }
+                        }
+                    }//close par
                 }//close par
             }//close par
         }//close local scope
@@ -858,51 +2257,555 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
         unsigned factVar = facts[i] > 0 ? facts[i] : -facts[i];
         Tuple starter = atomsTable[factVar];
         starter.setNegated(facts[i]<0);
-        if(starter.getPredicateName() == &_d) { 
+        if(starter.getPredicateName() == &_rest) { 
             const Tuple * tuple0 = &starter;
             if(facts[i] > 0){
                 {
                     const Tuple * tupleU = NULL;
                     bool tupleUNegated = false;
-                    int Y = (*tuple0)[0];
-                    int Z = (*tuple0)[1];
-                    const std::vector<const Tuple* >* tuples;
-                    tuples = &pc_1_.getValues({Y});
-                    const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
-                    if(tupleU == NULL){
-                        tuplesU = &uc_1_.getValues({Y});
+                    int C = (*tuple0)[0];
+                    int X = (*tuple0)[1];
+                    int R = (*tuple0)[2];
+                    const Tuple * tuple1 = (win.find({C, X}));
+                    if(!tuple1 && !tupleU ){
+                        tuple1 = tupleU = (uin.find({C, X}));
+                        tupleUNegated = false;
                     }
-                    for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
-                        const Tuple * tuple1 = NULL;
-                        if(i<tuples->size()){
-                            tuple1 = tuples->at(i);
-                            if(tuplesU != &EMPTY_TUPLES) {
-                                tupleU = NULL;
+                    if(tuple1){
+                        const Tuple negativeTuple = Tuple({R, 1}, &_cliquesize, true);
+                        const Tuple * tuple2 = &negativeTuple;
+                        bool lTrue = (wcliquesize.find(negativeTuple)!=NULL);
+                        const Tuple * undefTuple = ucliquesize.find(negativeTuple);
+                        if((!lTrue && undefTuple == NULL) || (undefTuple && tupleU == NULL)){
+                            if(undefTuple){
+                                tuple2 = tupleU = undefTuple;
+                                tupleU->print();
+                                tupleUNegated = true;
                             }
-                        }
-                        else {
-                            tuple1 = tuplesU->at(i-tuples->size());
-                            tupleU = tuple1;
-                            tupleUNegated = false;
-                        }
-                        int X = (*tuple1)[0];
-                        std::pair<AuxMap*,AuxMap*> joinTuples_0_2;
-                        joinTuples_0_2.first = &p_e_X_A_Y_f_B_Y_;
-                        joinTuples_0_2.second = &u_e_X_A_Y_f_B_Y_;
-                        std::pair<AuxMap*,AuxMap*> joinTuples_0_2SharedVariables = *sharedVariables_0_ToAggregate_2[std::vector<int>({X,Y,Y})];
-                        if(tupleU==NULL){
-                            const std::vector<const Tuple*>* trueTuples = &p_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                            joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                            joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                                    sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                    const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    for(int i=0;i<trueJoinTuples->size();i++){
+                                        const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                                        }
+                                    }
+                                    for(int i=0;i<undefJoinTuples->size();i++){
+                                        const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                                        }
+                                    }
+                                }
+                            }
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                            if(tupleU==NULL){
+                                const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                std::vector<int> reason;
+                                for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                    Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                    const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                    if(itaux_0!=tupleToVar.end()){
+                                        reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                    }//closing if
+                                    Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                    const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                    if(itmember_1!=tupleToVar.end()){
+                                        reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                    }//closing if
+                                }
+                                if(joinTuples_1_3SharedVariables.first->size()>=0){
+                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                                    joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                                    joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                                    {
+                                        Tuple sharedTuple(std::vector<int>({R,R}));
+                                        if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                                            sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                            const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            for(int i=0;i<trueJoinTuples->size();i++){
+                                                const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                                if(findResult!=NULL){
+                                                    sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                                                }
+                                            }
+                                            for(int i=0;i<undefJoinTuples->size();i++){
+                                                const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                                if(findResult!=NULL){
+                                                    sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                                    int actualSize4 = joinTuples_1_4SharedVariables.first->size();
+                                    std::set<std::vector<int>> alreadyCounted4;
+                                    for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                                        if(joinTuples_1_4SharedVariables.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                                            if(joinTuples_1_4SharedVariables.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                                std::vector<int> key({joinTupleUndef->at(1)});
+                                                alreadyCounted4.insert(key);
+                                            }
+                                        }
+                                    }
+                                    actualSize4+=alreadyCounted4.size();
+                                    const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                                    for(int i=0;i<falseTuples0->size();i++){
+                                        bool joiningTupleFound=false;
+                                        int R = falseTuples0->at(i)->at(0);
+                                        int Y = falseTuples0->at(i)->at(1);
+                                        const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                        const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                        const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                        for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                            const Tuple * tuple1=NULL;
+                                            if(i_1<trueTuples1->size())
+                                                tuple1=trueTuples1->at(i_1);
+                                            else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                                tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                            else
+                                                tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                            joiningTupleFound=true;
+                                        }
+                                        if(joiningTupleFound){
+                                            const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                            if(it!=tupleToVar.end()){
+                                                reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                            }//closing if
+                                        }
+                                    }
+                                    const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                                    for(int i=0;i<falseTuples1->size();i++){
+                                        bool joiningTupleFound=false;
+                                        int Y = falseTuples1->at(i)->at(0);
+                                        int R = falseTuples1->at(i)->at(1);
+                                        const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                        const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                        const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                        for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                            const Tuple * tuple0=NULL;
+                                            if(i_0<trueTuples0->size())
+                                                tuple0=trueTuples0->at(i_0);
+                                            else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                                tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                            else
+                                                tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                            joiningTupleFound=true;
+                                        }
+                                        if(joiningTupleFound){
+                                            const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                            if(it!=tupleToVar.end()){
+                                                reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                            }//closing if
+                                        }
+                                    }
+                                    if(tuple0!=tupleU){
+                                        const auto & it_reason0 = tupleToVar.find(Tuple(*tuple0));
+                                        if(it_reason0!=tupleToVar.end())
+                                            reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
+                                    }
+                                    if(tuple1!=tupleU){
+                                        const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                        if(it_reason1!=tupleToVar.end())
+                                            reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                                    }
+                                    if(tuple2!=tupleU){
+                                        const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                        if(it_reason2!=tupleToVar.end())
+                                            reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                                    }
+                                    const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                                    if(it_reason_starter!=tupleToVar.end())
+                                        reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                                    if(!(actualSize4>=0+1)){
+                                        std::cout<<"conflict detected in propagatoron last aggregate starting from literal1"<<std::endl;
+                                        propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
+                                    }else{
+                                        if(actualSize4 == 0+1){
+                                            const std::vector<const Tuple*>* undefinedTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
+                                                if(joinTuples_1_4SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0 && joinTuples_1_4SharedVariables.second->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 1){
+                                                    {
+                                                        const Tuple* aggrTupleU = uaux.find({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                        if(aggrTupleU != NULL){
+                                                            const auto & it = tupleToVar.find(*aggrTupleU);
+                                                            if(it != tupleToVar.end()) {
+                                                                int sign = aggrTupleU->isNegated() ? 1:-1;
+                                                                auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                            }
+                                                        }
+                                                    }
+                                                    {
+                                                        const Tuple* aggrTupleU = umember.find({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                        if(aggrTupleU != NULL){
+                                                            const auto & it = tupleToVar.find(*aggrTupleU);
+                                                            if(it != tupleToVar.end()) {
+                                                                int sign = aggrTupleU->isNegated() ? 1:-1;
+                                                                auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }//close ext aggregate if
+                            }else{
+                            std::vector<int> reason;
+                            const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                            for(int i=0;i<falseTuples0->size();i++){
+                                bool joiningTupleFound=false;
+                                int R = falseTuples0->at(i)->at(0);
+                                int Y = falseTuples0->at(i)->at(1);
+                                const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                    const Tuple * tuple1=NULL;
+                                    if(i_1<trueTuples1->size())
+                                        tuple1=trueTuples1->at(i_1);
+                                    else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                        tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                    else
+                                        tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                    joiningTupleFound=true;
+                                }
+                                if(joiningTupleFound){
+                                    const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                    if(it!=tupleToVar.end()){
+                                        reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                    }//closing if
+                                }
+                            }
+                            const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                            for(int i=0;i<falseTuples1->size();i++){
+                                bool joiningTupleFound=false;
+                                int Y = falseTuples1->at(i)->at(0);
+                                int R = falseTuples1->at(i)->at(1);
+                                const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                    const Tuple * tuple0=NULL;
+                                    if(i_0<trueTuples0->size())
+                                        tuple0=trueTuples0->at(i_0);
+                                    else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                        tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                    else
+                                        tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                    joiningTupleFound=true;
+                                }
+                                if(joiningTupleFound){
+                                    const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                    if(it!=tupleToVar.end()){
+                                        reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                    }//closing if
+                                }
+                            }
+                            if(tuple0!=tupleU){
+                                const auto & it_reason0 = tupleToVar.find(Tuple(*tuple0));
+                                if(it_reason0!=tupleToVar.end())
+                                    reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
+                            }
+                            if(tuple1!=tupleU){
+                                const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                if(it_reason1!=tupleToVar.end())
+                                    reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                            }
+                            if(tuple2!=tupleU){
+                                const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                if(it_reason2!=tupleToVar.end())
+                                    reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                            }
+                            const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                            for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                if(itaux_0!=tupleToVar.end()){
+                                    reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                }//closing if
+                                Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                if(itmember_1!=tupleToVar.end()){
+                                    reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                }//closing if
+                            }
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                            joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                            joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                                    sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                    const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    for(int i=0;i<trueJoinTuples->size();i++){
+                                        const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                                        }
+                                    }
+                                    for(int i=0;i<undefJoinTuples->size();i++){
+                                        const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                                        }
+                                    }
+                                }
+                            }
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                            int actualSize4 = joinTuples_1_4SharedVariables.first->size();
+                            std::set<std::vector<int>> alreadyCounted4;
+                            for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                                if(joinTuples_1_4SharedVariables.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                                    if(joinTuples_1_4SharedVariables.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                        std::vector<int> key({joinTupleUndef->at(1)});
+                                        alreadyCounted4.insert(key);
+                                    }
+                                }
+                            }
+                            actualSize4+=alreadyCounted4.size();
+                                if(!(actualSize4>=0+1) && (joinTuples_1_3SharedVariables.first->size()>=0)){
+                                    const auto & it = tupleToVar.find(*tupleU);
+                                    if(it != tupleToVar.end()) {
+                                        int sign = tupleU->isNegated() ? -1 : 1;
+                                        auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                    }
+                                }
+                            }
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                            joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                            joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                                    sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                    const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    for(int i=0;i<trueJoinTuples->size();i++){
+                                        const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                                        }
+                                    }
+                                    for(int i=0;i<undefJoinTuples->size();i++){
+                                        const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                                        }
+                                    }
+                                }
+                            }
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                            int actualSize4 = joinTuples_1_4SharedVariables.first->size();
+                            std::set<std::vector<int>> alreadyCounted4;
+                            for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                                if(joinTuples_1_4SharedVariables.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                                    if(joinTuples_1_4SharedVariables.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                        std::vector<int> key({joinTupleUndef->at(1)});
+                                        alreadyCounted4.insert(key);
+                                    }
+                                }
+                            }
+                            actualSize4+=alreadyCounted4.size();
+                            if(tupleU==NULL){
+                                std::vector<int> reason;
+                                const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                                for(int i=0;i<falseTuples0->size();i++){
+                                    bool joiningTupleFound=false;
+                                    int R = falseTuples0->at(i)->at(0);
+                                    int Y = falseTuples0->at(i)->at(1);
+                                    const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                    const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                    const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                    for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                        const Tuple * tuple1=NULL;
+                                        if(i_1<trueTuples1->size())
+                                            tuple1=trueTuples1->at(i_1);
+                                        else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                            tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                        else
+                                            tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                        joiningTupleFound=true;
+                                    }
+                                    if(joiningTupleFound){
+                                        const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                        if(it!=tupleToVar.end()){
+                                            reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                        }//closing if
+                                    }
+                                }
+                                const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                                for(int i=0;i<falseTuples1->size();i++){
+                                    bool joiningTupleFound=false;
+                                    int Y = falseTuples1->at(i)->at(0);
+                                    int R = falseTuples1->at(i)->at(1);
+                                    const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                    const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                    const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                    for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                        const Tuple * tuple0=NULL;
+                                        if(i_0<trueTuples0->size())
+                                            tuple0=trueTuples0->at(i_0);
+                                        else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                            tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                        else
+                                            tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                        joiningTupleFound=true;
+                                    }
+                                    if(joiningTupleFound){
+                                        const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                        if(it!=tupleToVar.end()){
+                                            reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                        }//closing if
+                                    }
+                                }
+                                if(!(actualSize4>=0+1)){
+                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                                    joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                                    joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                                    {
+                                        Tuple sharedTuple(std::vector<int>({R,R}));
+                                        if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                                            sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                            const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            for(int i=0;i<trueJoinTuples->size();i++){
+                                                const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                                if(findResult!=NULL){
+                                                    sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                                                }
+                                            }
+                                            for(int i=0;i<undefJoinTuples->size();i++){
+                                                const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                                if(findResult!=NULL){
+                                                    sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                                    const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                        Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                        const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                        if(itaux_0!=tupleToVar.end()){
+                                            reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                        }//closing if
+                                        Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                        const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                        if(itmember_1!=tupleToVar.end()){
+                                            reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                        }//closing if
+                                    }
+                                    if(tuple0!=tupleU){
+                                        const auto & it_reason0 = tupleToVar.find(Tuple(*tuple0));
+                                        if(it_reason0!=tupleToVar.end())
+                                            reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
+                                    }
+                                    if(tuple1!=tupleU){
+                                        const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                        if(it_reason1!=tupleToVar.end())
+                                            reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                                    }
+                                    if(tuple2!=tupleU){
+                                        const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                        if(it_reason2!=tupleToVar.end())
+                                            reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                                    }
+                                    const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                                    if(it_reason_starter!=tupleToVar.end())
+                                        reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                                    if(joinTuples_1_3SharedVariables.first->size()>=0){
+                                        std::cout<<"conflict detected in propagatoron last aggregate starting from literal1"<<std::endl;
+                                        propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
+                                    }else{
+                                        if(joinTuples_1_3SharedVariables.first->size() == 0-1){
+                                            const std::vector<const Tuple*>* undefinedTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
+                                                if(joinTuples_1_3SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0){
+                                                    const Tuple* aggrTupleU=NULL;
+                                                    const std::vector<const Tuple*>* tuplesaux;
+                                                    const std::vector<const Tuple*>* tuplesUaux=&EMPTY_TUPLES;
+                                                    tuplesaux= &paux_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                    if(aggrTupleU==NULL)
+                                                        tuplesUaux= &uaux_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                    for(int j2=0;j2<tuplesaux->size()+tuplesUaux->size();j2++){
+                                                        const Tuple* auxTuple2=NULL;
+                                                        bool addedToReason=false;
+                                                        if(j2 < tuplesaux->size()){
+                                                            auxTuple2 = tuplesaux->at(j2);
+                                                            const auto & it = tupleToVar.find(*auxTuple2);
+                                                            if(it!=tupleToVar.end()){
+                                                                addedToReason=true;
+                                                                reason.push_back(it->second * (auxTuple2->isNegated() ? -1:1));
+                                                            }//closing if
+                                                            if(tuplesUaux != &EMPTY_TUPLES) {
+                                                            }
+                                                        }else{
+                                                            auxTuple2 = tuplesUaux->at(j2-tuplesaux->size());
+                                                            aggrTupleU = auxTuple2;
+                                                        }
+                                                        const std::vector<const Tuple*>* tuplesmember;
+                                                        const std::vector<const Tuple*>* tuplesUmember=&EMPTY_TUPLES;
+                                                        tuplesmember= &pmember_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                        if(aggrTupleU==NULL)
+                                                            tuplesUmember= &umember_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                        for(int j4=0;j4<tuplesmember->size()+tuplesUmember->size();j4++){
+                                                            const Tuple* auxTuple4=NULL;
+                                                            bool addedToReason=false;
+                                                            if(j4 < tuplesmember->size()){
+                                                                auxTuple4 = tuplesmember->at(j4);
+                                                                const auto & it = tupleToVar.find(*auxTuple4);
+                                                                if(it!=tupleToVar.end()){
+                                                                    addedToReason=true;
+                                                                    reason.push_back(it->second * (auxTuple4->isNegated() ? -1:1));
+                                                                }//closing if
+                                                                if(tuplesUmember != &EMPTY_TUPLES) {
+                                                                }
+                                                            }else{
+                                                                auxTuple4 = tuplesUmember->at(j4-tuplesmember->size());
+                                                                aggrTupleU = auxTuple4;
+                                                            }
+                                                            if(aggrTupleU == NULL){
+                                                                std::cout<<"Tuple undefined not well formed"<<std::endl;
+                                                            }else{
+                                                                const auto & it = tupleToVar.find(*aggrTupleU);
+                                                                if(it != tupleToVar.end()) {
+                                                                    int sign = aggrTupleU->isNegated() ? -1 : 1;
+                                                                    auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                                }
+                                                            }
+                                                            if(addedToReason) reason.pop_back();
+                                                        }
+                                                        if(addedToReason) reason.pop_back();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }//close ext aggregate if
+                            }else{
+                            const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
                             std::vector<int> reason;
                             for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
-                                Tuple tuplee_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1),trueTuples->at(reasonIndex)->at(2)}),&_e);
-                                const auto & ite_0 = tupleToVar.find(tuplee_0);
-                                if(ite_0!=tupleToVar.end()){
-                                    reason.push_back(ite_0->second * (tuplee_0.isNegated() ? -1:1));
+                                Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                if(itaux_0!=tupleToVar.end()){
+                                    reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
                                 }//closing if
-                                Tuple tuplef_1(std::vector<int>({trueTuples->at(reasonIndex)->at(3),trueTuples->at(reasonIndex)->at(4)}),&_f);
-                                const auto & itf_1 = tupleToVar.find(tuplef_1);
-                                if(itf_1!=tupleToVar.end()){
-                                    reason.push_back(itf_1->second * (tuplef_1.isNegated() ? -1:1));
+                                Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                if(itmember_1!=tupleToVar.end()){
+                                    reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
                                 }//closing if
                             }
                             if(tuple0!=tupleU){
@@ -915,88 +2818,142 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                 if(it_reason1!=tupleToVar.end())
                                     reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
                             }
-                            if(joinTuples_0_2SharedVariables.first->size()>=3){
-                                std::cout<<"conflict detected in propagator"<<std::endl;
-                                propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
-                            }else{
-                                if(joinTuples_0_2SharedVariables.first->size() == 3-1){
-                                    const std::vector<const Tuple*>* undefinedTuples = &u_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
-                                    for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
-                                        if(joinTuples_0_2SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1),undefinedTuples->at(iUndef)->at(3)}).size() == 0){
-                                            const Tuple* aggrTupleU=NULL;
-                                            const std::vector<const Tuple*>* tuplese;
-                                            const std::vector<const Tuple*>* tuplesUe=&EMPTY_TUPLES;
-                                            tuplese= &pe_0_1_2_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1),undefinedTuples->at(iUndef)->at(2)});
-                                            if(aggrTupleU==NULL)
-                                                tuplesUe= &ue_0_1_2_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1),undefinedTuples->at(iUndef)->at(2)});
-                                            for(int j3=0;j3<tuplese->size()+tuplesUe->size();j3++){
-                                                const Tuple* auxTuple3=NULL;
-                                                bool addedToReason=false;
-                                                if(j3 < tuplese->size()){
-                                                    auxTuple3 = tuplese->at(j3);
-                                                    const auto & it = tupleToVar.find(*auxTuple3);
-                                                    if(it!=tupleToVar.end()){
-                                                        addedToReason=true;
-                                                        reason.push_back(it->second * (auxTuple3->isNegated() ? -1:1));
-                                                    }//closing if
-                                                    if(tuplesUe != &EMPTY_TUPLES) {
-                                                    }
-                                                }else{
-                                                    auxTuple3 = tuplesUe->at(j3-tuplese->size());
-                                                    aggrTupleU = auxTuple3;
-                                                }
-                                                const std::vector<const Tuple*>* tuplesf;
-                                                const std::vector<const Tuple*>* tuplesUf=&EMPTY_TUPLES;
-                                                tuplesf= &pf_0_1_.getValues({undefinedTuples->at(iUndef)->at(3),undefinedTuples->at(iUndef)->at(4)});
-                                                if(aggrTupleU==NULL)
-                                                    tuplesUf= &uf_0_1_.getValues({undefinedTuples->at(iUndef)->at(3),undefinedTuples->at(iUndef)->at(4)});
-                                                for(int j5=0;j5<tuplesf->size()+tuplesUf->size();j5++){
-                                                    const Tuple* auxTuple5=NULL;
-                                                    bool addedToReason=false;
-                                                    if(j5 < tuplesf->size()){
-                                                        auxTuple5 = tuplesf->at(j5);
-                                                        const auto & it = tupleToVar.find(*auxTuple5);
-                                                        if(it!=tupleToVar.end()){
-                                                            addedToReason=true;
-                                                            reason.push_back(it->second * (auxTuple5->isNegated() ? -1:1));
-                                                        }//closing if
-                                                        if(tuplesUf != &EMPTY_TUPLES) {
-                                                        }
-                                                    }else{
-                                                        auxTuple5 = tuplesUf->at(j5-tuplesf->size());
-                                                        aggrTupleU = auxTuple5;
-                                                    }
-                                                    if(aggrTupleU == NULL){
-                                                        std::cout<<"Tuple undefined not well formed"<<std::endl;
-                                                        propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
-                                                    }else{
-                                                        const auto & it = tupleToVar.find(*aggrTupleU);
-                                                        if(it != tupleToVar.end()) {
-                                                            int sign = aggrTupleU->isNegated() ? -1 : 1;
-                                                            auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
-                                                        }
-                                                    }
-                                                    if(addedToReason) reason.pop_back();
-                                                }
-                                                if(addedToReason) reason.pop_back();
-                                            }
+                            if(tuple2!=tupleU){
+                                const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                if(it_reason2!=tupleToVar.end())
+                                    reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                            }
+                            const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                            for(int i=0;i<falseTuples0->size();i++){
+                                bool joiningTupleFound=false;
+                                int R = falseTuples0->at(i)->at(0);
+                                int Y = falseTuples0->at(i)->at(1);
+                                const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                    const Tuple * tuple1=NULL;
+                                    if(i_1<trueTuples1->size())
+                                        tuple1=trueTuples1->at(i_1);
+                                    else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                        tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                    else
+                                        tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                    joiningTupleFound=true;
+                                }
+                                if(joiningTupleFound){
+                                    const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                    if(it!=tupleToVar.end()){
+                                        reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                    }//closing if
+                                }
+                            }
+                            const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                            for(int i=0;i<falseTuples1->size();i++){
+                                bool joiningTupleFound=false;
+                                int Y = falseTuples1->at(i)->at(0);
+                                int R = falseTuples1->at(i)->at(1);
+                                const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                    const Tuple * tuple0=NULL;
+                                    if(i_0<trueTuples0->size())
+                                        tuple0=trueTuples0->at(i_0);
+                                    else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                        tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                    else
+                                        tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                    joiningTupleFound=true;
+                                }
+                                if(joiningTupleFound){
+                                    const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                    if(it!=tupleToVar.end()){
+                                        reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                    }//closing if
+                                }
+                            }
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                            joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                            joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                                    sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                    const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    for(int i=0;i<trueJoinTuples->size();i++){
+                                        const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                                        }
+                                    }
+                                    for(int i=0;i<undefJoinTuples->size();i++){
+                                        const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
                                         }
                                     }
                                 }
                             }
-                        }else{
-                        const std::vector<const Tuple*>* trueTuples = &p_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                                if(joinTuples_1_3SharedVariables.first->size()>=0 && (!(actualSize4>=0+1))){
+                                    const auto & it = tupleToVar.find(*tupleU);
+                                    if(it != tupleToVar.end()) {
+                                        int sign = tupleU->isNegated() ? -1 : 1;
+                                        auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                    }
+                                }
+                            }
+                        }//close par
+                    }//close par
+                }//close loop nested join
+            }//close loop nested join
+        }//close predicate joins
+        if(starter.getPredicateName() == &_clique) { 
+            const Tuple * tuple0 = &starter;
+            if(facts[i] > 0){
+                {
+                    const Tuple * tupleU = NULL;
+                    bool tupleUNegated = false;
+                    int C = (*tuple0)[0];
+                    std::pair<AuxMap*,AuxMap*> joinTuples_0_1;
+                    joinTuples_0_1.first = &p_in_C_X_pair_C_X_;
+                    joinTuples_0_1.second = &u_in_C_X_pair_C_X_;
+                    {
+                        Tuple sharedTuple(std::vector<int>({C,C}));
+                        if(!sharedVariables_0_ToAggregate_1.count(sharedTuple)){
+                            sharedVariables_0_ToAggregate_1[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                            const std::vector<const Tuple*>* trueJoinTuples = &p_in_C_X_pair_C_X_0_2_.getValues({C,C});
+                            const std::vector<const Tuple*>* undefJoinTuples = &u_in_C_X_pair_C_X_0_2_.getValues({C,C});
+                            for(int i=0;i<trueJoinTuples->size();i++){
+                                const auto findResult = win_C_X_pair_C_X_.find(Tuple(*trueJoinTuples->at(i)));
+                                if(findResult!=NULL){
+                                    sharedVariables_0_ToAggregate_1[sharedTuple]->first->insert2(*findResult);
+                                }
+                            }
+                            for(int i=0;i<undefJoinTuples->size();i++){
+                                const auto findResult = uin_C_X_pair_C_X_.find(Tuple(*undefJoinTuples->at(i)));
+                                if(findResult!=NULL){
+                                    sharedVariables_0_ToAggregate_1[sharedTuple]->second->insert2(*findResult);
+                                }
+                            }
+                        }
+                    }
+                    std::pair<AuxMap*,AuxMap*> joinTuples_0_1SharedVariables = *sharedVariables_0_ToAggregate_1[std::vector<int>({C,C})];
+                    if(tupleU==NULL){
+                        const std::vector<const Tuple*>* trueTuples = &p_in_C_X_pair_C_X_0_2_.getValues({C,C});
                         std::vector<int> reason;
                         for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
-                            Tuple tuplee_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1),trueTuples->at(reasonIndex)->at(2)}),&_e);
-                            const auto & ite_0 = tupleToVar.find(tuplee_0);
-                            if(ite_0!=tupleToVar.end()){
-                                reason.push_back(ite_0->second * (tuplee_0.isNegated() ? -1:1));
+                            Tuple tuplein_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_in);
+                            const auto & itin_0 = tupleToVar.find(tuplein_0);
+                            if(itin_0!=tupleToVar.end()){
+                                reason.push_back(itin_0->second * (tuplein_0.isNegated() ? -1:1));
                             }//closing if
-                            Tuple tuplef_1(std::vector<int>({trueTuples->at(reasonIndex)->at(3),trueTuples->at(reasonIndex)->at(4)}),&_f);
-                            const auto & itf_1 = tupleToVar.find(tuplef_1);
-                            if(itf_1!=tupleToVar.end()){
-                                reason.push_back(itf_1->second * (tuplef_1.isNegated() ? -1:1));
+                            Tuple tuplepair_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_pair);
+                            const auto & itpair_1 = tupleToVar.find(tuplepair_1);
+                            if(itpair_1!=tupleToVar.end()){
+                                reason.push_back(itpair_1->second * (tuplepair_1.isNegated() ? -1:1));
                             }//closing if
                         }
                         if(tuple0!=tupleU){
@@ -1004,73 +2961,375 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             if(it_reason0!=tupleToVar.end())
                                 reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
                         }
-                        if(tuple1!=tupleU){
-                            const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
-                            if(it_reason1!=tupleToVar.end())
-                                reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
-                        }
-                            if(joinTuples_0_2SharedVariables.first->size()>=3){
-                                const auto & it = tupleToVar.find(*tupleU);
-                                if(it != tupleToVar.end()) {
-                                    int sign = tupleU->isNegated() ? -1 : 1;
-                                    auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                        const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                        if(it_reason_starter!=tupleToVar.end())
+                            reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                        if(joinTuples_0_1SharedVariables.first->size()>=2+1){
+                            std::cout<<"conflict detected in propagator0"<<std::endl;
+                            propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
+                        }else{
+                            if(joinTuples_0_1SharedVariables.first->size() == 2+1-1){
+                                const std::vector<const Tuple*>* undefinedTuples = &u_in_C_X_pair_C_X_0_2_.getValues({C,C});
+                                for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
+                                    if(joinTuples_0_1SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0){
+                                        const Tuple* aggrTupleU=NULL;
+                                        const std::vector<const Tuple*>* tuplesin;
+                                        const std::vector<const Tuple*>* tuplesUin=&EMPTY_TUPLES;
+                                        tuplesin= &pin_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                        if(aggrTupleU==NULL)
+                                            tuplesUin= &uin_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                        for(int j2=0;j2<tuplesin->size()+tuplesUin->size();j2++){
+                                            const Tuple* auxTuple2=NULL;
+                                            bool addedToReason=false;
+                                            if(j2 < tuplesin->size()){
+                                                auxTuple2 = tuplesin->at(j2);
+                                                const auto & it = tupleToVar.find(*auxTuple2);
+                                                if(it!=tupleToVar.end()){
+                                                    addedToReason=true;
+                                                    reason.push_back(it->second * (auxTuple2->isNegated() ? -1:1));
+                                                }//closing if
+                                                if(tuplesUin != &EMPTY_TUPLES) {
+                                                }
+                                            }else{
+                                                auxTuple2 = tuplesUin->at(j2-tuplesin->size());
+                                                aggrTupleU = auxTuple2;
+                                            }
+                                            const std::vector<const Tuple*>* tuplespair;
+                                            const std::vector<const Tuple*>* tuplesUpair=&EMPTY_TUPLES;
+                                            tuplespair= &ppair_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                            if(aggrTupleU==NULL)
+                                                tuplesUpair= &upair_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                            for(int j4=0;j4<tuplespair->size()+tuplesUpair->size();j4++){
+                                                const Tuple* auxTuple4=NULL;
+                                                bool addedToReason=false;
+                                                if(j4 < tuplespair->size()){
+                                                    auxTuple4 = tuplespair->at(j4);
+                                                    const auto & it = tupleToVar.find(*auxTuple4);
+                                                    if(it!=tupleToVar.end()){
+                                                        addedToReason=true;
+                                                        reason.push_back(it->second * (auxTuple4->isNegated() ? -1:1));
+                                                    }//closing if
+                                                    if(tuplesUpair != &EMPTY_TUPLES) {
+                                                    }
+                                                }else{
+                                                    auxTuple4 = tuplesUpair->at(j4-tuplespair->size());
+                                                    aggrTupleU = auxTuple4;
+                                                }
+                                                if(aggrTupleU == NULL){
+                                                    std::cout<<"Tuple undefined not well formed"<<std::endl;
+                                                }else{
+                                                    const auto & it = tupleToVar.find(*aggrTupleU);
+                                                    if(it != tupleToVar.end()) {
+                                                        int sign = aggrTupleU->isNegated() ? -1 : 1;
+                                                        auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                    }
+                                                }
+                                                if(addedToReason) reason.pop_back();
+                                            }
+                                            if(addedToReason) reason.pop_back();
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }//close par
+                    }else{
+                    const std::vector<const Tuple*>* trueTuples = &p_in_C_X_pair_C_X_0_2_.getValues({C,C});
+                    std::vector<int> reason;
+                    for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                        Tuple tuplein_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_in);
+                        const auto & itin_0 = tupleToVar.find(tuplein_0);
+                        if(itin_0!=tupleToVar.end()){
+                            reason.push_back(itin_0->second * (tuplein_0.isNegated() ? -1:1));
+                        }//closing if
+                        Tuple tuplepair_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_pair);
+                        const auto & itpair_1 = tupleToVar.find(tuplepair_1);
+                        if(itpair_1!=tupleToVar.end()){
+                            reason.push_back(itpair_1->second * (tuplepair_1.isNegated() ? -1:1));
+                        }//closing if
+                    }
+                    if(tuple0!=tupleU){
+                        const auto & it_reason0 = tupleToVar.find(Tuple(*tuple0));
+                        if(it_reason0!=tupleToVar.end())
+                            reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
+                    }
+                        if(joinTuples_0_1SharedVariables.first->size()>=2+1){
+                            const auto & it = tupleToVar.find(*tupleU);
+                            if(it != tupleToVar.end()) {
+                                int sign = tupleU->isNegated() ? -1 : 1;
+                                auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                            }
+                        }
+                    }
                 }//close loop nested join
             }//close loop nested join
         }//close predicate joins
-        if(facts[i] > 0){
-            bool tupleUNegated = false;
-            const Tuple * tupleU = NULL;
-            if(starter.getPredicateName()== &_e || starter.getPredicateName()== &_f){
-                for(const auto sharedVarTuple : sharedVariables_0_ToAggregate_2){
-                    int X = sharedVarTuple.first[0];
-                    int Y = sharedVarTuple.first[1];
-                    std::pair<AuxMap*,AuxMap*> joinTuples_0_2;
-                    joinTuples_0_2.first=sharedVarTuple.second->first;
-                    joinTuples_0_2.second=sharedVarTuple.second->second;
-                    if(joinTuples_0_2.first->size()>=3){
-                        const Tuple * tuple1 = (wc.find({X, Y}));
-                        if(!tuple1 && !tupleU ){
-                            tuple1 = tupleU = (uc.find({X, Y}));
-                            tupleUNegated = false;
+        if(starter.getPredicateName() == &_cliquesize) { 
+            const Tuple * tuple0 = &starter;
+            if(facts[i] < 0){
+                {
+                    const Tuple * tupleU = NULL;
+                    bool tupleUNegated = false;
+                    int R = (*tuple0)[0];
+                    if( (*tuple0)[1] == 1){
+                        const std::vector<const Tuple* >* tuples;
+                        tuples = &pin_.getValues({});
+                        const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
+                        if(tupleU == NULL){
+                            tuplesU = &uin_.getValues({});
                         }
-                        if(tuple1){
-                            const std::vector<const Tuple* >* tuples;
-                            tuples = &pd_0_.getValues({Y});
-                            const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
-                            if(tupleU == NULL){
-                                tuplesU = &ud_0_.getValues({Y});
+                        for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
+                            const Tuple * tuple1 = NULL;
+                            if(i<tuples->size()){
+                                tuple1 = tuples->at(i);
+                                if(tuplesU != &EMPTY_TUPLES) {
+                                    tupleU = NULL;
+                                }
                             }
-                            for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
-                                const Tuple * tuple2 = NULL;
-                                if(i<tuples->size()){
-                                    tuple2 = tuples->at(i);
-                                    if(tuplesU != &EMPTY_TUPLES) {
-                                        tupleU = NULL;
+                            else {
+                                tuple1 = tuplesU->at(i-tuples->size());
+                                tupleU = tuple1;
+                                tupleUNegated = false;
+                            }
+                            int C = (*tuple1)[0];
+                            int X = (*tuple1)[1];
+                            const Tuple * tuple2 = (wrest.find({C, X, R}));
+                            if(!tuple2 && !tupleU ){
+                                tuple2 = tupleU = (urest.find({C, X, R}));
+                                tupleUNegated = false;
+                            }
+                            if(tuple2){
+                                std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                                joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                                joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                                {
+                                    Tuple sharedTuple(std::vector<int>({R,R}));
+                                    if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                                        sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        for(int i=0;i<trueJoinTuples->size();i++){
+                                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                            if(findResult!=NULL){
+                                                sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                                            }
+                                        }
+                                        for(int i=0;i<undefJoinTuples->size();i++){
+                                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                            if(findResult!=NULL){
+                                                sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                                            }
+                                        }
                                     }
                                 }
-                                else {
-                                    tuple2 = tuplesU->at(i-tuples->size());
-                                    tupleU = tuple2;
-                                    tupleUNegated = false;
-                                }
-                                int Z = (*tuple2)[1];
-                                const std::vector<const Tuple*>* trueTuples = &p_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
+                                std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                                if(tupleU==NULL){
+                                    const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    std::vector<int> reason;
+                                    for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                        Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                        const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                        if(itaux_0!=tupleToVar.end()){
+                                            reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                        }//closing if
+                                        Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                        const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                        if(itmember_1!=tupleToVar.end()){
+                                            reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                        }//closing if
+                                    }
+                                    if(joinTuples_1_3SharedVariables.first->size()>=0){
+                                        std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                                        joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                                        joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                                        {
+                                            Tuple sharedTuple(std::vector<int>({R,R}));
+                                            if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                                                sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                                const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                for(int i=0;i<trueJoinTuples->size();i++){
+                                                    const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                                    if(findResult!=NULL){
+                                                        sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                                                    }
+                                                }
+                                                for(int i=0;i<undefJoinTuples->size();i++){
+                                                    const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                                    if(findResult!=NULL){
+                                                        sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                                        int actualSize4 = joinTuples_1_4SharedVariables.first->size();
+                                        std::set<std::vector<int>> alreadyCounted4;
+                                        for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                                            if(joinTuples_1_4SharedVariables.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                                                if(joinTuples_1_4SharedVariables.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                                    std::vector<int> key({joinTupleUndef->at(1)});
+                                                    alreadyCounted4.insert(key);
+                                                }
+                                            }
+                                        }
+                                        actualSize4+=alreadyCounted4.size();
+                                        const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                                        for(int i=0;i<falseTuples0->size();i++){
+                                            bool joiningTupleFound=false;
+                                            int R = falseTuples0->at(i)->at(0);
+                                            int Y = falseTuples0->at(i)->at(1);
+                                            const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                            const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                            const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                            for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                                const Tuple * tuple1=NULL;
+                                                if(i_1<trueTuples1->size())
+                                                    tuple1=trueTuples1->at(i_1);
+                                                else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                                    tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                                else
+                                                    tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                                joiningTupleFound=true;
+                                            }
+                                            if(joiningTupleFound){
+                                                const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                                if(it!=tupleToVar.end()){
+                                                    reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                                }//closing if
+                                            }
+                                        }
+                                        const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                                        for(int i=0;i<falseTuples1->size();i++){
+                                            bool joiningTupleFound=false;
+                                            int Y = falseTuples1->at(i)->at(0);
+                                            int R = falseTuples1->at(i)->at(1);
+                                            const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                            const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                            const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                            for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                                const Tuple * tuple0=NULL;
+                                                if(i_0<trueTuples0->size())
+                                                    tuple0=trueTuples0->at(i_0);
+                                                else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                                    tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                                else
+                                                    tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                                joiningTupleFound=true;
+                                            }
+                                            if(joiningTupleFound){
+                                                const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                                if(it!=tupleToVar.end()){
+                                                    reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                                }//closing if
+                                            }
+                                        }
+                                        if(tuple0!=tupleU){
+                                            const auto & it_reason0 = tupleToVar.find(Tuple(*tuple0));
+                                            if(it_reason0!=tupleToVar.end())
+                                                reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
+                                        }
+                                        if(tuple1!=tupleU){
+                                            const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                            if(it_reason1!=tupleToVar.end())
+                                                reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                                        }
+                                        if(tuple2!=tupleU){
+                                            const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                            if(it_reason2!=tupleToVar.end())
+                                                reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                                        }
+                                        const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                                        if(it_reason_starter!=tupleToVar.end())
+                                            reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                                        if(!(actualSize4>=0+1)){
+                                            std::cout<<"conflict detected in propagatoron last aggregate starting from literal1"<<std::endl;
+                                            propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
+                                        }else{
+                                            if(actualSize4 == 0+1){
+                                                const std::vector<const Tuple*>* undefinedTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
+                                                    if(joinTuples_1_4SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0 && joinTuples_1_4SharedVariables.second->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 1){
+                                                        {
+                                                            const Tuple* aggrTupleU = uaux.find({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                            if(aggrTupleU != NULL){
+                                                                const auto & it = tupleToVar.find(*aggrTupleU);
+                                                                if(it != tupleToVar.end()) {
+                                                                    int sign = aggrTupleU->isNegated() ? 1:-1;
+                                                                    auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                                }
+                                                            }
+                                                        }
+                                                        {
+                                                            const Tuple* aggrTupleU = umember.find({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                            if(aggrTupleU != NULL){
+                                                                const auto & it = tupleToVar.find(*aggrTupleU);
+                                                                if(it != tupleToVar.end()) {
+                                                                    int sign = aggrTupleU->isNegated() ? 1:-1;
+                                                                    auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }//close ext aggregate if
+                                }else{
                                 std::vector<int> reason;
-                                for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
-                                    Tuple tuplee_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1),trueTuples->at(reasonIndex)->at(2)}),&_e);
-                                    const auto & ite_0 = tupleToVar.find(tuplee_0);
-                                    if(ite_0!=tupleToVar.end()){
-                                        reason.push_back(ite_0->second * (tuplee_0.isNegated() ? -1:1));
-                                    }//closing if
-                                    Tuple tuplef_1(std::vector<int>({trueTuples->at(reasonIndex)->at(3),trueTuples->at(reasonIndex)->at(4)}),&_f);
-                                    const auto & itf_1 = tupleToVar.find(tuplef_1);
-                                    if(itf_1!=tupleToVar.end()){
-                                        reason.push_back(itf_1->second * (tuplef_1.isNegated() ? -1:1));
-                                    }//closing if
+                                const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                                for(int i=0;i<falseTuples0->size();i++){
+                                    bool joiningTupleFound=false;
+                                    int R = falseTuples0->at(i)->at(0);
+                                    int Y = falseTuples0->at(i)->at(1);
+                                    const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                    const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                    const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                    for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                        const Tuple * tuple1=NULL;
+                                        if(i_1<trueTuples1->size())
+                                            tuple1=trueTuples1->at(i_1);
+                                        else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                            tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                        else
+                                            tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                        joiningTupleFound=true;
+                                    }
+                                    if(joiningTupleFound){
+                                        const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                        if(it!=tupleToVar.end()){
+                                            reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                        }//closing if
+                                    }
+                                }
+                                const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                                for(int i=0;i<falseTuples1->size();i++){
+                                    bool joiningTupleFound=false;
+                                    int Y = falseTuples1->at(i)->at(0);
+                                    int R = falseTuples1->at(i)->at(1);
+                                    const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                    const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                    const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                    for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                        const Tuple * tuple0=NULL;
+                                        if(i_0<trueTuples0->size())
+                                            tuple0=trueTuples0->at(i_0);
+                                        else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                            tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                        else
+                                            tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                        joiningTupleFound=true;
+                                    }
+                                    if(joiningTupleFound){
+                                        const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                        if(it!=tupleToVar.end()){
+                                            reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                        }//closing if
+                                    }
+                                }
+                                if(tuple0!=tupleU){
+                                    const auto & it_reason0 = tupleToVar.find(Tuple(*tuple0));
+                                    if(it_reason0!=tupleToVar.end())
+                                        reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
                                 }
                                 if(tuple1!=tupleU){
                                     const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
@@ -1082,263 +3341,525 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                     if(it_reason2!=tupleToVar.end())
                                         reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
                                 }
-                                const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
-                                if(it_reason_starter!=tupleToVar.end())
-                                    reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
-                                if(tupleU == NULL) {
-                                    std::cout<<"shared var: "<<X<<" "<<Y<<std::endl;
-                                    std::cout<<"tuple1: ";tuple1->print();std::cout<<std::endl;
-                                    std::cout<<"tuple2: ";tuple2->print();std::cout<<std::endl;
-                                    std::cout<<"conflict detected in propagator External Propagation2"<<std::endl;
-                                    propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
+                                const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                    Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                    const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                    if(itaux_0!=tupleToVar.end()){
+                                        reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                    }//closing if
+                                    Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                    const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                    if(itmember_1!=tupleToVar.end()){
+                                        reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                    }//closing if
                                 }
-                                else {
-                                    const auto & it = tupleToVar.find(*tupleU);
-                                    if(it != tupleToVar.end()) {
-                                        int sign = tupleU->isNegated() ? -1 : 1;
-                                        propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
-                                    }
-                                }
-                            }//close par
-                        }//close par
-                    }//close par
-                    else{
-                        if(joinTuples_0_2.first->size()==3-1){
-                            const Tuple * tuple1 = (wc.find({X, Y}));
-                            if(!tuple1 && !tupleU ){
-                                tuple1 = tupleU = (uc.find({X, Y}));
-                                tupleUNegated = false;
-                            }
-                            if(tuple1){
-                                const std::vector<const Tuple* >* tuples;
-                                tuples = &pd_0_.getValues({Y});
-                                const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
-                                if(tupleU == NULL){
-                                    tuplesU = &ud_0_.getValues({Y});
-                                }
-                                for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
-                                    const Tuple * tuple2 = NULL;
-                                    if(i<tuples->size()){
-                                        tuple2 = tuples->at(i);
-                                        if(tuplesU != &EMPTY_TUPLES) {
-                                            tupleU = NULL;
+                                std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                                joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                                joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                                {
+                                    Tuple sharedTuple(std::vector<int>({R,R}));
+                                    if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                                        sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        for(int i=0;i<trueJoinTuples->size();i++){
+                                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                            if(findResult!=NULL){
+                                                sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                                            }
                                         }
-                                    }
-                                    else {
-                                        tuple2 = tuplesU->at(i-tuples->size());
-                                        tupleU = tuple2;
-                                        tupleUNegated = false;
-                                    }
-                                    int Z = (*tuple2)[1];
-                                    if(tupleU ==  NULL) {
-                                        std::pair<AuxMap*,AuxMap*> joinTuples_0_2;
-                                        joinTuples_0_2.first = &p_e_X_A_Y_f_B_Y_;
-                                        joinTuples_0_2.second = &u_e_X_A_Y_f_B_Y_;
-                                        std::pair<AuxMap*,AuxMap*> joinTuples_0_2SharedVariables = *sharedVariables_0_ToAggregate_2[std::vector<int>({X,Y,Y})];
-                                        const std::vector<const Tuple*>* trueTuples = &p_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
-                                        std::vector<int> reason;
-                                        for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
-                                            Tuple tuplee_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1),trueTuples->at(reasonIndex)->at(2)}),&_e);
-                                            const auto & ite_0 = tupleToVar.find(tuplee_0);
-                                            if(ite_0!=tupleToVar.end()){
-                                                reason.push_back(ite_0->second * (tuplee_0.isNegated() ? -1:1));
-                                            }//closing if
-                                            Tuple tuplef_1(std::vector<int>({trueTuples->at(reasonIndex)->at(3),trueTuples->at(reasonIndex)->at(4)}),&_f);
-                                            const auto & itf_1 = tupleToVar.find(tuplef_1);
-                                            if(itf_1!=tupleToVar.end()){
-                                                reason.push_back(itf_1->second * (tuplef_1.isNegated() ? -1:1));
-                                            }//closing if
-                                        }
-                                        const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
-                                        if(it_reason1!=tupleToVar.end())
-                                            reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
-                                        const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
-                                        if(it_reason2!=tupleToVar.end())
-                                            reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
-                                        const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
-                                        if(it_reason_starter!=tupleToVar.end())
-                                            reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
-                                        const std::vector<const Tuple*>* undefinedTuples = &u_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
-                                        for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
-                                            if(joinTuples_0_2SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1),undefinedTuples->at(iUndef)->at(3)}).size() == 0){
-                                                const Tuple* aggrTupleU=NULL;
-                                                const std::vector<const Tuple*>* tuplese;
-                                                const std::vector<const Tuple*>* tuplesUe=&EMPTY_TUPLES;
-                                                tuplese= &pe_0_1_2_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1),undefinedTuples->at(iUndef)->at(2)});
-                                                if(aggrTupleU==NULL)
-                                                    tuplesUe= &ue_0_1_2_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1),undefinedTuples->at(iUndef)->at(2)});
-                                                for(int j3=0;j3<tuplese->size()+tuplesUe->size();j3++){
-                                                    const Tuple* auxTuple3=NULL;
-                                                    bool addedToReason=false;
-                                                    if(j3 < tuplese->size()){
-                                                        auxTuple3 = tuplese->at(j3);
-                                                        const auto & it = tupleToVar.find(*auxTuple3);
-                                                        if(it!=tupleToVar.end()){
-                                                            addedToReason=true;
-                                                            reason.push_back(it->second * (auxTuple3->isNegated() ? -1:1));
-                                                        }//closing if
-                                                        if(tuplesUe != &EMPTY_TUPLES) {
-                                                        }
-                                                    }else{
-                                                        auxTuple3 = tuplesUe->at(j3-tuplese->size());
-                                                        aggrTupleU = auxTuple3;
-                                                    }
-                                                    const std::vector<const Tuple*>* tuplesf;
-                                                    const std::vector<const Tuple*>* tuplesUf=&EMPTY_TUPLES;
-                                                    tuplesf= &pf_0_1_.getValues({undefinedTuples->at(iUndef)->at(3),undefinedTuples->at(iUndef)->at(4)});
-                                                    if(aggrTupleU==NULL)
-                                                        tuplesUf= &uf_0_1_.getValues({undefinedTuples->at(iUndef)->at(3),undefinedTuples->at(iUndef)->at(4)});
-                                                    for(int j5=0;j5<tuplesf->size()+tuplesUf->size();j5++){
-                                                        const Tuple* auxTuple5=NULL;
-                                                        bool addedToReason=false;
-                                                        if(j5 < tuplesf->size()){
-                                                            auxTuple5 = tuplesf->at(j5);
-                                                            const auto & it = tupleToVar.find(*auxTuple5);
-                                                            if(it!=tupleToVar.end()){
-                                                                addedToReason=true;
-                                                                reason.push_back(it->second * (auxTuple5->isNegated() ? -1:1));
-                                                            }//closing if
-                                                            if(tuplesUf != &EMPTY_TUPLES) {
-                                                            }
-                                                        }else{
-                                                            auxTuple5 = tuplesUf->at(j5-tuplesf->size());
-                                                            aggrTupleU = auxTuple5;
-                                                        }
-                                                        if(aggrTupleU == NULL){
-                                                            std::cout<<"Tuple undefined not well formed"<<std::endl;
-                                                            propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
-                                                        }else{
-                                                            const auto & it = tupleToVar.find(*aggrTupleU);
-                                                            if(it != tupleToVar.end()) {
-                                                                int sign = aggrTupleU->isNegated() ? -1 : 1;
-                                                                auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
-                                                            }
-                                                        }
-                                                        if(addedToReason) reason.pop_back();
-                                                    }
-                                                    if(addedToReason) reason.pop_back();
-                                                }
+                                        for(int i=0;i<undefJoinTuples->size();i++){
+                                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                            if(findResult!=NULL){
+                                                sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
                                             }
                                         }
                                     }
-                                }//close par
+                                }
+                                std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                                int actualSize4 = joinTuples_1_4SharedVariables.first->size();
+                                std::set<std::vector<int>> alreadyCounted4;
+                                for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                                    if(joinTuples_1_4SharedVariables.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                                        if(joinTuples_1_4SharedVariables.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                            std::vector<int> key({joinTupleUndef->at(1)});
+                                            alreadyCounted4.insert(key);
+                                        }
+                                    }
+                                }
+                                actualSize4+=alreadyCounted4.size();
+                                    if(!(actualSize4>=0+1) && (joinTuples_1_3SharedVariables.first->size()>=0)){
+                                        const auto & it = tupleToVar.find(*tupleU);
+                                        if(it != tupleToVar.end()) {
+                                            int sign = tupleU->isNegated() ? -1 : 1;
+                                            auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                        }
+                                    }
+                                }
+                                std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                                joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                                joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                                {
+                                    Tuple sharedTuple(std::vector<int>({R,R}));
+                                    if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                                        sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        for(int i=0;i<trueJoinTuples->size();i++){
+                                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                            if(findResult!=NULL){
+                                                sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                                            }
+                                        }
+                                        for(int i=0;i<undefJoinTuples->size();i++){
+                                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                            if(findResult!=NULL){
+                                                sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                                            }
+                                        }
+                                    }
+                                }
+                                std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                                int actualSize4 = joinTuples_1_4SharedVariables.first->size();
+                                std::set<std::vector<int>> alreadyCounted4;
+                                for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                                    if(joinTuples_1_4SharedVariables.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                                        if(joinTuples_1_4SharedVariables.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                            std::vector<int> key({joinTupleUndef->at(1)});
+                                            alreadyCounted4.insert(key);
+                                        }
+                                    }
+                                }
+                                actualSize4+=alreadyCounted4.size();
+                                if(tupleU==NULL){
+                                    std::vector<int> reason;
+                                    const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                                    for(int i=0;i<falseTuples0->size();i++){
+                                        bool joiningTupleFound=false;
+                                        int R = falseTuples0->at(i)->at(0);
+                                        int Y = falseTuples0->at(i)->at(1);
+                                        const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                        const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                        const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                        for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                            const Tuple * tuple1=NULL;
+                                            if(i_1<trueTuples1->size())
+                                                tuple1=trueTuples1->at(i_1);
+                                            else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                                tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                            else
+                                                tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                            joiningTupleFound=true;
+                                        }
+                                        if(joiningTupleFound){
+                                            const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                            if(it!=tupleToVar.end()){
+                                                reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                            }//closing if
+                                        }
+                                    }
+                                    const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                                    for(int i=0;i<falseTuples1->size();i++){
+                                        bool joiningTupleFound=false;
+                                        int Y = falseTuples1->at(i)->at(0);
+                                        int R = falseTuples1->at(i)->at(1);
+                                        const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                        const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                        const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                        for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                            const Tuple * tuple0=NULL;
+                                            if(i_0<trueTuples0->size())
+                                                tuple0=trueTuples0->at(i_0);
+                                            else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                                tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                            else
+                                                tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                            joiningTupleFound=true;
+                                        }
+                                        if(joiningTupleFound){
+                                            const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                            if(it!=tupleToVar.end()){
+                                                reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                            }//closing if
+                                        }
+                                    }
+                                    if(!(actualSize4>=0+1)){
+                                        std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                                        joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                                        joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                                        {
+                                            Tuple sharedTuple(std::vector<int>({R,R}));
+                                            if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                                                sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                                const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                for(int i=0;i<trueJoinTuples->size();i++){
+                                                    const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                                    if(findResult!=NULL){
+                                                        sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                                                    }
+                                                }
+                                                for(int i=0;i<undefJoinTuples->size();i++){
+                                                    const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                                    if(findResult!=NULL){
+                                                        sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                                        const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                            Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                            const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                            if(itaux_0!=tupleToVar.end()){
+                                                reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                            }//closing if
+                                            Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                            const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                            if(itmember_1!=tupleToVar.end()){
+                                                reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                            }//closing if
+                                        }
+                                        if(tuple0!=tupleU){
+                                            const auto & it_reason0 = tupleToVar.find(Tuple(*tuple0));
+                                            if(it_reason0!=tupleToVar.end())
+                                                reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
+                                        }
+                                        if(tuple1!=tupleU){
+                                            const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                            if(it_reason1!=tupleToVar.end())
+                                                reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                                        }
+                                        if(tuple2!=tupleU){
+                                            const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                            if(it_reason2!=tupleToVar.end())
+                                                reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                                        }
+                                        const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                                        if(it_reason_starter!=tupleToVar.end())
+                                            reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                                        if(joinTuples_1_3SharedVariables.first->size()>=0){
+                                            std::cout<<"conflict detected in propagatoron last aggregate starting from literal1"<<std::endl;
+                                            propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
+                                        }else{
+                                            if(joinTuples_1_3SharedVariables.first->size() == 0-1){
+                                                const std::vector<const Tuple*>* undefinedTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
+                                                    if(joinTuples_1_3SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0){
+                                                        const Tuple* aggrTupleU=NULL;
+                                                        const std::vector<const Tuple*>* tuplesaux;
+                                                        const std::vector<const Tuple*>* tuplesUaux=&EMPTY_TUPLES;
+                                                        tuplesaux= &paux_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                        if(aggrTupleU==NULL)
+                                                            tuplesUaux= &uaux_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                        for(int j2=0;j2<tuplesaux->size()+tuplesUaux->size();j2++){
+                                                            const Tuple* auxTuple2=NULL;
+                                                            bool addedToReason=false;
+                                                            if(j2 < tuplesaux->size()){
+                                                                auxTuple2 = tuplesaux->at(j2);
+                                                                const auto & it = tupleToVar.find(*auxTuple2);
+                                                                if(it!=tupleToVar.end()){
+                                                                    addedToReason=true;
+                                                                    reason.push_back(it->second * (auxTuple2->isNegated() ? -1:1));
+                                                                }//closing if
+                                                                if(tuplesUaux != &EMPTY_TUPLES) {
+                                                                }
+                                                            }else{
+                                                                auxTuple2 = tuplesUaux->at(j2-tuplesaux->size());
+                                                                aggrTupleU = auxTuple2;
+                                                            }
+                                                            const std::vector<const Tuple*>* tuplesmember;
+                                                            const std::vector<const Tuple*>* tuplesUmember=&EMPTY_TUPLES;
+                                                            tuplesmember= &pmember_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                            if(aggrTupleU==NULL)
+                                                                tuplesUmember= &umember_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                            for(int j4=0;j4<tuplesmember->size()+tuplesUmember->size();j4++){
+                                                                const Tuple* auxTuple4=NULL;
+                                                                bool addedToReason=false;
+                                                                if(j4 < tuplesmember->size()){
+                                                                    auxTuple4 = tuplesmember->at(j4);
+                                                                    const auto & it = tupleToVar.find(*auxTuple4);
+                                                                    if(it!=tupleToVar.end()){
+                                                                        addedToReason=true;
+                                                                        reason.push_back(it->second * (auxTuple4->isNegated() ? -1:1));
+                                                                    }//closing if
+                                                                    if(tuplesUmember != &EMPTY_TUPLES) {
+                                                                    }
+                                                                }else{
+                                                                    auxTuple4 = tuplesUmember->at(j4-tuplesmember->size());
+                                                                    aggrTupleU = auxTuple4;
+                                                                }
+                                                                if(aggrTupleU == NULL){
+                                                                    std::cout<<"Tuple undefined not well formed"<<std::endl;
+                                                                }else{
+                                                                    const auto & it = tupleToVar.find(*aggrTupleU);
+                                                                    if(it != tupleToVar.end()) {
+                                                                        int sign = aggrTupleU->isNegated() ? -1 : 1;
+                                                                        auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                                    }
+                                                                }
+                                                                if(addedToReason) reason.pop_back();
+                                                            }
+                                                            if(addedToReason) reason.pop_back();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }//close ext aggregate if
+                                }else{
+                                const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                std::vector<int> reason;
+                                for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                    Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                    const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                    if(itaux_0!=tupleToVar.end()){
+                                        reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                    }//closing if
+                                    Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                    const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                    if(itmember_1!=tupleToVar.end()){
+                                        reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                    }//closing if
+                                }
+                                if(tuple0!=tupleU){
+                                    const auto & it_reason0 = tupleToVar.find(Tuple(*tuple0));
+                                    if(it_reason0!=tupleToVar.end())
+                                        reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
+                                }
+                                if(tuple1!=tupleU){
+                                    const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                    if(it_reason1!=tupleToVar.end())
+                                        reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                                }
+                                if(tuple2!=tupleU){
+                                    const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                    if(it_reason2!=tupleToVar.end())
+                                        reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                                }
+                                const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                                for(int i=0;i<falseTuples0->size();i++){
+                                    bool joiningTupleFound=false;
+                                    int R = falseTuples0->at(i)->at(0);
+                                    int Y = falseTuples0->at(i)->at(1);
+                                    const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                    const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                    const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                    for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                        const Tuple * tuple1=NULL;
+                                        if(i_1<trueTuples1->size())
+                                            tuple1=trueTuples1->at(i_1);
+                                        else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                            tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                        else
+                                            tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                        joiningTupleFound=true;
+                                    }
+                                    if(joiningTupleFound){
+                                        const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                        if(it!=tupleToVar.end()){
+                                            reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                        }//closing if
+                                    }
+                                }
+                                const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                                for(int i=0;i<falseTuples1->size();i++){
+                                    bool joiningTupleFound=false;
+                                    int Y = falseTuples1->at(i)->at(0);
+                                    int R = falseTuples1->at(i)->at(1);
+                                    const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                    const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                    const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                    for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                        const Tuple * tuple0=NULL;
+                                        if(i_0<trueTuples0->size())
+                                            tuple0=trueTuples0->at(i_0);
+                                        else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                            tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                        else
+                                            tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                        joiningTupleFound=true;
+                                    }
+                                    if(joiningTupleFound){
+                                        const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                        if(it!=tupleToVar.end()){
+                                            reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                        }//closing if
+                                    }
+                                }
+                                std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                                joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                                joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                                {
+                                    Tuple sharedTuple(std::vector<int>({R,R}));
+                                    if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                                        sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                        const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        for(int i=0;i<trueJoinTuples->size();i++){
+                                            const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                            if(findResult!=NULL){
+                                                sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                                            }
+                                        }
+                                        for(int i=0;i<undefJoinTuples->size();i++){
+                                            const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                            if(findResult!=NULL){
+                                                sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                                            }
+                                        }
+                                    }
+                                }
+                                std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                                    if(joinTuples_1_3SharedVariables.first->size()>=0 && (!(actualSize4>=0+1))){
+                                        const auto & it = tupleToVar.find(*tupleU);
+                                        if(it != tupleToVar.end()) {
+                                            int sign = tupleU->isNegated() ? -1 : 1;
+                                            auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                        }
+                                    }
+                                }
                             }//close par
                         }//close par
                     }//close par
-                }//close par
-            }//close par
-        }//close if
-        if(starter.getPredicateName() == &_c) { 
-            const Tuple * tuple0 = &starter;
-            if(facts[i] > 0){
-                {
-                    const Tuple * tupleU = NULL;
-                    bool tupleUNegated = false;
-                    int X = (*tuple0)[0];
-                    int Y = (*tuple0)[1];
-                    const std::vector<const Tuple* >* tuples;
-                    tuples = &pd_0_.getValues({Y});
-                    const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
-                    if(tupleU == NULL){
-                        tuplesU = &ud_0_.getValues({Y});
-                    }
-                    for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
-                        const Tuple * tuple1 = NULL;
-                        if(i<tuples->size()){
-                            tuple1 = tuples->at(i);
-                            if(tuplesU != &EMPTY_TUPLES) {
-                                tupleU = NULL;
-                            }
-                        }
-                        else {
-                            tuple1 = tuplesU->at(i-tuples->size());
-                            tupleU = tuple1;
+                }//close loop nested join
+            }//close loop nested join
+        }//close predicate joins
+        if(facts[i] > 0){
+            bool tupleUNegated = false;
+            const Tuple * tupleU = NULL;
+            if(starter.getPredicateName()== &_in || starter.getPredicateName()== &_pair){
+                for(const auto sharedVarTuple : sharedVariables_0_ToAggregate_1){
+                    tupleU=NULL;
+                    int C = sharedVarTuple.first[0];
+                    std::pair<AuxMap*,AuxMap*> joinTuples_0_1;
+                    joinTuples_0_1.first=sharedVarTuple.second->first;
+                    joinTuples_0_1.second=sharedVarTuple.second->second;
+                    if(joinTuples_0_1.first->size()>=2+1){
+                        const Tuple * tuple1 = (wclique.find({C}));
+                        if(!tuple1 && !tupleU ){
+                            tuple1 = tupleU = (uclique.find({C}));
                             tupleUNegated = false;
                         }
-                        int Z = (*tuple1)[1];
-                        std::pair<AuxMap*,AuxMap*> joinTuples_0_2;
-                        joinTuples_0_2.first = &p_e_X_A_Y_f_B_Y_;
-                        joinTuples_0_2.second = &u_e_X_A_Y_f_B_Y_;
-                        std::pair<AuxMap*,AuxMap*> joinTuples_0_2SharedVariables = *sharedVariables_0_ToAggregate_2[std::vector<int>({X,Y,Y})];
-                        if(tupleU==NULL){
-                            const std::vector<const Tuple*>* trueTuples = &p_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
+                        if(tuple1){
+                            const std::vector<const Tuple*>* trueTuples = &p_in_C_X_pair_C_X_0_2_.getValues({C,C});
                             std::vector<int> reason;
                             for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
-                                Tuple tuplee_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1),trueTuples->at(reasonIndex)->at(2)}),&_e);
-                                const auto & ite_0 = tupleToVar.find(tuplee_0);
-                                if(ite_0!=tupleToVar.end()){
-                                    reason.push_back(ite_0->second * (tuplee_0.isNegated() ? -1:1));
+                                Tuple tuplein_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_in);
+                                const auto & itin_0 = tupleToVar.find(tuplein_0);
+                                if(itin_0!=tupleToVar.end()){
+                                    reason.push_back(itin_0->second * (tuplein_0.isNegated() ? -1:1));
                                 }//closing if
-                                Tuple tuplef_1(std::vector<int>({trueTuples->at(reasonIndex)->at(3),trueTuples->at(reasonIndex)->at(4)}),&_f);
-                                const auto & itf_1 = tupleToVar.find(tuplef_1);
-                                if(itf_1!=tupleToVar.end()){
-                                    reason.push_back(itf_1->second * (tuplef_1.isNegated() ? -1:1));
+                                Tuple tuplepair_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_pair);
+                                const auto & itpair_1 = tupleToVar.find(tuplepair_1);
+                                if(itpair_1!=tupleToVar.end()){
+                                    reason.push_back(itpair_1->second * (tuplepair_1.isNegated() ? -1:1));
                                 }//closing if
-                            }
-                            if(tuple0!=tupleU){
-                                const auto & it_reason0 = tupleToVar.find(Tuple(*tuple0));
-                                if(it_reason0!=tupleToVar.end())
-                                    reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
                             }
                             if(tuple1!=tupleU){
                                 const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
                                 if(it_reason1!=tupleToVar.end())
                                     reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
                             }
-                            if(joinTuples_0_2SharedVariables.first->size()>=3){
-                                std::cout<<"conflict detected in propagator"<<std::endl;
+                            const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                            if(it_reason_starter!=tupleToVar.end())
+                                reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                            if(tupleU == NULL) {
+                                std::cout<<"conflict detected in propagator External Propagation1"<<std::endl;
                                 propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
-                            }else{
-                                if(joinTuples_0_2SharedVariables.first->size() == 3-1){
-                                    const std::vector<const Tuple*>* undefinedTuples = &u_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
+                            }
+                            else {
+                                const auto & it = tupleToVar.find(*tupleU);
+                                if(it != tupleToVar.end()) {
+                                    int sign = tupleU->isNegated() ? -1 : 1;
+                                    propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                }
+                            }
+                        }//close par
+                    }//close par
+                    else{
+                        if(joinTuples_0_1.first->size()==2+1-1){
+                            const Tuple * tuple1 = (wclique.find({C}));
+                            if(!tuple1 && !tupleU ){
+                                tuple1 = tupleU = (uclique.find({C}));
+                                tupleUNegated = false;
+                            }
+                            if(tuple1){
+                                if(tupleU ==  NULL) {
+                                    std::pair<AuxMap*,AuxMap*> joinTuples_0_1;
+                                    joinTuples_0_1.first = &p_in_C_X_pair_C_X_;
+                                    joinTuples_0_1.second = &u_in_C_X_pair_C_X_;
+                                    std::pair<AuxMap*,AuxMap*> joinTuples_0_1SharedVariables = *sharedVariables_0_ToAggregate_1[std::vector<int>({C,C})];
+                                    const std::vector<const Tuple*>* trueTuples = &p_in_C_X_pair_C_X_0_2_.getValues({C,C});
+                                    std::vector<int> reason;
+                                    for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                        Tuple tuplein_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_in);
+                                        const auto & itin_0 = tupleToVar.find(tuplein_0);
+                                        if(itin_0!=tupleToVar.end()){
+                                            reason.push_back(itin_0->second * (tuplein_0.isNegated() ? -1:1));
+                                        }//closing if
+                                        Tuple tuplepair_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_pair);
+                                        const auto & itpair_1 = tupleToVar.find(tuplepair_1);
+                                        if(itpair_1!=tupleToVar.end()){
+                                            reason.push_back(itpair_1->second * (tuplepair_1.isNegated() ? -1:1));
+                                        }//closing if
+                                    }
+                                    const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                    if(it_reason1!=tupleToVar.end())
+                                        reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                                    const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                                    if(it_reason_starter!=tupleToVar.end())
+                                        reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                                    const std::vector<const Tuple*>* undefinedTuples = &u_in_C_X_pair_C_X_0_2_.getValues({C,C});
                                     for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
-                                        if(joinTuples_0_2SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1),undefinedTuples->at(iUndef)->at(3)}).size() == 0){
+                                        if(joinTuples_0_1SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0){
                                             const Tuple* aggrTupleU=NULL;
-                                            const std::vector<const Tuple*>* tuplese;
-                                            const std::vector<const Tuple*>* tuplesUe=&EMPTY_TUPLES;
-                                            tuplese= &pe_0_1_2_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1),undefinedTuples->at(iUndef)->at(2)});
+                                            const std::vector<const Tuple*>* tuplesin;
+                                            const std::vector<const Tuple*>* tuplesUin=&EMPTY_TUPLES;
+                                            tuplesin= &pin_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
                                             if(aggrTupleU==NULL)
-                                                tuplesUe= &ue_0_1_2_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1),undefinedTuples->at(iUndef)->at(2)});
-                                            for(int j3=0;j3<tuplese->size()+tuplesUe->size();j3++){
-                                                const Tuple* auxTuple3=NULL;
+                                                tuplesUin= &uin_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                            for(int j2=0;j2<tuplesin->size()+tuplesUin->size();j2++){
+                                                const Tuple* auxTuple2=NULL;
                                                 bool addedToReason=false;
-                                                if(j3 < tuplese->size()){
-                                                    auxTuple3 = tuplese->at(j3);
-                                                    const auto & it = tupleToVar.find(*auxTuple3);
+                                                if(j2 < tuplesin->size()){
+                                                    auxTuple2 = tuplesin->at(j2);
+                                                    const auto & it = tupleToVar.find(*auxTuple2);
                                                     if(it!=tupleToVar.end()){
                                                         addedToReason=true;
-                                                        reason.push_back(it->second * (auxTuple3->isNegated() ? -1:1));
+                                                        reason.push_back(it->second * (auxTuple2->isNegated() ? -1:1));
                                                     }//closing if
-                                                    if(tuplesUe != &EMPTY_TUPLES) {
+                                                    if(tuplesUin != &EMPTY_TUPLES) {
                                                     }
                                                 }else{
-                                                    auxTuple3 = tuplesUe->at(j3-tuplese->size());
-                                                    aggrTupleU = auxTuple3;
+                                                    auxTuple2 = tuplesUin->at(j2-tuplesin->size());
+                                                    aggrTupleU = auxTuple2;
                                                 }
-                                                const std::vector<const Tuple*>* tuplesf;
-                                                const std::vector<const Tuple*>* tuplesUf=&EMPTY_TUPLES;
-                                                tuplesf= &pf_0_1_.getValues({undefinedTuples->at(iUndef)->at(3),undefinedTuples->at(iUndef)->at(4)});
+                                                const std::vector<const Tuple*>* tuplespair;
+                                                const std::vector<const Tuple*>* tuplesUpair=&EMPTY_TUPLES;
+                                                tuplespair= &ppair_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
                                                 if(aggrTupleU==NULL)
-                                                    tuplesUf= &uf_0_1_.getValues({undefinedTuples->at(iUndef)->at(3),undefinedTuples->at(iUndef)->at(4)});
-                                                for(int j5=0;j5<tuplesf->size()+tuplesUf->size();j5++){
-                                                    const Tuple* auxTuple5=NULL;
+                                                    tuplesUpair= &upair_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                for(int j4=0;j4<tuplespair->size()+tuplesUpair->size();j4++){
+                                                    const Tuple* auxTuple4=NULL;
                                                     bool addedToReason=false;
-                                                    if(j5 < tuplesf->size()){
-                                                        auxTuple5 = tuplesf->at(j5);
-                                                        const auto & it = tupleToVar.find(*auxTuple5);
+                                                    if(j4 < tuplespair->size()){
+                                                        auxTuple4 = tuplespair->at(j4);
+                                                        const auto & it = tupleToVar.find(*auxTuple4);
                                                         if(it!=tupleToVar.end()){
                                                             addedToReason=true;
-                                                            reason.push_back(it->second * (auxTuple5->isNegated() ? -1:1));
+                                                            reason.push_back(it->second * (auxTuple4->isNegated() ? -1:1));
                                                         }//closing if
-                                                        if(tuplesUf != &EMPTY_TUPLES) {
+                                                        if(tuplesUpair != &EMPTY_TUPLES) {
                                                         }
                                                     }else{
-                                                        auxTuple5 = tuplesUf->at(j5-tuplesf->size());
-                                                        aggrTupleU = auxTuple5;
+                                                        auxTuple4 = tuplesUpair->at(j4-tuplespair->size());
+                                                        aggrTupleU = auxTuple4;
                                                     }
                                                     if(aggrTupleU == NULL){
                                                         std::cout<<"Tuple undefined not well formed"<<std::endl;
-                                                        propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
                                                     }else{
                                                         const auto & it = tupleToVar.find(*aggrTupleU);
                                                         if(it != tupleToVar.end()) {
@@ -1353,40 +3874,1642 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                         }
                                     }
                                 }
-                            }
-                        }else{
-                        const std::vector<const Tuple*>* trueTuples = &p_e_X_A_Y_f_B_Y_0_2_4_.getValues({X,Y,Y});
+                            }//close par
+                        }//close par
+                    }//close par
+                }//close par
+            }//close par
+        }//close if
+        if(facts[i] > 0){
+            bool tupleUNegated = false;
+            const Tuple * tupleU = NULL;
+            if(starter.getPredicateName()== &_aux || starter.getPredicateName()== &_member){
+                for(const auto sharedVarTuple : sharedVariables_1_ToAggregate_3){
+                    tupleU=NULL;
+                    int R = sharedVarTuple.first[0];
+                    std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                    joinTuples_1_3.first=sharedVarTuple.second->first;
+                    joinTuples_1_3.second=sharedVarTuple.second->second;
+                    if(joinTuples_1_3.first->size()>=0){
+                        const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
                         std::vector<int> reason;
                         for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
-                            Tuple tuplee_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1),trueTuples->at(reasonIndex)->at(2)}),&_e);
-                            const auto & ite_0 = tupleToVar.find(tuplee_0);
-                            if(ite_0!=tupleToVar.end()){
-                                reason.push_back(ite_0->second * (tuplee_0.isNegated() ? -1:1));
+                            Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                            const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                            if(itaux_0!=tupleToVar.end()){
+                                reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
                             }//closing if
-                            Tuple tuplef_1(std::vector<int>({trueTuples->at(reasonIndex)->at(3),trueTuples->at(reasonIndex)->at(4)}),&_f);
-                            const auto & itf_1 = tupleToVar.find(tuplef_1);
-                            if(itf_1!=tupleToVar.end()){
-                                reason.push_back(itf_1->second * (tuplef_1.isNegated() ? -1:1));
+                            Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                            const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                            if(itmember_1!=tupleToVar.end()){
+                                reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
                             }//closing if
                         }
-                        if(tuple0!=tupleU){
-                            const auto & it_reason0 = tupleToVar.find(Tuple(*tuple0));
-                            if(it_reason0!=tupleToVar.end())
-                                reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
+                        const std::vector<const Tuple* >* tuples;
+                        tuples = &pin_.getValues({});
+                        const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
+                        if(tupleU == NULL){
+                            tuplesU = &uin_.getValues({});
                         }
-                        if(tuple1!=tupleU){
-                            const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
-                            if(it_reason1!=tupleToVar.end())
-                                reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
-                        }
-                            if(joinTuples_0_2SharedVariables.first->size()>=3){
-                                const auto & it = tupleToVar.find(*tupleU);
-                                if(it != tupleToVar.end()) {
-                                    int sign = tupleU->isNegated() ? -1 : 1;
-                                    auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                        for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
+                            const Tuple * tuple1 = NULL;
+                            if(i<tuples->size()){
+                                tuple1 = tuples->at(i);
+                                if(tuplesU != &EMPTY_TUPLES) {
+                                    tupleU = NULL;
                                 }
                             }
+                            else {
+                                tuple1 = tuplesU->at(i-tuples->size());
+                                tupleU = tuple1;
+                                tupleUNegated = false;
+                            }
+                            int C = (*tuple1)[0];
+                            int X = (*tuple1)[1];
+                            const Tuple * tuple2 = (wrest.find({C, X, R}));
+                            if(!tuple2 && !tupleU ){
+                                tuple2 = tupleU = (urest.find({C, X, R}));
+                                tupleUNegated = false;
+                            }
+                            if(tuple2){
+                                const Tuple negativeTuple = Tuple({R, 1}, &_cliquesize, true);
+                                const Tuple * tuple3 = &negativeTuple;
+                                bool lTrue = (wcliquesize.find(negativeTuple)!=NULL);
+                                const Tuple * undefTuple = ucliquesize.find(negativeTuple);
+                                if((!lTrue && undefTuple == NULL) || (undefTuple && tupleU == NULL)){
+                                    if(undefTuple){
+                                        tuple3 = tupleU = undefTuple;
+                                        tupleU->print();
+                                        tupleUNegated = true;
+                                    }
+                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                                    joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                                    joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                                    {
+                                        Tuple sharedTuple(std::vector<int>({R,R}));
+                                        if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                                            sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                            const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            for(int i=0;i<trueJoinTuples->size();i++){
+                                                const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                                if(findResult!=NULL){
+                                                    sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                                                }
+                                            }
+                                            for(int i=0;i<undefJoinTuples->size();i++){
+                                                const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                                if(findResult!=NULL){
+                                                    sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                                    int actualSize4 = joinTuples_1_4SharedVariables.first->size();
+                                    std::set<std::vector<int>> alreadyCounted4;
+                                    for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                                        if(joinTuples_1_4SharedVariables.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                                            if(joinTuples_1_4SharedVariables.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                                std::vector<int> key({joinTupleUndef->at(1)});
+                                                alreadyCounted4.insert(key);
+                                            }
+                                        }
+                                    }
+                                    actualSize4+=alreadyCounted4.size();
+                                    if(tupleU==NULL){
+                                        const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                                        for(int i=0;i<falseTuples0->size();i++){
+                                            bool joiningTupleFound=false;
+                                            int R = falseTuples0->at(i)->at(0);
+                                            int Y = falseTuples0->at(i)->at(1);
+                                            const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                            const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                            const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                            for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                                const Tuple * tuple1=NULL;
+                                                if(i_1<trueTuples1->size())
+                                                    tuple1=trueTuples1->at(i_1);
+                                                else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                                    tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                                else
+                                                    tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                                joiningTupleFound=true;
+                                            }
+                                            if(joiningTupleFound){
+                                                const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                                if(it!=tupleToVar.end()){
+                                                    reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                                }//closing if
+                                            }
+                                        }
+                                        const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                                        for(int i=0;i<falseTuples1->size();i++){
+                                            bool joiningTupleFound=false;
+                                            int Y = falseTuples1->at(i)->at(0);
+                                            int R = falseTuples1->at(i)->at(1);
+                                            const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                            const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                            const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                            for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                                const Tuple * tuple0=NULL;
+                                                if(i_0<trueTuples0->size())
+                                                    tuple0=trueTuples0->at(i_0);
+                                                else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                                    tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                                else
+                                                    tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                                joiningTupleFound=true;
+                                            }
+                                            if(joiningTupleFound){
+                                                const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                                if(it!=tupleToVar.end()){
+                                                    reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                                }//closing if
+                                            }
+                                        }
+                                        if(tuple1!=tupleU){
+                                            const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                            if(it_reason1!=tupleToVar.end())
+                                                reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                                        }
+                                        if(tuple2!=tupleU){
+                                            const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                            if(it_reason2!=tupleToVar.end())
+                                                reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                                        }
+                                        if(tuple3!=tupleU){
+                                            const auto & it_reason3 = tupleToVar.find(Tuple(*tuple3));
+                                            if(it_reason3!=tupleToVar.end())
+                                                reason.push_back(it_reason3->second * (tuple3->isNegated() ? -1:1));
+                                        }
+                                        const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                                        if(it_reason_starter!=tupleToVar.end())
+                                            reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                                        if(!(actualSize4>=0+1)){
+                                            std::cout<<"conflict detected in propagator1"<<std::endl;
+                                            propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
+                                        }else{
+                                            if(actualSize4 == 0+1){
+                                                const std::vector<const Tuple*>* undefinedTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
+                                                    if(joinTuples_1_4SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0 && joinTuples_1_4SharedVariables.second->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 1){
+                                                        {
+                                                            const Tuple* aggrTupleU = uaux.find({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                            if(aggrTupleU != NULL){
+                                                                const auto & it = tupleToVar.find(*aggrTupleU);
+                                                                if(it != tupleToVar.end()) {
+                                                                    int sign = aggrTupleU->isNegated() ? 1:-1;
+                                                                    auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                                }
+                                                            }
+                                                        }
+                                                        {
+                                                            const Tuple* aggrTupleU = umember.find({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                            if(aggrTupleU != NULL){
+                                                                const auto & it = tupleToVar.find(*aggrTupleU);
+                                                                if(it != tupleToVar.end()) {
+                                                                    int sign = aggrTupleU->isNegated() ? 1:-1;
+                                                                    auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }else{
+                                    const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                                    for(int i=0;i<falseTuples0->size();i++){
+                                        bool joiningTupleFound=false;
+                                        int R = falseTuples0->at(i)->at(0);
+                                        int Y = falseTuples0->at(i)->at(1);
+                                        const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                        const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                        const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                        for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                            const Tuple * tuple1=NULL;
+                                            if(i_1<trueTuples1->size())
+                                                tuple1=trueTuples1->at(i_1);
+                                            else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                                tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                            else
+                                                tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                            joiningTupleFound=true;
+                                        }
+                                        if(joiningTupleFound){
+                                            const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                            if(it!=tupleToVar.end()){
+                                                reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                            }//closing if
+                                        }
+                                    }
+                                    const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                                    for(int i=0;i<falseTuples1->size();i++){
+                                        bool joiningTupleFound=false;
+                                        int Y = falseTuples1->at(i)->at(0);
+                                        int R = falseTuples1->at(i)->at(1);
+                                        const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                        const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                        const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                        for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                            const Tuple * tuple0=NULL;
+                                            if(i_0<trueTuples0->size())
+                                                tuple0=trueTuples0->at(i_0);
+                                            else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                                tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                            else
+                                                tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                            joiningTupleFound=true;
+                                        }
+                                        if(joiningTupleFound){
+                                            const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                            if(it!=tupleToVar.end()){
+                                                reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                            }//closing if
+                                        }
+                                    }
+                                    if(tuple1!=tupleU){
+                                        const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                        if(it_reason1!=tupleToVar.end())
+                                            reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                                    }
+                                    if(tuple2!=tupleU){
+                                        const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                        if(it_reason2!=tupleToVar.end())
+                                            reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                                    }
+                                    if(tuple3!=tupleU){
+                                        const auto & it_reason3 = tupleToVar.find(Tuple(*tuple3));
+                                        if(it_reason3!=tupleToVar.end())
+                                            reason.push_back(it_reason3->second * (tuple3->isNegated() ? -1:1));
+                                    }
+                                    const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                                    if(it_reason_starter!=tupleToVar.end())
+                                        reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                                        if(!(actualSize4>=0+1)){
+                                            const auto & it = tupleToVar.find(*tupleU);
+                                            if(it != tupleToVar.end()) {
+                                                int sign = tupleU->isNegated() ? -1 : 1;
+                                                auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                            }
+                                        }
+                                    }
+                                }//close par
+                            }//close par
+                        }//close par
+                    }//close par
+                    else{
+                        if(joinTuples_1_3.first->size()==0-1){
+                            const std::vector<const Tuple* >* tuples;
+                            tuples = &pin_.getValues({});
+                            const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
+                            if(tupleU == NULL){
+                                tuplesU = &uin_.getValues({});
+                            }
+                            for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
+                                const Tuple * tuple1 = NULL;
+                                if(i<tuples->size()){
+                                    tuple1 = tuples->at(i);
+                                    if(tuplesU != &EMPTY_TUPLES) {
+                                        tupleU = NULL;
+                                    }
+                                }
+                                else {
+                                    tuple1 = tuplesU->at(i-tuples->size());
+                                    tupleU = tuple1;
+                                    tupleUNegated = false;
+                                }
+                                int C = (*tuple1)[0];
+                                int X = (*tuple1)[1];
+                                const Tuple * tuple2 = (wrest.find({C, X, R}));
+                                if(!tuple2 && !tupleU ){
+                                    tuple2 = tupleU = (urest.find({C, X, R}));
+                                    tupleUNegated = false;
+                                }
+                                if(tuple2){
+                                    const Tuple negativeTuple = Tuple({R, 1}, &_cliquesize, true);
+                                    const Tuple * tuple3 = &negativeTuple;
+                                    bool lTrue = (wcliquesize.find(negativeTuple)!=NULL);
+                                    const Tuple * undefTuple = ucliquesize.find(negativeTuple);
+                                    if((!lTrue && undefTuple == NULL) || (undefTuple && tupleU == NULL)){
+                                        if(undefTuple){
+                                            tuple3 = tupleU = undefTuple;
+                                            tupleU->print();
+                                            tupleUNegated = true;
+                                        }
+                                        std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                                        joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                                        joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                                        {
+                                            Tuple sharedTuple(std::vector<int>({R,R}));
+                                            if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                                                sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                                const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                for(int i=0;i<trueJoinTuples->size();i++){
+                                                    const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                                    if(findResult!=NULL){
+                                                        sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                                                    }
+                                                }
+                                                for(int i=0;i<undefJoinTuples->size();i++){
+                                                    const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                                    if(findResult!=NULL){
+                                                        sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                                        int actualSize4 = joinTuples_1_4SharedVariables.first->size();
+                                        std::set<std::vector<int>> alreadyCounted4;
+                                        for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                                            if(joinTuples_1_4SharedVariables.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                                                if(joinTuples_1_4SharedVariables.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                                    std::vector<int> key({joinTupleUndef->at(1)});
+                                                    alreadyCounted4.insert(key);
+                                                }
+                                            }
+                                        }
+                                        actualSize4+=alreadyCounted4.size();
+                                        if(tupleU==NULL){
+                                            std::vector<int> reason;
+                                            const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                                            for(int i=0;i<falseTuples0->size();i++){
+                                                bool joiningTupleFound=false;
+                                                int R = falseTuples0->at(i)->at(0);
+                                                int Y = falseTuples0->at(i)->at(1);
+                                                const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                                const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                                const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                                for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                                    const Tuple * tuple1=NULL;
+                                                    if(i_1<trueTuples1->size())
+                                                        tuple1=trueTuples1->at(i_1);
+                                                    else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                                        tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                                    else
+                                                        tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                                    joiningTupleFound=true;
+                                                }
+                                                if(joiningTupleFound){
+                                                    const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                                    if(it!=tupleToVar.end()){
+                                                        reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                                    }//closing if
+                                                }
+                                            }
+                                            const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                                            for(int i=0;i<falseTuples1->size();i++){
+                                                bool joiningTupleFound=false;
+                                                int Y = falseTuples1->at(i)->at(0);
+                                                int R = falseTuples1->at(i)->at(1);
+                                                const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                                const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                                const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                                for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                                    const Tuple * tuple0=NULL;
+                                                    if(i_0<trueTuples0->size())
+                                                        tuple0=trueTuples0->at(i_0);
+                                                    else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                                        tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                                    else
+                                                        tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                                    joiningTupleFound=true;
+                                                }
+                                                if(joiningTupleFound){
+                                                    const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                                    if(it!=tupleToVar.end()){
+                                                        reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                                    }//closing if
+                                                }
+                                            }
+                                            if(!(actualSize4>=0+1)){
+                                                if(tupleU ==  NULL) {
+                                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                                                    joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                                                    joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                                                    const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                    for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                                        Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                                        const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                                        if(itaux_0!=tupleToVar.end()){
+                                                            reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                                        }//closing if
+                                                        Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                                        const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                                        if(itmember_1!=tupleToVar.end()){
+                                                            reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                                        }//closing if
+                                                    }
+                                                    const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                                    if(it_reason1!=tupleToVar.end())
+                                                        reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                                                    const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                                    if(it_reason2!=tupleToVar.end())
+                                                        reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                                                    const auto & it_reason3 = tupleToVar.find(Tuple(*tuple3));
+                                                    if(it_reason3!=tupleToVar.end())
+                                                        reason.push_back(it_reason3->second * (tuple3->isNegated() ? -1:1));
+                                                    const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                                                    if(it_reason_starter!=tupleToVar.end())
+                                                        reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                                                    const std::vector<const Tuple*>* undefinedTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                    for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
+                                                        if(joinTuples_1_3SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0){
+                                                            const Tuple* aggrTupleU=NULL;
+                                                            const std::vector<const Tuple*>* tuplesaux;
+                                                            const std::vector<const Tuple*>* tuplesUaux=&EMPTY_TUPLES;
+                                                            tuplesaux= &paux_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                            if(aggrTupleU==NULL)
+                                                                tuplesUaux= &uaux_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                            for(int j2=0;j2<tuplesaux->size()+tuplesUaux->size();j2++){
+                                                                const Tuple* auxTuple2=NULL;
+                                                                bool addedToReason=false;
+                                                                if(j2 < tuplesaux->size()){
+                                                                    auxTuple2 = tuplesaux->at(j2);
+                                                                    const auto & it = tupleToVar.find(*auxTuple2);
+                                                                    if(it!=tupleToVar.end()){
+                                                                        addedToReason=true;
+                                                                        reason.push_back(it->second * (auxTuple2->isNegated() ? -1:1));
+                                                                    }//closing if
+                                                                    if(tuplesUaux != &EMPTY_TUPLES) {
+                                                                    }
+                                                                }else{
+                                                                    auxTuple2 = tuplesUaux->at(j2-tuplesaux->size());
+                                                                    aggrTupleU = auxTuple2;
+                                                                }
+                                                                const std::vector<const Tuple*>* tuplesmember;
+                                                                const std::vector<const Tuple*>* tuplesUmember=&EMPTY_TUPLES;
+                                                                tuplesmember= &pmember_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                                if(aggrTupleU==NULL)
+                                                                    tuplesUmember= &umember_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                                for(int j4=0;j4<tuplesmember->size()+tuplesUmember->size();j4++){
+                                                                    const Tuple* auxTuple4=NULL;
+                                                                    bool addedToReason=false;
+                                                                    if(j4 < tuplesmember->size()){
+                                                                        auxTuple4 = tuplesmember->at(j4);
+                                                                        const auto & it = tupleToVar.find(*auxTuple4);
+                                                                        if(it!=tupleToVar.end()){
+                                                                            addedToReason=true;
+                                                                            reason.push_back(it->second * (auxTuple4->isNegated() ? -1:1));
+                                                                        }//closing if
+                                                                        if(tuplesUmember != &EMPTY_TUPLES) {
+                                                                        }
+                                                                    }else{
+                                                                        auxTuple4 = tuplesUmember->at(j4-tuplesmember->size());
+                                                                        aggrTupleU = auxTuple4;
+                                                                    }
+                                                                    if(aggrTupleU == NULL){
+                                                                        std::cout<<"Tuple undefined not well formed"<<std::endl;
+                                                                    }else{
+                                                                        const auto & it = tupleToVar.find(*aggrTupleU);
+                                                                        if(it != tupleToVar.end()) {
+                                                                            int sign = aggrTupleU->isNegated() ? -1 : 1;
+                                                                            auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                                        }
+                                                                    }
+                                                                    if(addedToReason) reason.pop_back();
+                                                                }
+                                                                if(addedToReason) reason.pop_back();
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }//close aggregate if
+                                        }//close tupleU if
+                                    }//close par
+                                }//close par
+                            }//close par
+                        }//close par
+                    }//close par
+                }//close par
+            }//close par
+        }//close if
+        if(facts[i] < 0){
+            bool tupleUNegated = false;
+            const Tuple * tupleU = NULL;
+            if(starter.getPredicateName()== &_aux || starter.getPredicateName()== &_member){
+                for(const auto sharedVarTuple : sharedVariables_1_ToAggregate_4){
+                    tupleU=NULL;
+                    int R = sharedVarTuple.first[0];
+                    std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                    joinTuples_1_4.first=sharedVarTuple.second->first;
+                    joinTuples_1_4.second=sharedVarTuple.second->second;
+                    int actualSize4 = joinTuples_1_4.first->size();
+                    std::set<std::vector<int>> alreadyCounted;
+                    for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                        if(joinTuples_1_4.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                            if(joinTuples_1_4.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                std::vector<int> key({joinTupleUndef->at(1)});
+                                alreadyCounted.insert(key);
+                            }
                         }
+                    }
+                    actualSize4+=alreadyCounted.size();
+                    if(!(actualSize4>=0+1)){
+                        std::vector<int> reason;
+                        const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                        for(int i=0;i<falseTuples0->size();i++){
+                            bool joiningTupleFound=false;
+                            int R = falseTuples0->at(i)->at(0);
+                            int Y = falseTuples0->at(i)->at(1);
+                            const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                            const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                            const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                            for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                const Tuple * tuple1=NULL;
+                                if(i_1<trueTuples1->size())
+                                    tuple1=trueTuples1->at(i_1);
+                                else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                    tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                else
+                                    tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                joiningTupleFound=true;
+                            }
+                            if(joiningTupleFound){
+                                const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                if(it!=tupleToVar.end()){
+                                    reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                }//closing if
+                            }
+                        }
+                        const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                        for(int i=0;i<falseTuples1->size();i++){
+                            bool joiningTupleFound=false;
+                            int Y = falseTuples1->at(i)->at(0);
+                            int R = falseTuples1->at(i)->at(1);
+                            const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                            const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                            const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                            for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                const Tuple * tuple0=NULL;
+                                if(i_0<trueTuples0->size())
+                                    tuple0=trueTuples0->at(i_0);
+                                else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                    tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                else
+                                    tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                joiningTupleFound=true;
+                            }
+                            if(joiningTupleFound){
+                                const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                if(it!=tupleToVar.end()){
+                                    reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                }//closing if
+                            }
+                        }
+                        const std::vector<const Tuple* >* tuples;
+                        tuples = &pin_.getValues({});
+                        const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
+                        if(tupleU == NULL){
+                            tuplesU = &uin_.getValues({});
+                        }
+                        for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
+                            const Tuple * tuple1 = NULL;
+                            if(i<tuples->size()){
+                                tuple1 = tuples->at(i);
+                                if(tuplesU != &EMPTY_TUPLES) {
+                                    tupleU = NULL;
+                                }
+                            }
+                            else {
+                                tuple1 = tuplesU->at(i-tuples->size());
+                                tupleU = tuple1;
+                                tupleUNegated = false;
+                            }
+                            int C = (*tuple1)[0];
+                            int X = (*tuple1)[1];
+                            const Tuple * tuple2 = (wrest.find({C, X, R}));
+                            if(!tuple2 && !tupleU ){
+                                tuple2 = tupleU = (urest.find({C, X, R}));
+                                tupleUNegated = false;
+                            }
+                            if(tuple2){
+                                const Tuple negativeTuple = Tuple({R, 1}, &_cliquesize, true);
+                                const Tuple * tuple3 = &negativeTuple;
+                                bool lTrue = (wcliquesize.find(negativeTuple)!=NULL);
+                                const Tuple * undefTuple = ucliquesize.find(negativeTuple);
+                                if((!lTrue && undefTuple == NULL) || (undefTuple && tupleU == NULL)){
+                                    if(undefTuple){
+                                        tuple3 = tupleU = undefTuple;
+                                        tupleU->print();
+                                        tupleUNegated = true;
+                                    }
+                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                                    joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                                    joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                                    {
+                                        Tuple sharedTuple(std::vector<int>({R,R}));
+                                        if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                                            sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                            const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            for(int i=0;i<trueJoinTuples->size();i++){
+                                                const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                                if(findResult!=NULL){
+                                                    sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                                                }
+                                            }
+                                            for(int i=0;i<undefJoinTuples->size();i++){
+                                                const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                                if(findResult!=NULL){
+                                                    sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                                    if(tupleU==NULL){
+                                        const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                        for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                            Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                            const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                            if(itaux_0!=tupleToVar.end()){
+                                                reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                            }//closing if
+                                            Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                            const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                            if(itmember_1!=tupleToVar.end()){
+                                                reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                            }//closing if
+                                        }
+                                        if(tuple1!=tupleU){
+                                            const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                            if(it_reason1!=tupleToVar.end())
+                                                reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                                        }
+                                        if(tuple2!=tupleU){
+                                            const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                            if(it_reason2!=tupleToVar.end())
+                                                reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                                        }
+                                        if(tuple3!=tupleU){
+                                            const auto & it_reason3 = tupleToVar.find(Tuple(*tuple3));
+                                            if(it_reason3!=tupleToVar.end())
+                                                reason.push_back(it_reason3->second * (tuple3->isNegated() ? -1:1));
+                                        }
+                                        const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                                        if(it_reason_starter!=tupleToVar.end())
+                                            reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                                        if(joinTuples_1_3SharedVariables.first->size()>=0){
+                                            std::cout<<"conflict detected in propagator1"<<std::endl;
+                                            propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
+                                        }else{
+                                            if(joinTuples_1_3SharedVariables.first->size() == 0-1){
+                                                const std::vector<const Tuple*>* undefinedTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
+                                                    if(joinTuples_1_3SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0){
+                                                        const Tuple* aggrTupleU=NULL;
+                                                        const std::vector<const Tuple*>* tuplesaux;
+                                                        const std::vector<const Tuple*>* tuplesUaux=&EMPTY_TUPLES;
+                                                        tuplesaux= &paux_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                        if(aggrTupleU==NULL)
+                                                            tuplesUaux= &uaux_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                        for(int j2=0;j2<tuplesaux->size()+tuplesUaux->size();j2++){
+                                                            const Tuple* auxTuple2=NULL;
+                                                            bool addedToReason=false;
+                                                            if(j2 < tuplesaux->size()){
+                                                                auxTuple2 = tuplesaux->at(j2);
+                                                                const auto & it = tupleToVar.find(*auxTuple2);
+                                                                if(it!=tupleToVar.end()){
+                                                                    addedToReason=true;
+                                                                    reason.push_back(it->second * (auxTuple2->isNegated() ? -1:1));
+                                                                }//closing if
+                                                                if(tuplesUaux != &EMPTY_TUPLES) {
+                                                                }
+                                                            }else{
+                                                                auxTuple2 = tuplesUaux->at(j2-tuplesaux->size());
+                                                                aggrTupleU = auxTuple2;
+                                                            }
+                                                            const std::vector<const Tuple*>* tuplesmember;
+                                                            const std::vector<const Tuple*>* tuplesUmember=&EMPTY_TUPLES;
+                                                            tuplesmember= &pmember_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                            if(aggrTupleU==NULL)
+                                                                tuplesUmember= &umember_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                            for(int j4=0;j4<tuplesmember->size()+tuplesUmember->size();j4++){
+                                                                const Tuple* auxTuple4=NULL;
+                                                                bool addedToReason=false;
+                                                                if(j4 < tuplesmember->size()){
+                                                                    auxTuple4 = tuplesmember->at(j4);
+                                                                    const auto & it = tupleToVar.find(*auxTuple4);
+                                                                    if(it!=tupleToVar.end()){
+                                                                        addedToReason=true;
+                                                                        reason.push_back(it->second * (auxTuple4->isNegated() ? -1:1));
+                                                                    }//closing if
+                                                                    if(tuplesUmember != &EMPTY_TUPLES) {
+                                                                    }
+                                                                }else{
+                                                                    auxTuple4 = tuplesUmember->at(j4-tuplesmember->size());
+                                                                    aggrTupleU = auxTuple4;
+                                                                }
+                                                                if(aggrTupleU == NULL){
+                                                                    std::cout<<"Tuple undefined not well formed"<<std::endl;
+                                                                }else{
+                                                                    const auto & it = tupleToVar.find(*aggrTupleU);
+                                                                    if(it != tupleToVar.end()) {
+                                                                        int sign = aggrTupleU->isNegated() ? -1 : 1;
+                                                                        auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                                    }
+                                                                }
+                                                                if(addedToReason) reason.pop_back();
+                                                            }
+                                                            if(addedToReason) reason.pop_back();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }else{
+                                    const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                        Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                        const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                        if(itaux_0!=tupleToVar.end()){
+                                            reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                        }//closing if
+                                        Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                        const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                        if(itmember_1!=tupleToVar.end()){
+                                            reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                        }//closing if
+                                    }
+                                    if(tuple1!=tupleU){
+                                        const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                        if(it_reason1!=tupleToVar.end())
+                                            reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                                    }
+                                    if(tuple2!=tupleU){
+                                        const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                        if(it_reason2!=tupleToVar.end())
+                                            reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                                    }
+                                    if(tuple3!=tupleU){
+                                        const auto & it_reason3 = tupleToVar.find(Tuple(*tuple3));
+                                        if(it_reason3!=tupleToVar.end())
+                                            reason.push_back(it_reason3->second * (tuple3->isNegated() ? -1:1));
+                                    }
+                                    const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                                    if(it_reason_starter!=tupleToVar.end())
+                                        reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                                        if(joinTuples_1_3SharedVariables.first->size()>=0){
+                                            const auto & it = tupleToVar.find(*tupleU);
+                                            if(it != tupleToVar.end()) {
+                                                int sign = tupleU->isNegated() ? -1 : 1;
+                                                auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                            }
+                                        }
+                                    }
+                                }//close par
+                            }//close par
+                        }//close par
+                    }//close par
+                    else{
+                        if(actualSize4==0+1){
+                            const std::vector<const Tuple* >* tuples;
+                            tuples = &pin_.getValues({});
+                            const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
+                            if(tupleU == NULL){
+                                tuplesU = &uin_.getValues({});
+                            }
+                            for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
+                                const Tuple * tuple1 = NULL;
+                                if(i<tuples->size()){
+                                    tuple1 = tuples->at(i);
+                                    if(tuplesU != &EMPTY_TUPLES) {
+                                        tupleU = NULL;
+                                    }
+                                }
+                                else {
+                                    tuple1 = tuplesU->at(i-tuples->size());
+                                    tupleU = tuple1;
+                                    tupleUNegated = false;
+                                }
+                                int C = (*tuple1)[0];
+                                int X = (*tuple1)[1];
+                                const Tuple * tuple2 = (wrest.find({C, X, R}));
+                                if(!tuple2 && !tupleU ){
+                                    tuple2 = tupleU = (urest.find({C, X, R}));
+                                    tupleUNegated = false;
+                                }
+                                if(tuple2){
+                                    const Tuple negativeTuple = Tuple({R, 1}, &_cliquesize, true);
+                                    const Tuple * tuple3 = &negativeTuple;
+                                    bool lTrue = (wcliquesize.find(negativeTuple)!=NULL);
+                                    const Tuple * undefTuple = ucliquesize.find(negativeTuple);
+                                    if((!lTrue && undefTuple == NULL) || (undefTuple && tupleU == NULL)){
+                                        if(undefTuple){
+                                            tuple3 = tupleU = undefTuple;
+                                            tupleU->print();
+                                            tupleUNegated = true;
+                                        }
+                                        std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                                        joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                                        joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                                        {
+                                            Tuple sharedTuple(std::vector<int>({R,R}));
+                                            if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                                                sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                                const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                for(int i=0;i<trueJoinTuples->size();i++){
+                                                    const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                                    if(findResult!=NULL){
+                                                        sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                                                    }
+                                                }
+                                                for(int i=0;i<undefJoinTuples->size();i++){
+                                                    const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                                    if(findResult!=NULL){
+                                                        sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                                        if(tupleU==NULL){
+                                            const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            std::vector<int> reason;
+                                            for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                                Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                                const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                                if(itaux_0!=tupleToVar.end()){
+                                                    reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                                }//closing if
+                                                Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                                const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                                if(itmember_1!=tupleToVar.end()){
+                                                    reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                                }//closing if
+                                            }
+                                            if(joinTuples_1_3SharedVariables.first->size()>=0){
+                                                if(tupleU ==  NULL) {
+                                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                                                    joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                                                    joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                                                    const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                                                    for(int i=0;i<falseTuples0->size();i++){
+                                                        bool joiningTupleFound=false;
+                                                        int R = falseTuples0->at(i)->at(0);
+                                                        int Y = falseTuples0->at(i)->at(1);
+                                                        const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                                        const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                                        const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                                        for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                                            const Tuple * tuple1=NULL;
+                                                            if(i_1<trueTuples1->size())
+                                                                tuple1=trueTuples1->at(i_1);
+                                                            else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                                                tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                                            else
+                                                                tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                                            joiningTupleFound=true;
+                                                        }
+                                                        if(joiningTupleFound){
+                                                            const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                                            if(it!=tupleToVar.end()){
+                                                                reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                                            }//closing if
+                                                        }
+                                                    }
+                                                    const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                                                    for(int i=0;i<falseTuples1->size();i++){
+                                                        bool joiningTupleFound=false;
+                                                        int Y = falseTuples1->at(i)->at(0);
+                                                        int R = falseTuples1->at(i)->at(1);
+                                                        const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                                        const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                                        const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                                        for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                                            const Tuple * tuple0=NULL;
+                                                            if(i_0<trueTuples0->size())
+                                                                tuple0=trueTuples0->at(i_0);
+                                                            else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                                                tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                                            else
+                                                                tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                                            joiningTupleFound=true;
+                                                        }
+                                                        if(joiningTupleFound){
+                                                            const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                                            if(it!=tupleToVar.end()){
+                                                                reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                                            }//closing if
+                                                        }
+                                                    }
+                                                    const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                                    if(it_reason1!=tupleToVar.end())
+                                                        reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                                                    const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                                    if(it_reason2!=tupleToVar.end())
+                                                        reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                                                    const auto & it_reason3 = tupleToVar.find(Tuple(*tuple3));
+                                                    if(it_reason3!=tupleToVar.end())
+                                                        reason.push_back(it_reason3->second * (tuple3->isNegated() ? -1:1));
+                                                    const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                                                    if(it_reason_starter!=tupleToVar.end())
+                                                        reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                                                    const std::vector<const Tuple*>* undefinedTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                                    for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
+                                                        if(joinTuples_1_4SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0 && joinTuples_1_4SharedVariables.second->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 1){
+                                                            {
+                                                                const Tuple* aggrTupleU = uaux.find({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                                if(aggrTupleU != NULL){
+                                                                    const auto & it = tupleToVar.find(*aggrTupleU);
+                                                                    if(it != tupleToVar.end()) {
+                                                                        int sign = aggrTupleU->isNegated() ? 1:-1;
+                                                                        auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                                    }
+                                                                }
+                                                            }
+                                                            {
+                                                                const Tuple* aggrTupleU = umember.find({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                                if(aggrTupleU != NULL){
+                                                                    const auto & it = tupleToVar.find(*aggrTupleU);
+                                                                    if(it != tupleToVar.end()) {
+                                                                        int sign = aggrTupleU->isNegated() ? 1:-1;
+                                                                        auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }//close aggregate if
+                                        }//close tupleU if
+                                    }//close par
+                                }//close par
+                            }//close par
+                        }//close par
+                    }//close par
+                }//close par
+            }//close par
+        }//close if
+        if(starter.getPredicateName() == &_in) { 
+            const Tuple * tuple0 = &starter;
+            if(facts[i] > 0){
+                {
+                    const Tuple * tupleU = NULL;
+                    bool tupleUNegated = false;
+                    int C = (*tuple0)[0];
+                    int X = (*tuple0)[1];
+                    const std::vector<const Tuple* >* tuples;
+                    tuples = &prest_0_1_.getValues({C, X});
+                    const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
+                    if(tupleU == NULL){
+                        tuplesU = &urest_0_1_.getValues({C, X});
+                    }
+                    for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
+                        const Tuple * tuple1 = NULL;
+                        if(i<tuples->size()){
+                            tuple1 = tuples->at(i);
+                            if(tuplesU != &EMPTY_TUPLES) {
+                                tupleU = NULL;
+                            }
+                        }
+                        else {
+                            tuple1 = tuplesU->at(i-tuples->size());
+                            tupleU = tuple1;
+                            tupleUNegated = false;
+                        }
+                        int R = (*tuple1)[2];
+                        const Tuple negativeTuple = Tuple({R, 1}, &_cliquesize, true);
+                        const Tuple * tuple2 = &negativeTuple;
+                        bool lTrue = (wcliquesize.find(negativeTuple)!=NULL);
+                        const Tuple * undefTuple = ucliquesize.find(negativeTuple);
+                        if((!lTrue && undefTuple == NULL) || (undefTuple && tupleU == NULL)){
+                            if(undefTuple){
+                                tuple2 = tupleU = undefTuple;
+                                tupleU->print();
+                                tupleUNegated = true;
+                            }
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                            joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                            joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                                    sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                    const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    for(int i=0;i<trueJoinTuples->size();i++){
+                                        const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                                        }
+                                    }
+                                    for(int i=0;i<undefJoinTuples->size();i++){
+                                        const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                                        }
+                                    }
+                                }
+                            }
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                            if(tupleU==NULL){
+                                const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                std::vector<int> reason;
+                                for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                    Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                    const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                    if(itaux_0!=tupleToVar.end()){
+                                        reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                    }//closing if
+                                    Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                    const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                    if(itmember_1!=tupleToVar.end()){
+                                        reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                    }//closing if
+                                }
+                                if(joinTuples_1_3SharedVariables.first->size()>=0){
+                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                                    joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                                    joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                                    {
+                                        Tuple sharedTuple(std::vector<int>({R,R}));
+                                        if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                                            sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                            const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            for(int i=0;i<trueJoinTuples->size();i++){
+                                                const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                                if(findResult!=NULL){
+                                                    sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                                                }
+                                            }
+                                            for(int i=0;i<undefJoinTuples->size();i++){
+                                                const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                                if(findResult!=NULL){
+                                                    sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                                    int actualSize4 = joinTuples_1_4SharedVariables.first->size();
+                                    std::set<std::vector<int>> alreadyCounted4;
+                                    for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                                        if(joinTuples_1_4SharedVariables.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                                            if(joinTuples_1_4SharedVariables.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                                std::vector<int> key({joinTupleUndef->at(1)});
+                                                alreadyCounted4.insert(key);
+                                            }
+                                        }
+                                    }
+                                    actualSize4+=alreadyCounted4.size();
+                                    const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                                    for(int i=0;i<falseTuples0->size();i++){
+                                        bool joiningTupleFound=false;
+                                        int R = falseTuples0->at(i)->at(0);
+                                        int Y = falseTuples0->at(i)->at(1);
+                                        const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                        const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                        const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                        for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                            const Tuple * tuple1=NULL;
+                                            if(i_1<trueTuples1->size())
+                                                tuple1=trueTuples1->at(i_1);
+                                            else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                                tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                            else
+                                                tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                            joiningTupleFound=true;
+                                        }
+                                        if(joiningTupleFound){
+                                            const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                            if(it!=tupleToVar.end()){
+                                                reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                            }//closing if
+                                        }
+                                    }
+                                    const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                                    for(int i=0;i<falseTuples1->size();i++){
+                                        bool joiningTupleFound=false;
+                                        int Y = falseTuples1->at(i)->at(0);
+                                        int R = falseTuples1->at(i)->at(1);
+                                        const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                        const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                        const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                        for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                            const Tuple * tuple0=NULL;
+                                            if(i_0<trueTuples0->size())
+                                                tuple0=trueTuples0->at(i_0);
+                                            else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                                tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                            else
+                                                tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                            joiningTupleFound=true;
+                                        }
+                                        if(joiningTupleFound){
+                                            const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                            if(it!=tupleToVar.end()){
+                                                reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                            }//closing if
+                                        }
+                                    }
+                                    if(tuple0!=tupleU){
+                                        const auto & it_reason0 = tupleToVar.find(Tuple(*tuple0));
+                                        if(it_reason0!=tupleToVar.end())
+                                            reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
+                                    }
+                                    if(tuple1!=tupleU){
+                                        const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                        if(it_reason1!=tupleToVar.end())
+                                            reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                                    }
+                                    if(tuple2!=tupleU){
+                                        const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                        if(it_reason2!=tupleToVar.end())
+                                            reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                                    }
+                                    const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                                    if(it_reason_starter!=tupleToVar.end())
+                                        reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                                    if(!(actualSize4>=0+1)){
+                                        std::cout<<"conflict detected in propagatoron last aggregate starting from literal1"<<std::endl;
+                                        propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
+                                    }else{
+                                        if(actualSize4 == 0+1){
+                                            const std::vector<const Tuple*>* undefinedTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
+                                                if(joinTuples_1_4SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0 && joinTuples_1_4SharedVariables.second->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 1){
+                                                    {
+                                                        const Tuple* aggrTupleU = uaux.find({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                        if(aggrTupleU != NULL){
+                                                            const auto & it = tupleToVar.find(*aggrTupleU);
+                                                            if(it != tupleToVar.end()) {
+                                                                int sign = aggrTupleU->isNegated() ? 1:-1;
+                                                                auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                            }
+                                                        }
+                                                    }
+                                                    {
+                                                        const Tuple* aggrTupleU = umember.find({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                        if(aggrTupleU != NULL){
+                                                            const auto & it = tupleToVar.find(*aggrTupleU);
+                                                            if(it != tupleToVar.end()) {
+                                                                int sign = aggrTupleU->isNegated() ? 1:-1;
+                                                                auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }//close ext aggregate if
+                            }else{
+                            std::vector<int> reason;
+                            const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                            for(int i=0;i<falseTuples0->size();i++){
+                                bool joiningTupleFound=false;
+                                int R = falseTuples0->at(i)->at(0);
+                                int Y = falseTuples0->at(i)->at(1);
+                                const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                    const Tuple * tuple1=NULL;
+                                    if(i_1<trueTuples1->size())
+                                        tuple1=trueTuples1->at(i_1);
+                                    else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                        tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                    else
+                                        tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                    joiningTupleFound=true;
+                                }
+                                if(joiningTupleFound){
+                                    const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                    if(it!=tupleToVar.end()){
+                                        reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                    }//closing if
+                                }
+                            }
+                            const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                            for(int i=0;i<falseTuples1->size();i++){
+                                bool joiningTupleFound=false;
+                                int Y = falseTuples1->at(i)->at(0);
+                                int R = falseTuples1->at(i)->at(1);
+                                const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                    const Tuple * tuple0=NULL;
+                                    if(i_0<trueTuples0->size())
+                                        tuple0=trueTuples0->at(i_0);
+                                    else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                        tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                    else
+                                        tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                    joiningTupleFound=true;
+                                }
+                                if(joiningTupleFound){
+                                    const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                    if(it!=tupleToVar.end()){
+                                        reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                    }//closing if
+                                }
+                            }
+                            if(tuple0!=tupleU){
+                                const auto & it_reason0 = tupleToVar.find(Tuple(*tuple0));
+                                if(it_reason0!=tupleToVar.end())
+                                    reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
+                            }
+                            if(tuple1!=tupleU){
+                                const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                if(it_reason1!=tupleToVar.end())
+                                    reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                            }
+                            if(tuple2!=tupleU){
+                                const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                if(it_reason2!=tupleToVar.end())
+                                    reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                            }
+                            const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                            for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                if(itaux_0!=tupleToVar.end()){
+                                    reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                }//closing if
+                                Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                if(itmember_1!=tupleToVar.end()){
+                                    reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                }//closing if
+                            }
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                            joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                            joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                                    sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                    const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    for(int i=0;i<trueJoinTuples->size();i++){
+                                        const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                                        }
+                                    }
+                                    for(int i=0;i<undefJoinTuples->size();i++){
+                                        const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                                        }
+                                    }
+                                }
+                            }
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                            int actualSize4 = joinTuples_1_4SharedVariables.first->size();
+                            std::set<std::vector<int>> alreadyCounted4;
+                            for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                                if(joinTuples_1_4SharedVariables.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                                    if(joinTuples_1_4SharedVariables.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                        std::vector<int> key({joinTupleUndef->at(1)});
+                                        alreadyCounted4.insert(key);
+                                    }
+                                }
+                            }
+                            actualSize4+=alreadyCounted4.size();
+                                if(!(actualSize4>=0+1) && (joinTuples_1_3SharedVariables.first->size()>=0)){
+                                    const auto & it = tupleToVar.find(*tupleU);
+                                    if(it != tupleToVar.end()) {
+                                        int sign = tupleU->isNegated() ? -1 : 1;
+                                        auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                    }
+                                }
+                            }
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_4;
+                            joinTuples_1_4.first = &p_aux_R_Y_member_Y_R_;
+                            joinTuples_1_4.second = &u_aux_R_Y_member_Y_R_;
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(!sharedVariables_1_ToAggregate_4.count(sharedTuple)){
+                                    sharedVariables_1_ToAggregate_4[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                    const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    for(int i=0;i<trueJoinTuples->size();i++){
+                                        const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_4[sharedTuple]->first->insert2(*findResult);
+                                        }
+                                    }
+                                    for(int i=0;i<undefJoinTuples->size();i++){
+                                        const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_4[sharedTuple]->second->insert2(*findResult);
+                                        }
+                                    }
+                                }
+                            }
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_4SharedVariables = *sharedVariables_1_ToAggregate_4[std::vector<int>({R,R})];
+                            int actualSize4 = joinTuples_1_4SharedVariables.first->size();
+                            std::set<std::vector<int>> alreadyCounted4;
+                            for(const Tuple * joinTupleUndef : u_aux_R_Y_member_Y_R_0_3_.getValues({R,R})){
+                                if(joinTuples_1_4SharedVariables.first->getValues({joinTupleUndef->at(1)}).size()==0){
+                                    if(joinTuples_1_4SharedVariables.second->getValues({joinTupleUndef->at(1)}).size()>0){
+                                        std::vector<int> key({joinTupleUndef->at(1)});
+                                        alreadyCounted4.insert(key);
+                                    }
+                                }
+                            }
+                            actualSize4+=alreadyCounted4.size();
+                            if(tupleU==NULL){
+                                std::vector<int> reason;
+                                const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                                for(int i=0;i<falseTuples0->size();i++){
+                                    bool joiningTupleFound=false;
+                                    int R = falseTuples0->at(i)->at(0);
+                                    int Y = falseTuples0->at(i)->at(1);
+                                    const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                    const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                    const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                    for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                        const Tuple * tuple1=NULL;
+                                        if(i_1<trueTuples1->size())
+                                            tuple1=trueTuples1->at(i_1);
+                                        else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                            tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                        else
+                                            tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                        joiningTupleFound=true;
+                                    }
+                                    if(joiningTupleFound){
+                                        const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                        if(it!=tupleToVar.end()){
+                                            reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                        }//closing if
+                                    }
+                                }
+                                const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                                for(int i=0;i<falseTuples1->size();i++){
+                                    bool joiningTupleFound=false;
+                                    int Y = falseTuples1->at(i)->at(0);
+                                    int R = falseTuples1->at(i)->at(1);
+                                    const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                    const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                    const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                    for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                        const Tuple * tuple0=NULL;
+                                        if(i_0<trueTuples0->size())
+                                            tuple0=trueTuples0->at(i_0);
+                                        else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                            tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                        else
+                                            tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                        joiningTupleFound=true;
+                                    }
+                                    if(joiningTupleFound){
+                                        const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                        if(it!=tupleToVar.end()){
+                                            reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                        }//closing if
+                                    }
+                                }
+                                if(!(actualSize4>=0+1)){
+                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                                    joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                                    joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                                    {
+                                        Tuple sharedTuple(std::vector<int>({R,R}));
+                                        if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                                            sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                            const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            for(int i=0;i<trueJoinTuples->size();i++){
+                                                const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                                if(findResult!=NULL){
+                                                    sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                                                }
+                                            }
+                                            for(int i=0;i<undefJoinTuples->size();i++){
+                                                const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                                if(findResult!=NULL){
+                                                    sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                                    const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                        Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                        const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                        if(itaux_0!=tupleToVar.end()){
+                                            reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                        }//closing if
+                                        Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                        const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                        if(itmember_1!=tupleToVar.end()){
+                                            reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                        }//closing if
+                                    }
+                                    if(tuple0!=tupleU){
+                                        const auto & it_reason0 = tupleToVar.find(Tuple(*tuple0));
+                                        if(it_reason0!=tupleToVar.end())
+                                            reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
+                                    }
+                                    if(tuple1!=tupleU){
+                                        const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                        if(it_reason1!=tupleToVar.end())
+                                            reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                                    }
+                                    if(tuple2!=tupleU){
+                                        const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                        if(it_reason2!=tupleToVar.end())
+                                            reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                                    }
+                                    const auto & it_reason_starter = tupleToVar.find(Tuple(starter));
+                                    if(it_reason_starter!=tupleToVar.end())
+                                        reason.push_back(it_reason_starter->second * (starter.isNegated() ? -1:1));
+                                    if(joinTuples_1_3SharedVariables.first->size()>=0){
+                                        std::cout<<"conflict detected in propagatoron last aggregate starting from literal1"<<std::endl;
+                                        propagatedLiteralsAndReasons.insert({-1, std::vector<int>(reason)});
+                                    }else{
+                                        if(joinTuples_1_3SharedVariables.first->size() == 0-1){
+                                            const std::vector<const Tuple*>* undefinedTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                            for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
+                                                if(joinTuples_1_3SharedVariables.first->getValues({undefinedTuples->at(iUndef)->at(1)}).size() == 0){
+                                                    const Tuple* aggrTupleU=NULL;
+                                                    const std::vector<const Tuple*>* tuplesaux;
+                                                    const std::vector<const Tuple*>* tuplesUaux=&EMPTY_TUPLES;
+                                                    tuplesaux= &paux_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                    if(aggrTupleU==NULL)
+                                                        tuplesUaux= &uaux_0_1_.getValues({undefinedTuples->at(iUndef)->at(0),undefinedTuples->at(iUndef)->at(1)});
+                                                    for(int j2=0;j2<tuplesaux->size()+tuplesUaux->size();j2++){
+                                                        const Tuple* auxTuple2=NULL;
+                                                        bool addedToReason=false;
+                                                        if(j2 < tuplesaux->size()){
+                                                            auxTuple2 = tuplesaux->at(j2);
+                                                            const auto & it = tupleToVar.find(*auxTuple2);
+                                                            if(it!=tupleToVar.end()){
+                                                                addedToReason=true;
+                                                                reason.push_back(it->second * (auxTuple2->isNegated() ? -1:1));
+                                                            }//closing if
+                                                            if(tuplesUaux != &EMPTY_TUPLES) {
+                                                            }
+                                                        }else{
+                                                            auxTuple2 = tuplesUaux->at(j2-tuplesaux->size());
+                                                            aggrTupleU = auxTuple2;
+                                                        }
+                                                        const std::vector<const Tuple*>* tuplesmember;
+                                                        const std::vector<const Tuple*>* tuplesUmember=&EMPTY_TUPLES;
+                                                        tuplesmember= &pmember_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                        if(aggrTupleU==NULL)
+                                                            tuplesUmember= &umember_0_1_.getValues({undefinedTuples->at(iUndef)->at(2),undefinedTuples->at(iUndef)->at(3)});
+                                                        for(int j4=0;j4<tuplesmember->size()+tuplesUmember->size();j4++){
+                                                            const Tuple* auxTuple4=NULL;
+                                                            bool addedToReason=false;
+                                                            if(j4 < tuplesmember->size()){
+                                                                auxTuple4 = tuplesmember->at(j4);
+                                                                const auto & it = tupleToVar.find(*auxTuple4);
+                                                                if(it!=tupleToVar.end()){
+                                                                    addedToReason=true;
+                                                                    reason.push_back(it->second * (auxTuple4->isNegated() ? -1:1));
+                                                                }//closing if
+                                                                if(tuplesUmember != &EMPTY_TUPLES) {
+                                                                }
+                                                            }else{
+                                                                auxTuple4 = tuplesUmember->at(j4-tuplesmember->size());
+                                                                aggrTupleU = auxTuple4;
+                                                            }
+                                                            if(aggrTupleU == NULL){
+                                                                std::cout<<"Tuple undefined not well formed"<<std::endl;
+                                                            }else{
+                                                                const auto & it = tupleToVar.find(*aggrTupleU);
+                                                                if(it != tupleToVar.end()) {
+                                                                    int sign = aggrTupleU->isNegated() ? -1 : 1;
+                                                                    auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                                                }
+                                                            }
+                                                            if(addedToReason) reason.pop_back();
+                                                        }
+                                                        if(addedToReason) reason.pop_back();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }//close ext aggregate if
+                            }else{
+                            const std::vector<const Tuple*>* trueTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                            std::vector<int> reason;
+                            for(int reasonIndex=0;reasonIndex<trueTuples->size();reasonIndex++){
+                                Tuple tupleaux_0(std::vector<int>({trueTuples->at(reasonIndex)->at(0),trueTuples->at(reasonIndex)->at(1)}),&_aux);
+                                const auto & itaux_0 = tupleToVar.find(tupleaux_0);
+                                if(itaux_0!=tupleToVar.end()){
+                                    reason.push_back(itaux_0->second * (tupleaux_0.isNegated() ? -1:1));
+                                }//closing if
+                                Tuple tuplemember_1(std::vector<int>({trueTuples->at(reasonIndex)->at(2),trueTuples->at(reasonIndex)->at(3)}),&_member);
+                                const auto & itmember_1 = tupleToVar.find(tuplemember_1);
+                                if(itmember_1!=tupleToVar.end()){
+                                    reason.push_back(itmember_1->second * (tuplemember_1.isNegated() ? -1:1));
+                                }//closing if
+                            }
+                            if(tuple0!=tupleU){
+                                const auto & it_reason0 = tupleToVar.find(Tuple(*tuple0));
+                                if(it_reason0!=tupleToVar.end())
+                                    reason.push_back(it_reason0->second * (tuple0->isNegated() ? -1:1));
+                            }
+                            if(tuple1!=tupleU){
+                                const auto & it_reason1 = tupleToVar.find(Tuple(*tuple1));
+                                if(it_reason1!=tupleToVar.end())
+                                    reason.push_back(it_reason1->second * (tuple1->isNegated() ? -1:1));
+                            }
+                            if(tuple2!=tupleU){
+                                const auto & it_reason2 = tupleToVar.find(Tuple(*tuple2));
+                                if(it_reason2!=tupleToVar.end())
+                                    reason.push_back(it_reason2->second * (tuple2->isNegated() ? -1:1));
+                            }
+                            const std::vector<const Tuple*>* falseTuples0 = &faux_.getValues({});
+                            for(int i=0;i<falseTuples0->size();i++){
+                                bool joiningTupleFound=false;
+                                int R = falseTuples0->at(i)->at(0);
+                                int Y = falseTuples0->at(i)->at(1);
+                                const std::vector<const Tuple*>* trueTuples1 = &pmember_0_1_.getValues({Y, R});
+                                const std::vector<const Tuple*>* undefTuples1 = &umember_0_1_.getValues({Y, R});
+                                const std::vector<const Tuple*>* falseTuples1 = &fmember_0_1_.getValues({Y, R});
+                                for(int i_1=0;!joiningTupleFound && i_1 < trueTuples1->size()+undefTuples1->size()+falseTuples1->size();i_1++){
+                                    const Tuple * tuple1=NULL;
+                                    if(i_1<trueTuples1->size())
+                                        tuple1=trueTuples1->at(i_1);
+                                    else if(i_1<trueTuples1->size()+undefTuples1->size())
+                                        tuple1=undefTuples1->at(i_1-trueTuples1->size());
+                                    else
+                                        tuple1=falseTuples1->at(i_1-trueTuples1->size()-undefTuples1->size());
+                                    joiningTupleFound=true;
+                                }
+                                if(joiningTupleFound){
+                                    const auto & it = tupleToVar.find(*falseTuples0->at(i));
+                                    if(it!=tupleToVar.end()){
+                                        reason.push_back(it->second * (falseTuples0->at(i)->isNegated() ? 1:-1));
+                                    }//closing if
+                                }
+                            }
+                            const std::vector<const Tuple*>* falseTuples1 = &fmember_.getValues({});
+                            for(int i=0;i<falseTuples1->size();i++){
+                                bool joiningTupleFound=false;
+                                int Y = falseTuples1->at(i)->at(0);
+                                int R = falseTuples1->at(i)->at(1);
+                                const std::vector<const Tuple*>* trueTuples0 = &paux_0_1_.getValues({R, Y});
+                                const std::vector<const Tuple*>* undefTuples0 = &uaux_0_1_.getValues({R, Y});
+                                const std::vector<const Tuple*>* falseTuples0 = &faux_0_1_.getValues({R, Y});
+                                for(int i_0=0;!joiningTupleFound && i_0 < trueTuples0->size()+undefTuples0->size()+falseTuples0->size();i_0++){
+                                    const Tuple * tuple0=NULL;
+                                    if(i_0<trueTuples0->size())
+                                        tuple0=trueTuples0->at(i_0);
+                                    else if(i_0<trueTuples0->size()+undefTuples0->size())
+                                        tuple0=undefTuples0->at(i_0-trueTuples0->size());
+                                    else
+                                        tuple0=falseTuples0->at(i_0-trueTuples0->size()-undefTuples0->size());
+                                    joiningTupleFound=true;
+                                }
+                                if(joiningTupleFound){
+                                    const auto & it = tupleToVar.find(*falseTuples1->at(i));
+                                    if(it!=tupleToVar.end()){
+                                        reason.push_back(it->second * (falseTuples1->at(i)->isNegated() ? 1:-1));
+                                    }//closing if
+                                }
+                            }
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_3;
+                            joinTuples_1_3.first = &p_aux_R_Y_member_Y_R_;
+                            joinTuples_1_3.second = &u_aux_R_Y_member_Y_R_;
+                            {
+                                Tuple sharedTuple(std::vector<int>({R,R}));
+                                if(!sharedVariables_1_ToAggregate_3.count(sharedTuple)){
+                                    sharedVariables_1_ToAggregate_3[sharedTuple] = new std::pair<AuxMap*,AuxMap*>(new AuxMap(std::vector<unsigned>({1})),new AuxMap(std::vector<unsigned>({1})));
+                                    const std::vector<const Tuple*>* trueJoinTuples = &p_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    const std::vector<const Tuple*>* undefJoinTuples = &u_aux_R_Y_member_Y_R_0_3_.getValues({R,R});
+                                    for(int i=0;i<trueJoinTuples->size();i++){
+                                        const auto findResult = waux_R_Y_member_Y_R_.find(Tuple(*trueJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_3[sharedTuple]->first->insert2(*findResult);
+                                        }
+                                    }
+                                    for(int i=0;i<undefJoinTuples->size();i++){
+                                        const auto findResult = uaux_R_Y_member_Y_R_.find(Tuple(*undefJoinTuples->at(i)));
+                                        if(findResult!=NULL){
+                                            sharedVariables_1_ToAggregate_3[sharedTuple]->second->insert2(*findResult);
+                                        }
+                                    }
+                                }
+                            }
+                            std::pair<AuxMap*,AuxMap*> joinTuples_1_3SharedVariables = *sharedVariables_1_ToAggregate_3[std::vector<int>({R,R})];
+                                if(joinTuples_1_3SharedVariables.first->size()>=0 && (!(actualSize4>=0+1))){
+                                    const auto & it = tupleToVar.find(*tupleU);
+                                    if(it != tupleToVar.end()) {
+                                        int sign = tupleU->isNegated() ? -1 : 1;
+                                        auto & reas = propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(reason)}).first->second;
+                                    }
+                                }
+                            }
+                        }//close par
                     }//close par
                 }//close loop nested join
             }//close loop nested join
