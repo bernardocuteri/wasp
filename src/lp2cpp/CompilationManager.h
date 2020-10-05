@@ -51,7 +51,13 @@ public:
 
 
     
-private:    
+private:   
+    void evaluationEndingWithAggregate(const aspc::Rule & r,std::vector<unsigned> joinOrder,unsigned start);
+    void propAggr(const aspc::ArithmeticRelationWithAggregate* aggregateRelation,std::string& aggregateIdentifier,bool withReason,std::string op);
+    void printAggregateTrueIf(std::string aggrIdentifier,const aspc::ArithmeticRelationWithAggregate* aggr,std::string joinTupleName,std::string op,bool isBound);
+    void printCanPropagateIf(std::string aggrIdentifier,const aspc::ArithmeticRelationWithAggregate* aggr,std::string op);
+    void evaluationStartingFromAggregate(const aspc::Rule & r,std::vector<unsigned> joinOrder,unsigned start);
+    void compileConstraintWithAggregate(const aspc::Rule & r, unsigned start, const aspc::Program & p);
     void checkSharedVariablesOnUndefTuple(std::string sharedVars,std::string aggrIdentifier);
     void countRemainingJoinTuples(std::string aggrIdentifier,std::string pairName,const aspc::ArithmeticRelationWithAggregate* aggregateRelation);
     void declareDataStructureForAggregate(const aspc::Rule& r,const std::set< std::pair<std::string, unsigned> >& aggregatePredicates);
